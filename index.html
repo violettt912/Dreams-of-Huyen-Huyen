@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Những giấc mơ của Huyên Huyên 🌙✨</title>
     
-    <!-- Logo hình bé rắn tím trên tab trình duyệt (Qua proxy chống chặn mạng + xóa cache cũ) -->
-    <link rel="icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/rk7zyl.png&w=128&h=128&fit=contain&v=snake2026">
-    <link rel="shortcut icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/rk7zyl.png&w=128&h=128&fit=contain&v=snake2026">
-    <link rel="apple-touch-icon" href="https://wsrv.nl/?url=https://files.catbox.moe/rk7zyl.png&w=180&h=180&fit=contain&v=snake2026">
+    <!-- Ép trình duyệt nhận icon bé rắn tím chuẩn xác -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/rk7zyl.png?v=v3">
+    <link rel="shortcut icon" type="image/png" href="https://files.catbox.moe/rk7zyl.png?v=v3">
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/rk7zyl.png?v=v3">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,7 +70,6 @@
 
         <div id="snow-container" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
 
-        <!-- Đẩy cụm chữ và nút bấm cao lên để hiển thị trọn vẹn trên điện thoại -->
         <div class="absolute inset-0 bg-gradient-to-t from-purple-950/85 via-purple-950/30 to-transparent flex flex-col justify-end items-center pb-28 sm:pb-24 px-4 text-center z-20">
             <div class="mb-4 sm:mb-5">
                 <span class="font-script text-4xl sm:text-6xl text-purple-100 tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)] block leading-tight">
@@ -95,14 +94,13 @@
     <!-- ================= 2. TRANG CHỦ & TRANG DANH SÁCH (MAIN & LIST CONTAINER) ================= -->
     <div id="main-website" class="hidden flex flex-col min-h-screen justify-between relative overflow-hidden">
         
-        <!-- Hiệu ứng tuyết động nền cho toàn bộ trang chủ và danh sách -->
         <div id="main-snow-container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-        <!-- Header / Navigation (Đã giữ nguyên icon trăng khuyết 🌙 ở góc trái) -->
+        <!-- Header / Navigation (Giữ nguyên icon trăng khuyết 🌙 ở góc trái) -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
             <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
                 <a href="#" onclick="openPasswordModal(event)" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
-                    <span class="group-hover:scale-110 transition duration-300">🌙</span>
+                    <span class="group-hover:scale-110 transition duration-300">🌙</span> 
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
                 </a>
                 <nav class="flex gap-4 sm:gap-6 font-semibold text-sm sm:text-base text-purple-700">
@@ -134,7 +132,7 @@
                     </div>
                 </section>
 
-                <!-- Gallery Section (Slider tối đa 3 ô + Nút Next/Prev + Bộ lọc Hashtag) -->
+                <!-- Gallery Section -->
                 <section id="gallery" class="space-y-5">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
@@ -363,7 +361,6 @@
                     <input type="text" id="form-hashtags" placeholder="#CEO, #Romance, #Mature" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                 </div>
 
-                <!-- Mục Đường vào giấc mơ: Cho phép đặt Tên nút (VD: Dokichat, GGAI) + Link -->
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <label class="block font-semibold">Đường vào giấc mơ (Tên nút & Link):</label>
