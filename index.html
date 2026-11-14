@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Những giấc mơ của Huyên Huyên 🌙✨</title>
     
-    <!-- Ép trình duyệt nhận icon bé rắn tím chuẩn xác -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://files.catbox.moe/rk7zyl.png?v=v3">
-    <link rel="shortcut icon" type="image/png" href="https://files.catbox.moe/rk7zyl.png?v=v3">
-    <link rel="apple-touch-icon" href="https://files.catbox.moe/rk7zyl.png?v=v3">
+    <!-- Logo bé rắn từ link fx4vjp.jfif của bạn (Được làm mới tự động bằng JS bên dưới để tách nền trắng) -->
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/fx4vjp.jfif&w=128&h=128&output=png&v=snake_jfif">
+    <link id="dynamic-shortcut" rel="shortcut icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/fx4vjp.jfif&w=128&h=128&output=png&v=snake_jfif">
+    <link rel="apple-touch-icon" href="https://wsrv.nl/?url=https://files.catbox.moe/fx4vjp.jfif&w=180&h=180&output=png&v=snake_jfif">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -384,6 +384,80 @@
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
+        // Hàm強制 (ép buộc) trình duyệt xóa icon cũ trên tab và cập nhật icon mới ngay lập tức
+        function forceSetFavicon(url) {
+            const oldLinks = document.querySelectorAll("link[rel*='icon']");
+            oldLinks.forEach(el => el.remove());
+
+            const link1 = document.createElement('link');
+            link1.rel = 'icon';
+            link1.type = 'image/png';
+            link1.href = url;
+            document.head.appendChild(link1);
+
+            const link2 = document.createElement('link');
+            link2.rel = 'shortcut icon';
+            link2.type = 'image/png';
+            link2.href = url;
+            document.head.appendChild(link2);
+        }
+
+        // Tải ảnh bé rắn fx4vjp.jfif qua đa luồng, tự động xóa sạch nền trắng và gắn lên tab
+        function applyTransparentSnakeFavicon() {
+            const rawUrl = 'https://files.catbox.moe/fx4vjp.jfif';
+            const proxySources = [
+                `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=128&h=128&output=png`,
+                `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
+                rawUrl
+            ];
+
+            function tryLoad(index) {
+                if (index >= proxySources.length) return;
+                const img = new Image();
+                if (index < proxySources.length - 1) {
+                    img.crossOrigin = 'Anonymous';
+                }
+                img.referrerPolicy = 'no-referrer';
+
+                img.onload = function() {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 128;
+                        canvas.height = 128;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, 128, 128);
+
+                        // Khử nền trắng/xám nhạt do nén ảnh .jfif để chỉ giữ lại hình bé rắn tím
+                        const imgData = ctx.getImageData(0, 0, 128, 128);
+                        const data = imgData.data;
+                        for (let i = 0; i < data.length; i += 4) {
+                            const r = data[i], g = data[i + 1], b = data[i + 2];
+                            // Nếu điểm ảnh là màu trắng hoặc trắng ngà (nền), làm trong suốt hoàn toàn
+                            if (r > 235 && g > 235 && b > 235 && Math.abs(r - b) < 15) {
+                                data[i + 3] = 0;
+                            }
+                        }
+                        ctx.putImageData(imgData, 0, 0);
+
+                        const transparentPngDataUrl = canvas.toDataURL('image/png');
+                        forceSetFavicon(transparentPngDataUrl);
+                    } catch (err) {
+                        // Nếu trình duyệt chặn xử lý Canvas, vẫn ép hiển thị trực tiếp ảnh từ link
+                        forceSetFavicon(proxySources[index]);
+                    }
+                };
+
+                img.onerror = function() {
+                    tryLoad(index + 1);
+                };
+
+                img.src = proxySources[index];
+            }
+
+            tryLoad(0);
+        }
+
         const defaultCharacters = [
             {
                 id: 1,
@@ -437,6 +511,7 @@
         let selectedHashtags = [];
 
         window.addEventListener('DOMContentLoaded', () => {
+            applyTransparentSnakeFavicon();
             initSnow('snow-container', 60);
             initSnow('main-snow-container', 40);
             renderAll();
