@@ -6,12 +6,35 @@
     <title>Những giấc mơ của Huyên Huyên 🌙✨</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Font: Nunito -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: MonteCarlo & Fraunces (Combo 4) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=MonteCarlo&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Nunito', sans-serif;
+        /* Định nghĩa Font chữ Combo 4 */
+        .font-montecarlo {
+            font-family: 'MonteCarlo', cursive;
         }
+        .font-fraunces {
+            font-family: 'Fraunces', serif;
+        }
+        body {
+            font-family: 'Fraunces', serif;
+        }
+        
+        /* Hiệu ứng lấp lánh Blink Blink / Twinkle */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.7); filter: drop-shadow(0 0 2px rgba(255,255,255,0.3)); }
+            50% { opacity: 1; transform: scale(1.3); filter: drop-shadow(0 0 10px rgba(238,130,238,0.9)); }
+        }
+        .animate-twinkle {
+            animation: twinkle 2s infinite ease-in-out;
+        }
+        .animate-twinkle-slow {
+            animation: twinkle 3.5s infinite ease-in-out;
+        }
+        .animate-twinkle-fast {
+            animation: twinkle 1.2s infinite ease-in-out;
+        }
+
         .dreamy-bg {
             background: linear-gradient(135deg, #fdf4ff 0%, #f3e8ff 50%, #fae8ff 100%);
         }
@@ -19,23 +42,40 @@
 </head>
 <body class="dreamy-bg text-purple-950 min-h-screen flex flex-col justify-between selection:bg-purple-300 selection:text-purple-900">
 
-    <!-- ================= PHẦN 1: MÀN HÌNH CHỜ ẢNH FULL 100% MÀN HÌNH ================= -->
+    <!-- ================= PHẦN 1: MÀN HÌNH CHỜ FULL MÀN HÌNH + HIỆU ỨNG BLINK BLINK ================= -->
     <div id="splash-screen" class="fixed inset-0 z-50 w-screen h-screen h-[100dvh] overflow-hidden transition-opacity duration-700">
         
-        <!-- Ảnh tràn 100% toàn màn hình của Huyên Huyên -->
-        <img src="https://files.catbox.moe/odx4ls.png"
+        <!-- Ảnh tràn 100% toàn màn hình -->
+        <img src="https://files.catbox.moe/5jzpfs.png"
              alt="Những giấc mơ của Huyên Huyên"
              class="w-full h-full object-cover object-center">
 
+        <!-- Các hạt lấp lánh (Blink Blink Sparkles) rải rác khắp màn hình -->
+        <div class="absolute top-12 left-12 text-2xl text-purple-200 animate-twinkle select-none pointer-events-none">✨</div>
+        <div class="absolute top-24 right-20 text-3xl text-pink-200 animate-twinkle-slow select-none pointer-events-none">⭐</div>
+        <div class="absolute bottom-32 left-20 text-2xl text-purple-300 animate-twinkle-fast select-none pointer-events-none">✨</div>
+        <div class="absolute top-1/3 right-10 text-xl text-white animate-twinkle select-none pointer-events-none">🌟</div>
+        <div class="absolute bottom-20 right-1/4 text-3xl text-pink-300 animate-twinkle-slow select-none pointer-events-none">✨</div>
+
         <!-- Lớp phủ mờ nhẹ ở dưới đáy để nút bấm nổi bật -->
-        <div class="absolute inset-0 bg-gradient-to-t from-purple-950/60 via-transparent to-transparent flex flex-col justify-end items-center pb-12 sm:pb-16 px-6">
+        <div class="absolute inset-0 bg-gradient-to-t from-purple-950/70 via-purple-950/20 to-transparent flex flex-col justify-end items-center pb-12 sm:pb-16 px-6 text-center">
+            
+            <!-- Tên tiêu đề phụ bay bổng với font MonteCarlo -->
+            <div class="mb-4 space-y-1">
+                <span class="font-montecarlo text-4xl sm:text-5xl text-purple-200 tracking-wider drop-shadow-lg animate-pulse">
+                    ~ Thế giới cổ tích của Huyên Huyên ~
+                </span>
+            </div>
+
             <button onclick="enterDream()"
-               class="group cursor-pointer inline-flex items-center justify-center gap-3 px-8 py-4 text-base sm:text-lg md:text-xl font-extrabold text-purple-950 bg-white/90 backdrop-blur-md rounded-full shadow-2xl border-2 border-purple-200 hover:bg-purple-100 hover:scale-105 active:scale-95 transition duration-300 focus:outline-none">
-                <span>Hãy vào giấc mơ của Huyên Huyên thôi 💜</span>
+               class="group cursor-pointer inline-flex items-center justify-center gap-3 px-8 py-4 text-base sm:text-lg md:text-xl font-bold font-fraunces text-purple-950 bg-white/90 backdrop-blur-md rounded-full shadow-2xl border-2 border-purple-200 hover:bg-purple-100 hover:scale-105 active:scale-95 transition duration-300 focus:outline-none">
+                <span class="animate-twinkle">💜</span>
+                <span>Hãy vào giấc mơ của Huyên Huyên thôi</span>
                 <span class="text-xl group-hover:rotate-12 transition duration-300">✨</span>
             </button>
-            <p class="mt-3 text-xs sm:text-sm text-white/90 font-semibold drop-shadow animate-pulse">
-                Chạm nhẹ để bước vào thế giới mộng mơ ✨
+            
+            <p class="mt-3 text-xs sm:text-sm text-white/90 font-semibold drop-shadow tracking-wide animate-pulse">
+                Chạm nhẹ để mở cánh cửa lâu đài mộng mơ ✨
             </p>
         </div>
     </div>
@@ -47,10 +87,10 @@
         <!-- Header / Navigation -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
             <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-                <a href="#" class="text-lg md:text-xl font-extrabold text-purple-800 flex items-center gap-2">
+                <a href="#" class="font-montecarlo text-2xl sm:text-3xl font-extrabold text-purple-800 flex items-center gap-2">
                     <span>🌙</span> Những giấc mơ của Huyên Huyên
                 </a>
-                <nav class="flex gap-4 md:gap-6 font-semibold text-sm md:text-base text-purple-700">
+                <nav class="flex gap-4 sm:gap-6 font-semibold text-sm sm:text-base text-purple-700">
                     <a href="#about" class="hover:text-purple-500 transition">Giới thiệu</a>
                     <a href="#gallery" class="hover:text-purple-500 transition">Gallery</a>
                     <a href="#diary" class="hover:text-purple-500 transition">Nhật ký</a>
@@ -65,14 +105,14 @@
             <section id="about" class="flex flex-col md:flex-row items-center gap-8 bg-white/90 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-sm border border-purple-200/60 relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none">✨</div>
                 
-                <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center text-5xl">
+                <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
                     <img src="https://files.catbox.moe/odx4ls.png" alt="Avatar" class="w-full h-full object-cover">
                 </div>
                 <div class="text-center md:text-left space-y-3 relative z-10">
-                    <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng đến với thế giới nhỏ</span>
-                    <h1 class="text-3xl md:text-4xl font-extrabold text-purple-900">Những giấc mơ của Huyên Huyên</h1>
-                    <p class="text-purple-800/80 leading-relaxed text-sm md:text-base">
-                        Nơi mình cất giữ những khoảnh khắc ngọt ngào, những giấc mơ màu tím lavender và vài mẩu chuyện nhỏ xíu dễ thương mỗi ngày. Cảm ơn bạn đã ghé thăm trạm dừng chân bình yên này nhé! ☁️💜
+                    <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng đến với lâu đài nhỏ</span>
+                    <h1 class="font-montecarlo text-4xl sm:text-5xl text-purple-900">Những giấc mơ của Huyên Huyên</h1>
+                    <p class="text-purple-800/80 leading-relaxed text-sm md:text-base italic">
+                        “Nơi mình cất giữ những khoảnh khắc ngọt ngào, những giấc mơ màu tím lavender và vài mẩu chuyện nhỏ xíu dễ thương mỗi ngày. Cảm ơn bạn đã ghé thăm trạm dừng chân bình yên này nhé!” ☁️💜
                     </p>
                 </div>
             </section>
@@ -80,10 +120,10 @@
             <!-- Gallery Section -->
             <section id="gallery" class="space-y-6">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-2xl font-bold text-purple-900 flex items-center gap-2">
+                    <h2 class="font-montecarlo text-3xl sm:text-4xl text-purple-900 flex items-center gap-2">
                         <span>🖼️</span> Góc Trưng Bày Mộng Mơ
                     </h2>
-                    <span class="text-xs text-purple-600 font-semibold bg-purple-100 px-3 py-1 rounded-full">Pastel Vibe</span>
+                    <span class="text-xs text-purple-600 font-semibold bg-purple-100 px-3 py-1 rounded-full">Classic Vibe</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -107,7 +147,7 @@
 
             <!-- Diary Section -->
             <section id="diary" class="space-y-6">
-                <h2 class="text-2xl font-bold text-purple-900 flex items-center gap-2">
+                <h2 class="font-montecarlo text-3xl sm:text-4xl text-purple-900 flex items-center gap-2">
                     <span>📖</span> Sổ Tay Giấc Mơ
                 </h2>
 
@@ -118,8 +158,8 @@
                             <span class="text-xs text-purple-400 font-semibold">14.11.2026</span>
                         </div>
                         <h3 class="text-lg font-bold text-purple-900 mb-2">Về những đám mây màu tím</h3>
-                        <p class="text-sm text-purple-800/80 leading-relaxed">
-                            Hôm nay mình mơ thấy một thành phố ngập tràn hoa oải hương. Mọi thứ trôi qua chậm rãi, nhẹ nhàng như một bản nhạc không lời... Mong rằng ai ghé qua trang web này cũng sẽ tìm thấy những phút giây thư thái nhất.
+                        <p class="text-sm text-purple-800/80 leading-relaxed italic">
+                            “Hôm nay mình mơ thấy một thành phố ngập tràn hoa oải hương. Mọi thứ trôi qua chậm rãi, nhẹ nhàng như một bản nhạc không lời... Mong rằng ai ghé qua trang web này cũng sẽ tìm thấy những phút giây thư thái nhất.”
                         </p>
                     </article>
 
@@ -129,8 +169,8 @@
                             <span class="text-xs text-purple-400 font-semibold">10.11.2026</span>
                         </div>
                         <h3 class="text-lg font-bold text-purple-900 mb-2">Khởi đầu cho một góc nhỏ riêng tư</h3>
-                        <p class="text-sm text-purple-800/80 leading-relaxed">
-                            Chính thức khai sinh ra "Những giấc mơ của Huyên Huyên". Nơi đây sẽ lưu giữ tất cả những kỷ niệm nhỏ nhặt nhưng đầy ắp tình yêu thương của chính mình.
+                        <p class="text-sm text-purple-800/80 leading-relaxed italic">
+                            “Chính thức khai sinh ra 'Những giấc mơ của Huyên Huyên'. Nơi đây sẽ lưu giữ tất cả những kỷ niệm nhỏ nhặt nhưng đầy ắp tình yêu thương của chính mình.”
                         </p>
                     </article>
                 </div>
@@ -139,13 +179,13 @@
         </main>
 
         <!-- Footer -->
-        <footer class="w-full bg-white/60 border-t border-purple-100 py-6 mt-16 text-center text-xs text-purple-700">
+        <footer class="w-full bg-white/60 border-t border-purple-100 py-6 mt-16 text-center text-xs text-purple-700 font-fraunces">
             <p>Made with 💜 for Huyên Huyên • Sweet Dreams ✨</p>
         </footer>
 
     </div>
 
-    <!-- JavaScript xử lý hiệu ứng ấn nút -->
+    <!-- JavaScript xử lý hiệu ứng chuyển cảnh -->
     <script>
         function enterDream() {
             const splash = document.getElementById('splash-screen');
