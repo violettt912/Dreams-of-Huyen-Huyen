@@ -13,7 +13,6 @@
     <!-- Google Fonts: Fraunces & Great Vibes (Font dự phòng cho script) -->
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
-        /* Khai báo font UVF Champion Script Pro */
         @font-face {
             font-family: 'UVF Champion Script Pro';
             src: url('UVF-Champion-Script-Pro.woff2') format('woff2');
@@ -32,22 +31,12 @@
             font-family: 'Fraunces', serif;
         }
         
-        /* Hiệu ứng tuyết động / hạt sáng bay phủ khắp màn hình */
+        /* Hiệu ứng tuyết động / hạt sáng bay phủ khắp màn hình chờ */
         @keyframes magicalFall {
-            0% {
-                transform: translateY(-10px) translateX(0);
-                opacity: 0;
-            }
-            15% {
-                opacity: 0.9;
-            }
-            85% {
-                opacity: 0.9;
-            }
-            100% {
-                transform: translateY(105vh) translateX(20px);
-                opacity: 0;
-            }
+            0% { transform: translateY(-10px) translateX(0); opacity: 0; }
+            15% { opacity: 0.9; }
+            85% { opacity: 0.9; }
+            100% { transform: translateY(105vh) translateX(20px); opacity: 0; }
         }
 
         .snowflake-particle {
@@ -70,20 +59,15 @@
 </head>
 <body class="dreamy-bg text-purple-950 min-h-screen flex flex-col justify-between selection:bg-purple-300 selection:text-purple-900">
 
-    <!-- ================= PHẦN 1: MÀN HÌNH CHỜ FULL MÀN HÌNH + TUYẾT ĐỘNG ================= -->
+    <!-- ================= 1. TRANG CHỜ (SPLASH SCREEN) ================= -->
     <div id="splash-screen" class="fixed inset-0 z-50 w-screen h-screen h-[100dvh] overflow-hidden transition-opacity duration-700">
-        
-        <!-- Ảnh màn hình chờ mới -->
         <img src="https://files.catbox.moe/uggtmm.png"
              alt="Những giấc mơ của Huyên Huyên"
              class="w-full h-full object-cover object-center">
 
-        <!-- Container chứa hiệu ứng tuyết/hạt sáng động rải khắp màn hình -->
         <div id="snow-container" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
 
-        <!-- Lớp phủ mờ nhẹ ở dưới đáy để nút bấm nổi bật -->
         <div class="absolute inset-0 bg-gradient-to-t from-purple-950/75 via-purple-950/25 to-transparent flex flex-col justify-end items-center pb-12 sm:pb-16 px-6 text-center z-20">
-            
             <div class="mb-4 space-y-1">
                 <span class="font-script text-4xl sm:text-6xl text-purple-200 tracking-wider drop-shadow-lg">
                     ~ Thế giới cổ tích của Huyên Huyên ~
@@ -104,137 +88,223 @@
     </div>
 
 
-    <!-- ================= PHẦN 2: TRANG CHỦ CHÍNH (ẨN ĐẾN KHI BẤM NÚT) ================= -->
+    <!-- ================= 2. TRANG CHỦ & TRANG DANH SÁCH (MAIN & LIST CONTAINER) ================= -->
     <div id="main-website" class="hidden flex flex-col min-h-screen justify-between">
         
         <!-- Header / Navigation -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
             <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-                <a href="#" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2">
+                <a href="#" onclick="showHomeView()" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2">
                     <span>🌙</span> Những giấc mơ của Huyên Huyên
                 </a>
                 <nav class="flex gap-4 sm:gap-6 font-semibold text-sm sm:text-base text-purple-700">
-                    <a href="#about" class="hover:text-purple-500 transition">Giới thiệu</a>
-                    <a href="#gallery" class="hover:text-purple-500 transition">Gallery</a>
-                    <a href="#diary" class="hover:text-purple-500 transition">Nhật ký</a>
+                    <a href="#about" onclick="showHomeView()" class="hover:text-purple-500 transition">Giới thiệu</a>
+                    <a href="#" onclick="showHomeView()" class="hover:text-purple-500 transition">Dreams</a>
+                    <a href="#diary" onclick="showHomeView()" class="hover:text-purple-500 transition">Nhật ký</a>
                 </nav>
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- MAIN CONTENT VIEW -->
         <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-16">
 
-            <!-- Hero Section -->
-            <section id="about" class="flex flex-col md:flex-row items-center gap-8 bg-white/90 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-sm border border-purple-200/60 relative overflow-hidden">
-                <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none">✨</div>
-                
-                <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
-                    <img src="https://files.catbox.moe/3c24gw.jpg" alt="Avatar Huyên Huyên" class="w-full h-full object-cover">
-                </div>
-                <div class="text-center md:text-left space-y-3 relative z-10">
-                    <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng đến với lâu đài nhỏ</span>
-                    <h1 class="font-script text-5xl sm:text-6xl text-purple-900">Những giấc mơ của Huyên Huyên</h1>
-                    <p class="text-purple-800/80 leading-relaxed text-sm md:text-base italic">
-                        “Nơi mình cất giữ những khoảnh khắc ngọt ngào, những giấc mơ màu tím lavender và vài mẩu chuyện nhỏ xíu dễ thương mỗi ngày. Cảm ơn bạn đã ghé thăm trạm dừng chân bình yên này nhé!” ☁️💜
-                    </p>
-                </div>
-            </section>
+            <!-- VIEW 1: TRANG CHỦ -->
+            <div id="home-view" class="space-y-16">
+                <!-- Hero Section -->
+                <section id="about" class="flex flex-col md:flex-row items-center gap-8 bg-white/90 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-sm border border-purple-200/60 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none">✨</div>
+                    
+                    <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
+                        <img src="https://files.catbox.moe/3c24gw.jpg" alt="Avatar Huyên Huyên" class="w-full h-full object-cover">
+                    </div>
+                    <div class="text-center md:text-left space-y-3 relative z-10">
+                        <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Trạm lưu trữ Dokichat & AI Studio</span>
+                        <h1 class="font-script text-5xl sm:text-6xl text-purple-900">Những giấc mơ của Huyên Huyên</h1>
+                        <p class="text-purple-800/80 leading-relaxed text-sm md:text-base italic">
+                            “Nơi mình cất giữ và giới thiệu những nhân vật ({char}) đầy cảm xúc được tạo ra từ tâm huyết. Mời bạn cùng khám phá trạm dừng chân bình yên này nhé!” ☁️💜
+                        </p>
+                    </div>
+                </section>
 
-            <!-- Gallery Section -->
-            <section id="gallery" class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
-                        <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
+                <!-- Gallery Section (Slider tối đa 3 ô + Nút Next/Prev) -->
+                <section id="gallery" class="space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
+                            <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
+                        </h2>
+                        <!-- Nút bấm mở trang danh sách -->
+                        <button onclick="showListView()" class="group cursor-pointer inline-flex items-center gap-2 text-xs text-purple-700 font-bold bg-purple-100 hover:bg-purple-200 px-4 py-2 rounded-full transition shadow-xs">
+                            <span>Xem tất cả các giấc mơ</span>
+                            <span class="group-hover:translate-x-1 transition">✨</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Carousel Container (Hiển thị 3 ô) -->
+                    <div class="relative flex items-center">
+                        <!-- Nút Previous -->
+                        <button onclick="prevSlide()" class="absolute -left-4 sm:-left-6 z-20 bg-white/90 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition">
+                            ❮
+                        </button>
+
+                        <!-- Danh sách các ô character -->
+                        <div id="carousel-track" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full px-2">
+                            <!-- Render bằng JS -->
+                        </div>
+
+                        <!-- Nút Next -->
+                        <button onclick="nextSlide()" class="absolute -right-4 sm:-right-6 z-20 bg-white/90 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition">
+                            ❯
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Diary Section -->
+                <section id="diary" class="space-y-6">
+                    <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
+                        <span>📖</span> Sổ Tay Giấc Mơ
                     </h2>
-                    <span class="text-xs text-purple-600 font-semibold bg-purple-100 px-3 py-1 rounded-full">Dreamy Vibe</span>
-                </div>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <div class="bg-white/90 p-4 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group">
-                        <div class="h-48 rounded-2xl bg-purple-100 mb-3 overflow-hidden flex items-center justify-center text-5xl group-hover:scale-105 transition duration-300">💜</div>
-                        <h3 class="font-bold text-purple-900 text-sm">Góc phòng lavender</h3>
-                        <p class="text-xs text-purple-700/70 mt-1">Ánh đèn ngủ dịu dàng và những giấc mơ đẹp.</p>
-                    </div>
-                    <div class="bg-white/90 p-4 rounded-3xl shadow-sm border border-pink-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group">
-                        <div class="h-48 rounded-2xl bg-pink-100 mb-3 overflow-hidden flex items-center justify-center text-5xl group-hover:scale-105 transition duration-300">🌸</div>
-                        <h3 class="font-bold text-purple-900 text-sm">Chiều hoàng hôn hồng</h3>
-                        <p class="text-xs text-purple-700/70 mt-1">Bầu trời ngập tràn sắc mây hồng ngọt ngào.</p>
-                    </div>
-                    <div class="bg-white/90 p-4 rounded-3xl shadow-sm border border-emerald-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group">
-                        <div class="h-48 rounded-2xl bg-emerald-100/60 mb-3 overflow-hidden flex items-center justify-center text-5xl group-hover:scale-105 transition duration-300">🍵</div>
-                        <h3 class="font-bold text-purple-900 text-sm">Ly matcha sữa ấm</h3>
-                        <p class="text-xs text-purple-700/70 mt-1">Hương vị bình yên cho một ngày thảnh thơi.</p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Diary Section -->
-            <section id="diary" class="space-y-6">
-                <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
-                    <span>📖</span> Sổ Tay Giấc Mơ
-                </h2>
+                    <div class="space-y-4">
+                        <article class="bg-white/90 p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-pink-600 font-bold bg-pink-50 px-2.5 py-1 rounded-full">✨ Nhật ký số 02</span>
+                                <span class="text-xs text-purple-400 font-semibold">14.11.2026</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-purple-900 mb-2">Về hành trình sáng tạo các {char}</h3>
+                            <p class="text-sm text-purple-800/80 leading-relaxed italic">
+                                “Mỗi nhân vật trên Dokichat hay AI Studio đều mang một câu chuyện và linh hồn riêng. Việc đưa chúng lên trang web này giúp mình dễ dàng chia sẻ thế giới mộng mơ ấy đến mọi người.”
+                            </p>
+                        </article>
+                    </div>
+                </section>
+            </div>
 
-                <div class="space-y-4">
-                    <article class="bg-white/90 p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs text-pink-600 font-bold bg-pink-50 px-2.5 py-1 rounded-full">✨ Nhật ký số 02</span>
-                            <span class="text-xs text-purple-400 font-semibold">14.11.2026</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-purple-900 mb-2">Về những đám mây màu tím</h3>
-                        <p class="text-sm text-purple-800/80 leading-relaxed italic">
-                            “Hôm nay mình mơ thấy một thành phố ngập tràn hoa oải hương. Mọi thứ trôi qua chậm rãi, nhẹ nhàng như một bản nhạc không lời... Mong rằng ai ghé qua trang web này cũng sẽ tìm thấy những phút giây thư thái nhất.”
-                        </p>
-                    </article>
 
-                    <article class="bg-white/90 p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs text-pink-600 font-bold bg-pink-50 px-2.5 py-1 rounded-full">🌙 Nhật ký số 01</span>
-                            <span class="text-xs text-purple-400 font-semibold">10.11.2026</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-purple-900 mb-2">Khởi đầu cho một góc nhỏ riêng tư</h3>
-                        <p class="text-sm text-purple-800/80 leading-relaxed italic">
-                            “Chính thức khai sinh ra 'Những giấc mơ của Huyên Huyên'. Nơi đây sẽ lưu giữ tất cả những kỷ niệm nhỏ nhặt nhưng đầy ắp tình yêu thương của chính mình.”
-                        </p>
-                    </article>
+            <!-- VIEW 2: TRANG DANH SÁCH (LIST VIEW - SHOW HẾT TẤT CẢ) -->
+            <div id="list-view" class="hidden space-y-8">
+                <div class="flex items-center justify-between border-b border-purple-200 pb-4">
+                    <!-- Nút quay lại trang chủ -->
+                    <button onclick="showHomeView()" class="group inline-flex items-center gap-2 text-sm font-bold text-purple-800 bg-white/90 hover:bg-purple-100 px-4 py-2.5 rounded-full shadow-sm border border-purple-200 transition">
+                        <span class="group-hover:-translate-x-1 transition">❮</span>
+                        <span>Quay lại trang chủ</span>
+                    </button>
+                    <span class="font-script text-3xl sm:text-4xl text-purple-900">✨ Tất Cả Các Giấc Mơ ✨</span>
                 </div>
-            </section>
+
+                <!-- Grid hiển thị toàn bộ character -->
+                <div id="full-list-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <!-- Render bằng JS -->
+                </div>
+            </div>
 
         </main>
 
         <!-- Footer -->
         <footer class="w-full bg-white/60 border-t border-purple-100 py-6 mt-16 text-center text-xs text-purple-700 font-fraunces">
-            <p>Made with 💜 for Huyên Huyên • Sweet Dreams ✨</p>
+            <p>Made with 💜 for Huyên Huyên • Dokichat & AI Studio Showcase ✨</p>
         </footer>
 
     </div>
 
-    <!-- JavaScript xử lý hiệu ứng tuyết rơi & chuyển cảnh -->
+
+    <!-- ================= 3. MODAL POPUP CHI TIẾT NHÂN VẬT ({CHAR}) ================= -->
+    <div id="char-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative transform transition-all scale-95 opacity-0 duration-300" id="modal-content-box">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
+            
+            <div class="flex items-center gap-4 mb-4">
+                <div id="modal-icon" class="text-4xl sm:text-5xl p-4 bg-purple-100 rounded-2xl"></div>
+                <div>
+                    <span id="modal-platform" class="text-xs font-bold text-pink-700 bg-pink-100 px-3 py-1 rounded-full uppercase"></span>
+                    <h3 id="modal-name" class="font-script text-3xl sm:text-4xl text-purple-900 mt-1"></h3>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-sm text-purple-800/90 leading-relaxed border-t border-purple-100 pt-4">
+                <p><strong>🌸 Mô tả giấc mơ:</strong> <span id="modal-desc"></span></p>
+                <p><strong>✨ Tính cách & Bối cảnh:</strong> <span id="modal-details"></span></p>
+                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100 text-purple-900 italic text-xs sm:text-sm">
+                    “<span id="modal-quote"></span>”
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="closeModal()" class="px-6 py-2.5 bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold rounded-full text-sm transition shadow-sm">
+                    Đóng cửa sổ
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // Tự động tạo hiệu ứng tuyết/hạt sáng động phủ kín màn hình
+        // Dữ liệu mẫu 4 Character ({char}) do bạn tạo trên Dokichat và AI Studio
+        const charactersData = [
+            {
+                id: 1,
+                name: "Phó Lăng Tiêu",
+                platform: "Dokichat (35 tuổi - CEO Đế Phong)",
+                icon: "👔",
+                shortDesc: "Vị tổng giám đốc lạnh lùng, thâm trầm nhưng sâu sắc.",
+                details: "Nam chính trưởng thành, sắc sảo trong thương trường nhưng lại có sự độc chiếm dịu dàng trong tình cảm. Sở hữu hệ thống kịch bản phân nhánh phức tạp.",
+                quote: "Em nghĩ bản thân có thể trốn thoát khỏi tầm mắt của tôi sao, Lâm Nguyệt?"
+            },
+            {
+                id: 2,
+                name: "Lâm Nguyệt",
+                platform: "Dokichat (32 tuổi - Nữ chính)",
+                icon: "🌙",
+                shortDesc: "Người phụ nữ tinh tế, mang vẻ đẹp dịu dàng và từng trải.",
+                details: "Nhân vật nữ được thiết kế với tâm lý chiều sâu, đối thoại thông minh và các nút thắt cảm xúc đời thường cực kỳ chân thực.",
+                quote: "Đôi khi, bình yên không phải là sở hữu tất cả, mà là học cách buông tay những điều không thuộc về mình."
+            },
+            {
+                id: 3,
+                name: "Thỏ Mây Mộng Mơ",
+                platform: "AI Studio (Chibi Mascot)",
+                icon: "🐰",
+                shortDesc: "Sứ giả dẫn đường đến những giấc mơ màu tím lavender.",
+                details: "Nhân vật trợ lý ảo siêu dễ thương, chuyên trò chuyện chữa lành tâm trạng và kể chuyện cổ tích trước giờ đi ngủ cho người dùng.",
+                quote: "Hôm nay bạn đã vất vả rồi, hãy thả lỏng và cùng Thỏ bay vào giấc mơ ngọt ngào nhé!"
+            },
+            {
+                id: 4,
+                name: "Bé Gấu Trà Sữa",
+                platform: "AI Studio (Interactive Companion)",
+                icon: "🧸",
+                shortDesc: "Chàng quản gia ngọt ngào chuyên pha trà và làm bánh.",
+                details: "Bot tương tác phong cách slice-of-life, luôn chờ sẵn với ly trà sữa ấm áp và những công thức bánh ngọt xoa dịu tâm hồn.",
+                quote: "Một ngụm trà sữa, một chút ngọt ngào — mọi muộn phiền cứ để tôi lo!"
+            }
+        ];
+
+        let currentIndex = 0; // Vị trí slider trang chủ
+
+        // Khởi tạo tuyết rơi và render carousel
         window.addEventListener('DOMContentLoaded', () => {
+            initSnow();
+            renderCarousel();
+            renderFullList();
+        });
+
+        function initSnow() {
             const snowContainer = document.getElementById('snow-container');
             if (snowContainer) {
-                const particleCount = 60; // Số lượng hạt bay dày dặn khắp màn hình
+                const particleCount = 60;
                 for (let i = 0; i < particleCount; i++) {
                     const flake = document.createElement('div');
                     flake.className = 'snowflake-particle';
-                    
-                    // Kích thước hạt ngẫu nhiên từ 3px đến 7px
                     const size = Math.random() * 4 + 3;
                     flake.style.width = `${size}px`;
                     flake.style.height = `${size}px`;
-                    
-                    // Vị trí ngang trải đều khắp màn hình
                     flake.style.left = `${Math.random() * 100}vw`;
                     flake.style.top = `${Math.random() * -20}px`;
-                    
-                    // Tốc độ rơi và độ trễ ngẫu nhiên cho tự nhiên
-                    const duration = Math.random() * 4 + 3; // Từ 3s đến 7s
+                    const duration = Math.random() * 4 + 3;
                     const delay = Math.random() * 5;
                     flake.style.animationDuration = `${duration}s`;
                     flake.style.animationDelay = `${delay}s`;
                     
-                    // Phối màu sắc hạt sáng mộng mơ (trắng, tím nhạt, hồng phấn)
                     if (i % 3 === 0) {
                         flake.style.background = '#f3e8ff';
                         flake.style.boxShadow = '0 0 8px #d8b4fe';
@@ -245,12 +315,82 @@
                         flake.style.background = '#ffffff';
                         flake.style.boxShadow = '0 0 10px #ffffff';
                     }
-                    
                     snowContainer.appendChild(flake);
                 }
             }
-        });
+        }
 
+        // Render 3 ô trên trang chủ có tính toán Next / Prev vòng tròn
+        function renderCarousel() {
+            const track = document.getElementById('carousel-track');
+            track.innerHTML = '';
+
+            // Lấy 3 character liên tiếp từ currentIndex
+            for (let i = 0; i < 3; i++) {
+                const charIndex = (currentIndex + i) % charactersData.length;
+                const char = charactersData[charIndex];
+
+                const card = document.createElement('div');
+                card.className = "bg-white/90 p-5 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col justify-between";
+                card.onclick = () => openModal(char.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="h-44 rounded-2xl bg-purple-100/70 mb-4 overflow-hidden flex items-center justify-center text-6xl group-hover:scale-105 transition duration-300 shadow-inner">
+                            ${char.icon}
+                        </div>
+                        <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full">${char.platform}</span>
+                        <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-2">${char.name}</h3>
+                        <p class="text-xs text-purple-700/80 mt-1.5 leading-relaxed">${char.shortDesc}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-600">
+                        <span>Chạm để khám phá</span>
+                        <span class="group-hover:translate-x-1 transition">✨</span>
+                    </div>
+                `;
+                track.appendChild(card);
+            }
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % charactersData.length;
+            renderCarousel();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + charactersData.length) % charactersData.length;
+            renderCarousel();
+        }
+
+        // Render danh sách đầy đủ ở trang danh sách
+        function renderFullList() {
+            const grid = document.getElementById('full-list-grid');
+            grid.innerHTML = '';
+
+            charactersData.forEach(char => {
+                const card = document.createElement('div');
+                card.className = "bg-white/90 p-5 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col justify-between";
+                card.onclick = () => openModal(char.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="h-44 rounded-2xl bg-purple-100/70 mb-4 overflow-hidden flex items-center justify-center text-6xl group-hover:scale-105 transition duration-300 shadow-inner">
+                            ${char.icon}
+                        </div>
+                        <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full">${char.platform}</span>
+                        <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-2">${char.name}</h3>
+                        <p class="text-xs text-purple-700/80 mt-1.5 leading-relaxed">${char.shortDesc}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-600">
+                        <span>Chạm để khám phá</span>
+                        <span class="group-hover:translate-x-1 transition">✨</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Chuyển qua lại giữa các view
         function enterDream() {
             const splash = document.getElementById('splash-screen');
             const mainWeb = document.getElementById('main-website');
@@ -261,6 +401,49 @@
                 mainWeb.classList.remove('hidden');
                 window.scrollTo(0, 0);
             }, 500);
+        }
+
+        function showHomeView() {
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('list-view').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showListView() {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('list-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Xử lý Modal Popup chi tiết character
+        function openModal(id) {
+            const char = charactersData.find(c => c.id === id);
+            if (!char) return;
+
+            document.getElementById('modal-icon').innerText = char.icon;
+            document.getElementById('modal-platform').innerText = char.platform;
+            document.getElementById('modal-name').innerText = char.name;
+            document.getElementById('modal-desc').innerText = char.shortDesc;
+            document.getElementById('modal-details').innerText = char.details;
+            document.getElementById('modal-quote').innerText = char.quote;
+
+            const modal = document.getElementById('char-modal');
+            const box = document.getElementById('modal-content-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('char-modal');
+            const box = document.getElementById('modal-content-box');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
     </script>
 </body>
