@@ -97,7 +97,6 @@
         <!-- Header / Navigation -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
             <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
-                <!-- Nút mặt trăng ẩn để mở bảng nhập pass quản trị -->
                 <a href="#" onclick="openPasswordModal(event)" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
                     <span class="group-hover:scale-110 transition duration-300">🌙</span> 
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
@@ -190,14 +189,12 @@
                     
                     <div class="flex items-center gap-3">
                         <span class="font-script text-3xl sm:text-4xl text-purple-900">✨ Tất Cả Các Giấc Mơ ✨</span>
-                        <!-- Nút Thêm Mới (Chỉ hiện khi đăng nhập admin) -->
                         <button id="add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md flex items-center gap-1">
                             <span>+ Thêm Giấc Mơ Mới</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Grid hiển thị toàn bộ character -->
                 <div id="full-list-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <!-- Render bằng JS -->
                 </div>
@@ -319,7 +316,6 @@
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // Dữ liệu mẫu mặc định hoặc lấy từ localStorage
         const defaultCharacters = [
             {
                 id: 1,
@@ -363,10 +359,9 @@
             }
         ];
 
-        // Load dữ liệu từ localStorage nếu có, nếu không dùng mặc định
         let charactersData = JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters;
         let currentIndex = 0;
-        let isAdmin = false; // Trạng thái đăng nhập admin
+        let isAdmin = false;
 
         window.addEventListener('DOMContentLoaded', () => {
             initSnow('snow-container', 60);
@@ -406,7 +401,6 @@
             }
         }
 
-        // Render Carousel (Trang chủ - Tối đa 3 ô)
         function renderCarousel() {
             const track = document.getElementById('carousel-track');
             track.innerHTML = '';
@@ -424,12 +418,10 @@
                 card.className = "bg-white/90 p-5 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col justify-between relative";
                 card.onclick = () => openModal(char.id);
 
-                // Render Icon (hỗ trợ cả Emoji lẫn Link ảnh URL)
                 let iconHtml = char.icon.startsWith('http') 
                     ? `<img src="${char.icon}" class="w-full h-full object-cover">` 
                     : `<span>${char.icon}</span>`;
 
-                // Render Hashtags
                 let tagsHtml = (char.hashtags || []).map(tag => `<span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold">${tag}</span>`).join('');
 
                 card.innerHTML = `
@@ -463,7 +455,6 @@
             renderCarousel();
         }
 
-        // Render trang danh sách (Show tất cả)
         function renderFullList() {
             const grid = document.getElementById('full-list-grid');
             grid.innerHTML = '';
@@ -484,7 +475,6 @@
 
                 let tagsHtml = (char.hashtags || []).map(tag => `<span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold">${tag}</span>`).join('');
 
-                // Nút Sửa & Xóa chỉ hiện khi ở chế độ Admin
                 let adminButtonsHtml = '';
                 if (isAdmin) {
                     adminButtonsHtml = `
@@ -515,7 +505,6 @@
             });
         }
 
-        // Chuyển trang & Quản lý View
         function enterDream() {
             const splash = document.getElementById('splash-screen');
             const mainWeb = document.getElementById('main-website');
@@ -540,7 +529,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Modal xem chi tiết
         function openModal(id) {
             const char = charactersData.find(c => c.id === id);
             if (!char) return;
@@ -573,12 +561,11 @@
             const box = document.getElementById('modal-content-box');
             box.classList.remove('scale-100', 'opacity-100');
             box.classList.add('scale-95', 'opacity-0');
-            setTimeout => {
+            setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
         }
 
-        // Xử lý Mật khẩu Quản Trị (Mặt trăng)
         function openPasswordModal(e) {
             e.preventDefault();
             document.getElementById('admin-pass-input').value = '';
@@ -607,7 +594,6 @@
             }
         }
 
-        // Thêm / Sửa nhân vật (Admin Actions)
         function openAddModal() {
             document.getElementById('admin-form-title').innerText = "✨ Thêm Giấc Mơ Mới";
             document.getElementById('char-form').reset();
@@ -647,25 +633,21 @@
             const quote = document.getElementById('form-quote').value;
             const hashtagsRaw = document.getElementById('form-hashtags').value;
             
-            // Xử lý định dạng hashtag (tách dấu phẩy, thêm # nếu thiếu)
             const hashtags = hashtagsRaw.split(',').map(tag => {
                 tag = tag.trim();
                 return tag.startsWith('#') ? tag : '#' + tag;
             }).filter(tag => tag.length > 1);
 
             if (id) {
-                // Sửa nhân vật cũ
                 const index = charactersData.findIndex(c => c.id == id);
                 if (index !== -1) {
                     charactersData[index] = { id: Number(id), name, platform, icon, shortDesc, details, quote, hashtags };
                 }
             } else {
-                // Thêm nhân vật mới
                 const newId = charactersData.length > 0 ? Math.max(...charactersData.map(c => c.id)) + 1 : 1;
                 charactersData.push({ id: newId, name, platform, icon, shortDesc, details, quote, hashtags });
             }
 
-            // Lưu vào localStorage
             localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
             
             closeAdminForm();
