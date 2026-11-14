@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Những giấc mơ của Huyên Huyên 🌙✨</title>
     
-    <!-- Logo mới từ link n07y30.jfif của bạn -->
-    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/n07y30.jfif&w=128&h=128&output=png&v=logo_n07y30">
-    <link id="dynamic-shortcut" rel="shortcut icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/n07y30.jfif&w=128&h=128&output=png&v=logo_n07y30">
-    <link rel="apple-touch-icon" href="https://wsrv.nl/?url=https://files.catbox.moe/n07y30.jfif&w=180&h=180&output=png&v=logo_n07y30">
+    <!-- Logo bé rắn tím chibi cố định trên tab trình duyệt (Chuẩn PNG 64x64 chống mất icon) -->
+    <link rel="icon" type="image/png" href="https://wsrv.nl/?url=files.catbox.moe/rk7zyl.png&w=64&h=64&output=png">
+    <link rel="shortcut icon" type="image/png" href="https://wsrv.nl/?url=files.catbox.moe/rk7zyl.png&w=64&h=64&output=png">
+    <link rel="apple-touch-icon" href="https://wsrv.nl/?url=files.catbox.moe/rk7zyl.png&w=180&h=180&output=png">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,7 +48,6 @@
             animation: magicalFall linear infinite;
         }
 
-        /* Nền dự phòng trong lúc tải ảnh nền chính */
         .dreamy-bg {
             background-color: #faf5ff;
         }
@@ -56,13 +55,12 @@
 </head>
 <body class="dreamy-bg text-purple-950 min-h-screen flex flex-col justify-between selection:bg-purple-300 selection:text-purple-900 relative">
 
-    <!-- ================= HÌNH NỀN CỐ ĐỊNH CHO TRANG CHỦ & TRANG DANH SÁCH (CHỖ ĐÁNH DẤU V ĐỎ) ================= -->
+    <!-- ================= HÌNH NỀN CỐ ĐỊNH CHO TRANG CHỦ & TRANG DANH SÁCH ================= -->
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img src="https://files.catbox.moe/5jzpfs.png"
              referrerpolicy="no-referrer"
              alt="Background"
              class="w-full h-full object-cover object-center">
-        <!-- Lớp phủ cực nhẹ giúp chữ và các khung luôn rõ nét trên nền ảnh -->
         <div class="absolute inset-0 bg-purple-950/5"></div>
     </div>
 
@@ -118,6 +116,21 @@
             </div>
         </header>
 
+        <!-- Thanh công cụ Admin đặc biệt (Chỉ hiện khi đăng nhập đúng pass) -->
+        <div id="admin-sync-banner" class="hidden bg-gradient-to-r from-purple-900 via-purple-800 to-pink-800 text-white px-4 py-3 shadow-md relative z-30">
+            <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
+                <div class="flex items-center gap-2 text-center sm:text-left">
+                    <span class="text-lg">👑</span>
+                    <span><strong>Chế độ Quản Trị:</strong> Sau khi sửa xong trên máy này, hãy bấm nút bên cạnh để lưu lên GitHub giúp iPad, Điện thoại & khách mời đều thấy nhé!</span>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button onclick="exportUpdatedHtmlCode()" class="cursor-pointer bg-white text-purple-950 hover:bg-purple-100 font-bold px-4 py-2 rounded-full shadow-md transition flex items-center gap-1.5">
+                        <span>☁️</span> <span>Copy Code Đồng Bộ Mọi Thiết Bị</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MAIN CONTENT VIEW -->
         <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-16 relative z-10">
 
@@ -137,12 +150,11 @@
                             “Nơi những giấc mơ hóa thành nhân vật và câu chuyện 💜”
                         </p>
 
-                        <!-- 👇 KHU VỰC KHOANH XANH LÁ: HIỂN THỊ LINK MẠNG XÃ HỘI & NÚT + KHI Ở CHẾ ĐỘ SỬA -->
+                        <!-- KHU VỰC HIỂN THỊ LINK MẠNG XÃ HỘI & NÚT + KHI Ở CHẾ ĐỘ SỬA -->
                         <div id="social-links-wrapper" class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2">
                             <div id="social-links-list" class="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                                <!-- Các nút mạng xã hội của Huyên Huyên sẽ hiển thị ở đây -->
+                                <!-- Render bằng JS -->
                             </div>
-                            <!-- Nút dấu + chỉ hiện khi đăng nhập mật khẩu đúng -->
                             <button id="edit-social-btn" onclick="openSocialModal()" class="hidden cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md hover:scale-105 transition" title="Thêm / Sửa các link mạng xã hội của bạn">
                                 <span class="text-sm leading-none">+</span>
                                 <span>Gắn link MXH</span>
@@ -157,7 +169,7 @@
                         <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
                             <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
                         </h2>
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
                             <button id="home-add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md cursor-pointer">
                                 + Thêm Giấc Mơ Mới
                             </button>
@@ -230,7 +242,7 @@
                         <span>Quay lại trang chủ</span>
                     </button>
                     
-                    <div class="flex items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-3">
                         <span class="font-script text-3xl sm:text-4xl text-purple-900">✨ Tất Cả Các Giấc Mơ ✨</span>
                         <button id="add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md flex items-center gap-1 cursor-pointer">
                             <span>+ Thêm Giấc Mơ Mới</span>
@@ -390,7 +402,7 @@
                         </button>
                     </div>
                     <div id="form-links-container" class="space-y-2">
-                        <!-- Các dòng nhập [Tên nút] + [Link] sẽ xuất hiện ở đây -->
+                        <!-- Render bằng JS -->
                     </div>
                 </div>
 
@@ -420,7 +432,7 @@
                         </button>
                     </div>
                     <div id="social-inputs-container" class="space-y-2.5">
-                        <!-- Các dòng nhập [Tên MXH] + [Link] sẽ hiện ở đây -->
+                        <!-- Render bằng JS -->
                     </div>
                 </div>
 
@@ -433,79 +445,32 @@
     </div>
 
 
+    <!-- ================= 7. MODAL XUẤT CODE ĐỒNG BỘ MỌI THIẾT BỊ ================= -->
+    <div id="sync-code-modal" class="fixed inset-0 z-50 hidden bg-purple-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative text-center space-y-4">
+            <button onclick="document.getElementById('sync-code-modal').classList.add('hidden')" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-xl font-bold w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
+            <div class="text-4xl">☁️✨</div>
+            <h3 class="font-script text-3xl text-purple-900">Đã Copy Code Mới Nhất!</h3>
+            <p class="text-xs sm:text-sm text-purple-800 leading-relaxed">
+                Toàn bộ các <strong>{char}</strong>, <strong>hình ảnh</strong>, <strong>hashtag</strong> và <strong>link mạng xã hội</strong> bạn vừa sửa trên máy này đã được đóng gói sẵn vào bộ nhớ tạm (Clipboard).<br><br>
+                Bây giờ bạn chỉ cần mở file <strong><code>index.html</code></strong> trên GitHub, xóa code cũ và <strong>Dán (Ctrl + V)</strong> đoạn code vừa copy này vào rồi bấm <strong>Commit changes</strong>. Ngay lập tức iPad, Điện thoại của bạn và tất cả khách mời vào web đều sẽ thấy bản cập nhật mới nhất!
+            </p>
+            <textarea id="exported-html-textarea" readonly class="w-full h-28 p-3 text-[10px] font-mono bg-purple-50 border border-purple-200 rounded-xl focus:outline-none text-purple-900" onclick="this.select()"></textarea>
+            <div class="flex justify-center gap-3">
+                <button onclick="copyTextareaCode()" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full text-xs sm:text-sm shadow-md transition cursor-pointer">
+                    📋 Copy Lại Lần Nữa
+                </button>
+                <button onclick="document.getElementById('sync-code-modal').classList.add('hidden')" class="px-5 py-2.5 bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold rounded-full text-xs sm:text-sm transition cursor-pointer">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // Ép trình duyệt xóa icon cũ trên tab và cập nhật logo mới từ link n07y30.jfif
-        function forceSetFavicon(url) {
-            const oldLinks = document.querySelectorAll("link[rel*='icon']");
-            oldLinks.forEach(el => el.remove());
-
-            const link1 = document.createElement('link');
-            link1.rel = 'icon';
-            link1.type = 'image/png';
-            link1.href = url;
-            document.head.appendChild(link1);
-
-            const link2 = document.createElement('link');
-            link2.rel = 'shortcut icon';
-            link2.type = 'image/png';
-            link2.href = url;
-            document.head.appendChild(link2);
-        }
-
-        function applyCustomFavicon() {
-            const rawUrl = 'https://files.catbox.moe/n07y30.jfif';
-            const proxySources = [
-                `https://wsrv.nl/?url=${encodeURIComponent(rawUrl)}&w=128&h=128&output=png`,
-                `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
-                rawUrl
-            ];
-
-            function tryLoad(index) {
-                if (index >= proxySources.length) return;
-                const img = new Image();
-                if (index < proxySources.length - 1) {
-                    img.crossOrigin = 'Anonymous';
-                }
-                img.referrerPolicy = 'no-referrer';
-
-                img.onload = function() {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 128;
-                        canvas.height = 128;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, 128, 128);
-
-                        // Khử nền trắng xung quanh nếu có để icon hiển thị đẹp trên tab
-                        const imgData = ctx.getImageData(0, 0, 128, 128);
-                        const data = imgData.data;
-                        for (let i = 0; i < data.length; i += 4) {
-                            const r = data[i], g = data[i + 1], b = data[i + 2];
-                            if (r > 238 && g > 238 && b > 238 && Math.abs(r - b) < 12) {
-                                data[i + 3] = 0;
-                            }
-                        }
-                        ctx.putImageData(imgData, 0, 0);
-
-                        const transparentPngDataUrl = canvas.toDataURL('image/png');
-                        forceSetFavicon(transparentPngDataUrl);
-                    } catch (err) {
-                        forceSetFavicon(proxySources[index]);
-                    }
-                };
-
-                img.onerror = function() {
-                    tryLoad(index + 1);
-                };
-
-                img.src = proxySources[index];
-            }
-
-            tryLoad(0);
-        }
-
+        /*__START_DEFAULT_DATA__*/
         const defaultCharacters = [
             {
                 id: 1,
@@ -552,19 +517,58 @@
                 links: []
             }
         ];
+        const defaultSocialLinks = [];
+        /*__END_DEFAULT_DATA__*/
+
+        // Lưu lại mã nguồn gốc sạch sẽ trước khi trình duyệt render để phục vụ tính năng Xuất Code Đồng Bộ
+        const INITIAL_HTML_SOURCE = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
 
         let charactersData = JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters;
-        let socialLinksData = JSON.parse(localStorage.getItem('huyen_social_links')) || [];
+        let socialLinksData = JSON.parse(localStorage.getItem('huyen_social_links')) || defaultSocialLinks;
         let currentIndex = 0;
         let isAdmin = false;
         let selectedHashtags = [];
 
         window.addEventListener('DOMContentLoaded', () => {
-            applyCustomFavicon();
             initSnow('snow-container', 60);
             initSnow('main-snow-container', 55);
             renderAll();
         });
+
+        // Hàm đóng gói toàn bộ dữ liệu đã sửa trên máy hiện tại thành code HTML mới để dán lên GitHub
+        function exportUpdatedHtmlCode() {
+            const newDataBlock = `/*__START_DEFAULT_DATA__*/\n        const defaultCharacters = ${JSON.stringify(charactersData, null, 12)};\n        const defaultSocialLinks = ${JSON.stringify(socialLinksData, null, 12)};\n        /*__END_DEFAULT_DATA__*/`;
+
+            const updatedHtml = INITIAL_HTML_SOURCE.replace(
+                /\/\*__START_DEFAULT_DATA__\*\/[\s\S]*?\/\*__END_DEFAULT_DATA__\*\//,
+                newDataBlock
+            );
+
+            const textarea = document.getElementById('exported-html-textarea');
+            textarea.value = updatedHtml;
+            document.getElementById('sync-code-modal').classList.remove('hidden');
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(updatedHtml).catch(() => {
+                    textarea.select();
+                    document.execCommand('copy');
+                });
+            } else {
+                textarea.select();
+                document.execCommand('copy');
+            }
+        }
+
+        function copyTextareaCode() {
+            const textarea = document.getElementById('exported-html-textarea');
+            textarea.select();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textarea.value);
+            } else {
+                document.execCommand('copy');
+            }
+            alert("Đã copy toàn bộ code mới vào bộ nhớ tạm! Bạn chỉ cần dán (Ctrl+V) vào file index.html trên GitHub là mọi thiết bị đều được cập nhật.");
+        }
 
         function renderAll() {
             renderSocialLinks();
@@ -573,7 +577,6 @@
             renderFullList();
         }
 
-        // Render khu vực Link Mạng Xã Hội (chỗ khoanh xanh lá)
         function renderSocialLinks() {
             const listContainer = document.getElementById('social-links-list');
             const editBtn = document.getElementById('edit-social-btn');
@@ -603,7 +606,6 @@
             }
         }
 
-        // Mở / Đóng Modal thêm sửa Mạng Xã Hội
         function openSocialModal() {
             const container = document.getElementById('social-inputs-container');
             container.innerHTML = '';
@@ -1030,8 +1032,9 @@
                 document.getElementById('add-char-btn').classList.remove('hidden');
                 document.getElementById('home-add-char-btn').classList.remove('hidden');
                 document.getElementById('edit-social-btn').classList.remove('hidden');
+                document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể gắn link MXH và thêm, sửa, xóa các giấc mơ.");
+                alert("Đăng nhập quản trị thành công! Sau khi sửa xong, nhớ bấm nút 'Copy Code Đồng Bộ Mọi Thiết Bị' ở thanh màu tím phía trên cùng nhé!");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
