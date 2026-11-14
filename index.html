@@ -31,7 +31,7 @@
             font-family: 'Fraunces', serif;
         }
         
-        /* Hiệu ứng tuyết động / hạt sáng bay phủ khắp màn hình chờ */
+        /* Hiệu ứng tuyết động / hạt sáng bay phủ khắp màn hình */
         @keyframes magicalFall {
             0% { transform: translateY(-10px) translateX(0); opacity: 0; }
             15% { opacity: 0.9; }
@@ -89,11 +89,14 @@
 
 
     <!-- ================= 2. TRANG CHỦ & TRANG DANH SÁCH (MAIN & LIST CONTAINER) ================= -->
-    <div id="main-website" class="hidden flex flex-col min-h-screen justify-between">
+    <div id="main-website" class="hidden flex flex-col min-h-screen justify-between relative overflow-hidden">
         
+        <!-- Hiệu ứng tuyết động nền cho toàn bộ trang chủ và danh sách -->
+        <div id="main-snow-container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
+
         <!-- Header / Navigation -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
-            <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
                 <a href="#" onclick="showHomeView()" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2">
                     <span>🌙</span> Những giấc mơ của Huyên Huyên
                 </a>
@@ -106,7 +109,7 @@
         </header>
 
         <!-- MAIN CONTENT VIEW -->
-        <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-16">
+        <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-16 relative z-10">
 
             <!-- VIEW 1: TRANG CHỦ -->
             <div id="home-view" class="space-y-16">
@@ -118,10 +121,10 @@
                         <img src="https://files.catbox.moe/3c24gw.jpg" alt="Avatar Huyên Huyên" class="w-full h-full object-cover">
                     </div>
                     <div class="text-center md:text-left space-y-3 relative z-10">
-                        <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Trạm lưu trữ Dokichat & AI Studio</span>
+                        <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng các tình iu đến với</span>
                         <h1 class="font-script text-5xl sm:text-6xl text-purple-900">Những giấc mơ của Huyên Huyên</h1>
                         <p class="text-purple-800/80 leading-relaxed text-sm md:text-base italic">
-                            “Nơi mình cất giữ và giới thiệu những nhân vật ({char}) đầy cảm xúc được tạo ra từ tâm huyết. Mời bạn cùng khám phá trạm dừng chân bình yên này nhé!” ☁️💜
+                            “Nơi những giấc mơ hóa thành nhân vật và câu chuyện 💜”
                         </p>
                     </div>
                 </section>
@@ -170,7 +173,7 @@
                                 <span class="text-xs text-pink-600 font-bold bg-pink-50 px-2.5 py-1 rounded-full">✨ Nhật ký số 02</span>
                                 <span class="text-xs text-purple-400 font-semibold">14.11.2026</span>
                             </div>
-                            <h3 class="text-lg font-bold text-purple-900 mb-2">Về hành trình sáng tạo các {char}</h3>
+                            <h3 class="text-lg font-bold text-purple-900 mb-2">Về hành trình sáng tạo các nhân vật</h3>
                             <p class="text-sm text-purple-800/80 leading-relaxed italic">
                                 “Mỗi nhân vật trên Dokichat hay AI Studio đều mang một câu chuyện và linh hồn riêng. Việc đưa chúng lên trang web này giúp mình dễ dàng chia sẻ thế giới mộng mơ ấy đến mọi người.”
                             </p>
@@ -200,14 +203,14 @@
         </main>
 
         <!-- Footer -->
-        <footer class="w-full bg-white/60 border-t border-purple-100 py-6 mt-16 text-center text-xs text-purple-700 font-fraunces">
+        <footer class="w-full bg-white/60 border-t border-purple-100 py-6 mt-16 text-center text-xs text-purple-700 font-fraunces relative z-10">
             <p>Made with 💜 for Huyên Huyên • Dokichat & AI Studio Showcase ✨</p>
         </footer>
 
     </div>
 
 
-    <!-- ================= 3. MODAL POPUP CHI TIẾT NHÂN VẬT ({CHAR}) ================= -->
+    <!-- ================= 3. MODAL POPUP CHI TIẾT NHÂN VẬT ================= -->
     <div id="char-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative transform transition-all scale-95 opacity-0 duration-300" id="modal-content-box">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
@@ -239,7 +242,6 @@
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // Dữ liệu mẫu 4 Character ({char}) do bạn tạo trên Dokichat và AI Studio
         const charactersData = [
             {
                 id: 1,
@@ -279,19 +281,18 @@
             }
         ];
 
-        let currentIndex = 0; // Vị trí slider trang chủ
+        let currentIndex = 0;
 
-        // Khởi tạo tuyết rơi và render carousel
         window.addEventListener('DOMContentLoaded', () => {
-            initSnow();
+            initSnow('snow-container', 60);
+            initSnow('main-snow-container', 40);
             renderCarousel();
             renderFullList();
         });
 
-        function initSnow() {
-            const snowContainer = document.getElementById('snow-container');
+        function initSnow(containerId, particleCount) {
+            const snowContainer = document.getElementById(containerId);
             if (snowContainer) {
-                const particleCount = 60;
                 for (let i = 0; i < particleCount; i++) {
                     const flake = document.createElement('div');
                     flake.className = 'snowflake-particle';
@@ -320,12 +321,10 @@
             }
         }
 
-        // Render 3 ô trên trang chủ có tính toán Next / Prev vòng tròn
         function renderCarousel() {
             const track = document.getElementById('carousel-track');
             track.innerHTML = '';
 
-            // Lấy 3 character liên tiếp từ currentIndex
             for (let i = 0; i < 3; i++) {
                 const charIndex = (currentIndex + i) % charactersData.length;
                 const char = charactersData[charIndex];
@@ -362,7 +361,6 @@
             renderCarousel();
         }
 
-        // Render danh sách đầy đủ ở trang danh sách
         function renderFullList() {
             const grid = document.getElementById('full-list-grid');
             grid.innerHTML = '';
@@ -390,7 +388,6 @@
             });
         }
 
-        // Chuyển qua lại giữa các view
         function enterDream() {
             const splash = document.getElementById('splash-screen');
             const mainWeb = document.getElementById('main-website');
@@ -415,7 +412,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Xử lý Modal Popup chi tiết character
         function openModal(id) {
             const char = charactersData.find(c => c.id === id);
             if (!char) return;
