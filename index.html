@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Những giấc mơ của Huyên Huyên 🌙✨</title>
     
-    <!-- Logo hình bé rắn tím trên tab trình duyệt -->
-    <link id="site-favicon" rel="icon" type="image/png" href="https://files.catbox.moe/rk7zyl.png">
+    <!-- Logo hình bé rắn tím trên tab trình duyệt (Qua proxy chống chặn mạng + xóa cache cũ) -->
+    <link rel="icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/rk7zyl.png&w=128&h=128&fit=contain&v=snake2026">
+    <link rel="shortcut icon" type="image/png" href="https://wsrv.nl/?url=https://files.catbox.moe/rk7zyl.png&w=128&h=128&fit=contain&v=snake2026">
+    <link rel="apple-touch-icon" href="https://wsrv.nl/?url=https://files.catbox.moe/rk7zyl.png&w=180&h=180&fit=contain&v=snake2026">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -96,11 +98,11 @@
         <!-- Hiệu ứng tuyết động nền cho toàn bộ trang chủ và danh sách -->
         <div id="main-snow-container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-        <!-- Header / Navigation -->
+        <!-- Header / Navigation (Đã giữ nguyên icon trăng khuyết 🌙 ở góc trái) -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
-            <div class="max-w-4xl mx-auto px-6 py-3.5 flex justify-between items-center relative z-10">
-                <a href="#" onclick="openPasswordModal(event)" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2.5 group" title="Chạm vào đây để đăng nhập quản trị">
-                    <img src="https://files.catbox.moe/rk7zyl.png" referrerpolicy="no-referrer" alt="Logo" class="w-9 h-9 sm:w-11 sm:h-11 object-contain group-hover:scale-110 transition duration-300 drop-shadow-sm">
+            <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
+                <a href="#" onclick="openPasswordModal(event)" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
+                    <span class="group-hover:scale-110 transition duration-300">🌙</span>
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
                 </a>
                 <nav class="flex gap-4 sm:gap-6 font-semibold text-sm sm:text-base text-purple-700">
@@ -252,7 +254,7 @@
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-sm w-full shadow-2xl border border-purple-200 relative text-center">
             <button onclick="closePasswordModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-xl font-bold w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
             
-            <img src="https://files.catbox.moe/rk7zyl.png" referrerpolicy="no-referrer" alt="Logo" class="w-16 h-16 mx-auto mb-2 object-contain drop-shadow">
+            <div class="text-4xl mb-3">🌙</div>
             <h3 class="font-script text-2xl text-purple-900 mb-2">Chào mừng Huyên Huyên đã quay trở lại giấc mơ</h3>
             
             <div class="mt-4 flex items-center justify-center gap-2">
@@ -740,7 +742,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Chuẩn hóa dữ liệu link (hỗ trợ cả dữ liệu cũ dạng chuỗi lẫn dữ liệu mới có {label, url})
         function normalizeLinks(rawLinks) {
             if (!Array.isArray(rawLinks)) return [];
             return rawLinks.map(item => {
@@ -767,7 +768,6 @@
             const tagsBox = document.getElementById('modal-hashtags-box');
             tagsBox.innerHTML = (char.hashtags || []).map(tag => `<span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-semibold">${tag}</span>`).join('');
 
-            // Hiển thị các nút Đường vào giấc mơ với Tên nút tùy chỉnh (VD: Dokichat, GGAI)
             const linksSection = document.getElementById('modal-links-section');
             const linksBox = document.getElementById('modal-links-box');
             const validLinks = normalizeLinks(char.links);
@@ -889,7 +889,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Thêm 1 dòng gồm 2 ô: [Tên nút: Dokichat / GGAI] và [Link URL]
         function addDreamLinkField(label = '', url = '') {
             const container = document.getElementById('form-links-container');
             const row = document.createElement('div');
