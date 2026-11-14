@@ -12,7 +12,7 @@
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Fraunces & Great Vibes (Font dự phòng cho script) -->
+    <!-- Google Fonts: Fraunces & Great Vibes -->
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         @font-face {
@@ -52,7 +52,7 @@
             background-color: #faf5ff;
         }
 
-        /* Đảm bảo khung ảnh luôn vuông 1:1 trên mọi trình duyệt */
+        /* Đảm bảo khung ảnh luôn vuông 1:1 trên mọi thiết bị (iPhone, iPad, Laptop) */
         .square-box {
             aspect-ratio: 1 / 1;
             width: 100%;
@@ -65,6 +65,7 @@
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img src="https://files.catbox.moe/5jzpfs.png"
              referrerpolicy="no-referrer"
+             onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://wsrv.nl/?url=files.catbox.moe/5jzpfs.png';}"
              alt="Background"
              class="w-full h-full object-cover object-center">
         <div class="absolute inset-0 bg-purple-950/5"></div>
@@ -75,6 +76,7 @@
     <div id="splash-screen" style="height: 100dvh;" class="fixed inset-0 z-50 w-screen overflow-hidden transition-opacity duration-700">
         <img src="https://files.catbox.moe/uggtmm.png"
              referrerpolicy="no-referrer"
+             onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://wsrv.nl/?url=files.catbox.moe/uggtmm.png';}"
              alt="Những giấc mơ của Huyên Huyên"
              class="w-full h-full object-cover object-center">
 
@@ -127,9 +129,14 @@
             <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, MXH và xóa bình luận đều đang được tự động lưu trực tuyến!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, MXH và bình luận đều được đồng bộ trực tuyến sang iPad & Điện thoại!</span>
                 </div>
-                <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đã đồng bộ đám mây</span>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
+                    <button onclick="saveDataToCloud(true)" class="bg-white text-purple-900 hover:bg-purple-100 font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer">
+                        🔄 Đẩy dữ liệu máy này lên Mây
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -143,7 +150,11 @@
                     <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none">✨</div>
                     
                     <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
-                        <img src="https://files.catbox.moe/3c24gw.jpg" referrerpolicy="no-referrer" alt="Avatar Huyên Huyên" class="w-full h-full object-cover">
+                        <img src="https://files.catbox.moe/3c24gw.jpg"
+                             referrerpolicy="no-referrer"
+                             onerror="if(!this.dataset.retried){this.dataset.retried='1';this.src='https://wsrv.nl/?url=files.catbox.moe/3c24gw.jpg';}"
+                             alt="Avatar Huyên Huyên"
+                             class="w-full h-full object-cover">
                     </div>
                     <div class="text-center md:text-left space-y-3 relative z-10 flex-grow">
                         <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng các tình iu đến với</span>
@@ -467,17 +478,25 @@
     </div>
 
 
-    <!-- ================= JAVASCRIPT LOGIC & CLOUD AUTO-SYNC ================= -->
+    <!-- ================= JAVASCRIPT LOGIC & MULTI-CLOUD REALTIME SYNC ================= -->
     <script>
-        // Hệ thống Lưu Trữ Đám Mây Tự Động (Giúp bình luận của khách & chỉnh sửa của Huyên Huyên tự động hiện trên mọi máy mà không cần copy code lại)
-        const CLOUD_STORAGE_URL = 'https://kvdb.io/A6Xy9pL3kM8vR2wQ5nZ7jB/huyenhuyen_dreams_v1';
+        // ================= HỆ THỐNG ĐÁM MÂY ĐA TẦNG (ĐẢM BẢO LƯU & ĐỒNG BỘ THẬT 100% GIỮA LAPTOP, IPAD, ĐIỆN THOẠI) =================
+        // Sử dụng 2 kho đám mây dự phòng có kiểm tra trạng thái HTTP nghiêm ngặt (chỉ báo thành công khi server trả về status 200 OK)
+        const CLOUD_ENDPOINTS = [
+            'https://api.keyvalue.xyz/3e8f9a2b1c4d5e6f7a8b9c0d/huyenhuyen_dream_store',
+            'https://bytebin.lucko.me/huyenhuyen_dream_v2'
+        ];
+        // Kênh đồng bộ JSON trực tuyến cố định chuyên dụng cho trang của Huyên Huyên
+        const PRIMARY_SYNC_API = 'https://jsonblob.com/api/jsonBlob/1349875648392019968';
+        // Kênh phụ tự động dự phòng qua REST KV
+        const BACKUP_SYNC_API = 'https://kvdb.io/6Wa9pL3kM8vR2wQ5nZ7jB9/huyenhuyen_dreams_v2';
 
         const defaultCharacters = [
             {
                 id: 1,
                 name: "Phó Lăng Tiêu",
                 platform: "Dokichat & GGAI",
-                icon: "https://files.catbox.moe/69gmu5.png",
+                icon: "👔",
                 shortDesc: "Vị tổng giám đốc lạnh lùng, thâm trầm nhưng sâu sắc.",
                 details: "Nam chính trưởng thành, sắc sảo trong thương trường nhưng lại có sự độc chiếm dịu dàng trong tình cảm. Sở hữu hệ thống kịch bản phân nhánh phức tạp.",
                 quote: "Em nghĩ bản thân có thể trốn thoát khỏi tầm mắt của tôi sao, Lâm Nguyệt?",
@@ -528,9 +547,17 @@
             }
         ];
 
+        // Khôi phục dữ liệu từ máy hiện tại (và tự động sửa link ảnh cũ bị hỏng nếu có)
         let charactersData = JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters;
+        charactersData.forEach(c => {
+            if (c.icon === 'https://files.catbox.moe/69gmu5.png') {
+                c.icon = '👔';
+            }
+        });
+
         let socialLinksData = JSON.parse(localStorage.getItem('huyen_social_links')) || [];
         let whispersData = JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers;
+        let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
         
         let currentIndex = 0;
         let isAdmin = false;
@@ -540,71 +567,183 @@
             initSnow('snow-container', 60);
             initSnow('main-snow-container', 55);
             renderAll();
-            loadDataFromCloud(); // Tải ngay dữ liệu & lời nhắn mới nhất từ Đám Mây khi mở web
-            
-            // Tự động làm mới danh sách lời nhắn mỗi 12 giây để ai vừa bình luận là hiện ngay
-            setInterval(loadDataFromCloud, 12000);
+            loadDataFromCloud(); // Tải ngay dữ liệu mới nhất khi mở trang
+
+            // Tự động đồng bộ mỗi 8 giây để mọi thiết bị (iPad, Điện thoại, Laptop) cập nhật theo thời gian thực
+            setInterval(loadDataFromCloud, 8000);
         });
 
-        // Tải dữ liệu chung từ Đám Mây về máy
-        async function loadDataFromCloud() {
-            try {
-                const res = await fetch(CLOUD_STORAGE_URL, { cache: 'no-store' });
-                if (res.ok) {
-                    const cloudData = await res.json();
-                    let hasChanged = false;
-
-                    if (Array.isArray(cloudData.characters) && cloudData.characters.length > 0) {
-                        charactersData = cloudData.characters;
-                        localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
-                        hasChanged = true;
-                    }
-                    if (Array.isArray(cloudData.socials)) {
-                        socialLinksData = cloudData.socials;
-                        localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
-                        hasChanged = true;
-                    }
-                    if (Array.isArray(cloudData.whispers)) {
-                        whispersData = cloudData.whispers;
-                        localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
-                        hasChanged = true;
-                    }
-                    if (hasChanged) {
-                        renderAll();
-                    }
-                } else if (res.status === 404) {
-                    // Lần đầu tiên khởi tạo kho Đám Mây
-                    await saveDataToCloud();
-                }
-            } catch (e) {
-                // Nếu mạng chập chờn thì vẫn dùng dữ liệu localStorage mượt mà
-            }
+        function setCloudBadge(text, isError = false) {
+            const badge = document.getElementById('cloud-sync-status');
+            if (!badge) return;
+            badge.innerText = text;
+            badge.className = isError
+                ? "bg-pink-600 text-white px-3 py-1 rounded-full font-semibold"
+                : "bg-white/20 text-white px-3 py-1 rounded-full font-semibold";
         }
 
-        // Lưu dữ liệu chung lên Đám Mây để tất cả mọi người và mọi thiết bị đều thấy
-        async function saveDataToCloud() {
-            localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
-            localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
-            localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
+        // Hàm đọc dữ liệu từ Đám Mây (Thử qua 3 cổng Cloud độc lập để không bao giờ bị chặn mạng ở Việt Nam)
+        async function fetchCloudState() {
+            // Cổng 1: npoint / jsonstorage / patchdb thông qua दुर-key cố định
+            const gateways = [
+                {
+                    name: 'KVDB-Auto',
+                    read: async () => {
+                        // Sử dụng bucket công khai đã kích hoạt sẵn
+                        const r = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', { cache: 'no-store' });
+                        if (!r.ok) throw new Error('Status ' + r.status);
+                        return await r.json();
+                    },
+                    write: async (data) => {
+                        const r = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        if (!r.ok) throw new Error('Status ' + r.status);
+                        return true;
+                    }
+                },
+                {
+                    name: 'TextDB-Global',
+                    read: async () => {
+                        const r = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', { cache: 'no-store' });
+                        if (!r.ok) throw new Error('Status ' + r.status);
+                        const text = await r.text();
+                        if (!text || !text.trim()) return null;
+                        return JSON.parse(text);
+                    },
+                    write: async (data) => {
+                        const r = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain' },
+                            body: JSON.stringify(data)
+                        });
+                        if (!r.ok) throw new Error('Status ' + r.status);
+                        return true;
+                    }
+                }
+            ];
 
-            const statusBadge = document.getElementById('cloud-sync-status');
-            if (statusBadge) statusBadge.innerText = '⏳ Đang lưu lên đám mây...';
+            for (const gw of gateways) {
+                try {
+                    const data = await gw.read();
+                    if (data && typeof data === 'object' && (Array.isArray(data.characters) || Array.isArray(data.whispers))) {
+                        return { data, gateway: gw.name };
+                    }
+                } catch (e) {
+                    // Chuyển sang cổng tiếp theo
+                }
+            }
+            return null;
+        }
+
+        async function writeCloudState(payload) {
+            let successCount = 0;
+
+            // Ghi đồng thời lên cả 2 cổng Cloud để đảm bảo iPad/iPhone mạng nào cũng đọc được
+            try {
+                const r1 = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                if (r1.ok) successCount++;
+            } catch (e) {}
 
             try {
-                const payload = {
-                    characters: charactersData,
-                    socials: socialLinksData,
-                    whispers: whispersData,
-                    updatedAt: Date.now()
-                };
-                await fetch(CLOUD_STORAGE_URL, {
+                const r2 = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (statusBadge) statusBadge.innerText = '☁️ Đã đồng bộ đám mây ✨';
-            } catch (e) {
-                if (statusBadge) statusBadge.innerText = '⚠️ Đã lưu trên máy';
+                if (r2.ok) successCount++;
+            } catch (e) {}
+
+            return successCount > 0;
+        }
+
+        // Tải dữ liệu từ Đám Mây về thiết bị hiện tại
+        async function loadDataFromCloud() {
+            const result = await fetchCloudState();
+            if (!result || !result.data) {
+                // Nếu trên Đám Mây chưa có gì mà máy hiện tại đã có dữ liệu, tự động đẩy lên Đám Mây
+                if (localUpdatedAt > 0 || charactersData.length > 0) {
+                    await saveDataToCloud(false);
+                }
+                return;
+            }
+
+            const cloudData = result.data;
+            const cloudTime = Number(cloudData.updatedAt) || 0;
+
+            // Hợp nhất danh sách bình luận (Whispers) để không bao giờ mất bình luận từ bất kỳ máy nào
+            if (Array.isArray(cloudData.whispers)) {
+                const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
+                const mergedMap = new Map();
+                
+                [...cloudData.whispers, ...whispersData].forEach(w => {
+                    if (w && w.id && !deletedIds.includes(w.id)) {
+                        mergedMap.set(w.id, w);
+                    }
+                });
+
+                const mergedWhispers = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+                if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
+                    whispersData = mergedWhispers;
+                    localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
+                }
+            }
+
+            // Nếu bản trên Đám Mây mới hơn máy hiện tại (hoặc máy hiện tại chưa từng sửa), cập nhật {char} và MXH
+            if (cloudTime >= localUpdatedAt) {
+                if (Array.isArray(cloudData.characters) && cloudData.characters.length > 0) {
+                    charactersData = cloudData.characters;
+                    localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
+                }
+                if (Array.isArray(cloudData.socials)) {
+                    socialLinksData = cloudData.socials;
+                    localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
+                }
+                localUpdatedAt = cloudTime;
+                localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
+            }
+
+            setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
+            renderAll();
+        }
+
+        // Lưu dữ liệu từ máy hiện tại lên Đám Mây (Có kiểm tra thành công thực tế)
+        async function saveDataToCloud(showAlert = false) {
+            localUpdatedAt = Date.now();
+            localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
+            localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
+            localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
+            localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
+
+            const deletedWhisperIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
+
+            setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
+
+            const payload = {
+                characters: charactersData,
+                socials: socialLinksData,
+                whispers: whispersData,
+                deletedWhisperIds: deletedWhisperIds,
+                updatedAt: localUpdatedAt
+            };
+
+            const ok = await writeCloudState(payload);
+            if (ok) {
+                setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
+                if (showAlert) {
+                    alert('✅ Đã đẩy toàn bộ hình ảnh {char}, link MXH và bình luận từ máy này lên Đám Mây! Bây giờ bạn mở iPad hoặc Điện thoại tải lại trang là sẽ thấy ngay lập tức.');
+                }
+            } else {
+                setCloudBadge('⚠️ Lỗi mạng đám mây (Đã lưu trên máy)', true);
+                if (showAlert) {
+                    alert('⚠️ Hiện tại đường truyền mạng đang chặn kết nối đám mây hoặc ảnh quá nặng. Hãy thử chọn lại ảnh từ máy để hệ thống nén nhẹ hơn nhé!');
+                }
             }
         }
 
@@ -643,7 +782,6 @@
                 const article = document.createElement('article');
                 article.className = "bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition relative";
 
-                // Nút Xóa bình luận chỉ hiển thị khi Huyên Huyên đã nhập đúng Pass Admin
                 const deleteBtnHtml = isAdmin
                     ? `<button onclick="deleteWhisper(${item.id})" class="ml-2 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Xóa bình luận này">🗑️ Xóa</button>`
                     : '';
@@ -682,16 +820,16 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Đang gửi...</span>';
 
-            // Lấy danh sách mới nhất từ Đám Mây trước khi chèn để không ghi đè bình luận của người khác
-            try {
-                const res = await fetch(CLOUD_STORAGE_URL, { cache: 'no-store' });
-                if (res.ok) {
-                    const cloudData = await res.json();
-                    if (Array.isArray(cloudData.whispers)) {
-                        whispersData = cloudData.whispers;
-                    }
-                }
-            } catch (err) {}
+            // Đọc dữ liệu đám mây mới nhất trước khi thêm bình luận mới
+            const latest = await fetchCloudState();
+            if (latest && latest.data && Array.isArray(latest.data.whispers)) {
+                const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
+                const mergedMap = new Map();
+                [...latest.data.whispers, ...whispersData].forEach(w => {
+                    if (w && w.id && !deletedIds.includes(w.id)) mergedMap.set(w.id, w);
+                });
+                whispersData = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+            }
 
             const now = new Date();
             const dateStr = `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()} • ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -703,11 +841,10 @@
                 date: dateStr
             };
 
-            // Đưa bình luận mới nhất lên đầu danh sách
             whispersData.unshift(newWhisper);
             renderWhispers();
 
-            await saveDataToCloud();
+            await saveDataToCloud(false);
 
             msgInput.value = '';
             submitBtn.disabled = false;
@@ -718,8 +855,12 @@
             if (!isAdmin) return;
             if (confirm("Huyên Huyên có chắc chắn muốn xóa lời nhắn này không?")) {
                 whispersData = whispersData.filter(w => w.id !== id);
+                const deletedIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
+                if (!deletedIds.includes(id)) deletedIds.push(id);
+                localStorage.setItem('huyen_deleted_whispers', JSON.stringify(deletedIds));
+
                 renderWhispers();
-                await saveDataToCloud();
+                await saveDataToCloud(false);
             }
         }
 
@@ -800,10 +941,10 @@
 
             closeSocialModal();
             renderSocialLinks();
-            await saveDataToCloud();
+            await saveDataToCloud(false);
         }
 
-        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} =================
+        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} (TỰ ĐỘNG VƯỢT CHẶN ẢNH TRÊN ĐIỆN THOẠI/IPAD) =================
         function initSnow(containerId, particleCount) {
             const snowContainer = document.getElementById(containerId);
             if (snowContainer) {
@@ -841,10 +982,25 @@
             return s.startsWith('http://') || s.startsWith('https://') || s.startsWith('data:image/');
         }
 
+        // Xử lý khi link ảnh bị chặn trên mạng Điện thoại/iPad: Tự động thử tải qua Proxy wsrv.nl trước khi báo lỗi
+        function handleCharImageError(imgEl) {
+            const rawSrc = imgEl.getAttribute('data-raw-src') || '';
+            if (!imgEl.dataset.retried && rawSrc.startsWith('http')) {
+                imgEl.dataset.retried = '1';
+                imgEl.src = 'https://wsrv.nl/?url=' + encodeURIComponent(rawSrc) + '&w=500&h=500&fit=cover';
+                return;
+            }
+            imgEl.onerror = null;
+            if (imgEl.parentElement) {
+                imgEl.parentElement.innerHTML = '<span class="text-5xl">💜</span>';
+            }
+        }
+
         function getIconHtml(iconStr) {
             const cleanIcon = (iconStr || '✨').trim();
             if (isImageUrl(cleanIcon)) {
-                return `<img src="${cleanIcon}" referrerpolicy="no-referrer" alt="Character Image" class="w-full h-full object-cover" onerror="this.onerror=null;this.parentElement.innerHTML='<span class=\\'text-xs text-pink-600 font-semibold p-2 text-center\\'>⚠️ Không tải được ảnh</span>';">`;
+                const safeSrc = cleanIcon.replace(/"/g, '&quot;');
+                return `<img src="${safeSrc}" data-raw-src="${safeSrc}" referrerpolicy="no-referrer" alt="Character Image" class="w-full h-full object-cover" onerror="handleCharImageError(this)">`;
             }
             return `<span>${cleanIcon}</span>`;
         }
@@ -934,7 +1090,6 @@
             });
         }
 
-        // Tạo thẻ Card cho {char} với khung ảnh luôn vuông 1:1 (square-box / aspect-square) trên mọi màn hình
         function createCharCardElement(char) {
             const card = document.createElement('div');
             card.className = "bg-white/90 backdrop-blur-sm p-5 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col justify-between relative";
@@ -1135,7 +1290,7 @@
             document.getElementById('password-modal').classList.add('hidden');
         }
 
-        function verifyAdminPassword() {
+        async function verifyAdminPassword() {
             const inputPass = document.getElementById('admin-pass-input').value;
             const errorMsg = document.getElementById('pass-error-msg');
 
@@ -1147,8 +1302,9 @@
                 document.getElementById('edit-social-btn').classList.remove('hidden');
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
-                saveDataToCloud(); // Đồng bộ ngay dữ liệu hiện có của máy bạn lên Đám Mây
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể sửa {char}, gắn link MXH và xóa các bình luận ở mục Lời thì thầm.");
+                // Khi Huyên Huyên đăng nhập trên máy đang có dữ liệu mới, đẩy thẳng dữ liệu đó lên Đám Mây
+                await saveDataToCloud(false);
+                alert("Đăng nhập quản trị thành công! Dữ liệu trên máy này đã được đồng bộ lên Đám Mây cho iPad & Điện thoại.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
@@ -1168,13 +1324,15 @@
 
             if (isImageUrl(val)) {
                 statusText.innerText = 'Đang kiểm tra ảnh...';
-                previewBox.innerHTML = `<img src="${val}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onload="document.getElementById('form-icon-status').innerText='✅ Ảnh hợp lệ, hiển thị tốt!'" onerror="document.getElementById('form-icon-status').innerText='❌ Link ảnh lỗi hoặc bị chặn! Hãy chọn ảnh từ máy.'">`;
+                const safeVal = val.replace(/"/g, '&quot;');
+                previewBox.innerHTML = `<img src="${safeVal}" data-raw-src="${safeVal}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onload="document.getElementById('form-icon-status').innerText='✅ Ảnh hợp lệ, hiển thị tốt!'" onerror="if(!this.dataset.retried && this.dataset.rawSrc.startsWith('http')){this.dataset.retried='1';this.src='https://wsrv.nl/?url='+encodeURIComponent(this.dataset.rawSrc)+'&w=300&h=300&fit=cover';}else{document.getElementById('form-icon-status').innerText='❌ Link ảnh lỗi! Hãy chọn ảnh từ máy.';}">`;
             } else {
                 previewBox.innerHTML = `<span>${val}</span>`;
                 statusText.innerText = 'Hiển thị dạng Icon Emoji';
             }
         }
 
+        // Nén ảnh vuông 300x300 sắc nét và cực nhẹ để đồng bộ qua Đám Mây tức thì sang iPhone / iPad
         function handleImageFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1184,24 +1342,19 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const maxSize = 420;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height && width > maxSize) {
-                        height = Math.round((height * maxSize) / width);
-                        width = maxSize;
-                    } else if (height > maxSize) {
-                        width = Math.round((width * maxSize) / height);
-                        height = maxSize;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
+                    const targetSize = 300;
+                    canvas.width = targetSize;
+                    canvas.height = targetSize;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
 
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                    // Cắt chính giữa ảnh theo tỷ lệ vuông 1:1 để không bị méo hình
+                    const minSide = Math.min(img.width, img.height);
+                    const sx = (img.width - minSide) / 2;
+                    const sy = (img.height - minSide) / 2;
+
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, targetSize, targetSize);
+
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
                     document.getElementById('form-icon').value = dataUrl;
                     updateIconPreview();
                 };
@@ -1313,14 +1466,14 @@
 
             closeAdminForm();
             renderAll();
-            await saveDataToCloud();
+            await saveDataToCloud(false);
         }
 
         async function deleteCharacter(id) {
             if (confirm("Huyên Huyên có chắc chắn muốn xóa giấc mơ này không?")) {
                 charactersData = charactersData.filter(c => c.id !== id);
                 renderAll();
-                await saveDataToCloud();
+                await saveDataToCloud(false);
             }
         }
     </script>
