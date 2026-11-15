@@ -129,7 +129,7 @@
             <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, MXH và bình luận đều được đồng bộ trực tuyến sang iPad & Điện thoại!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, album ảnh, MXH và bình luận đều được đồng bộ trực tuyến!</span>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
@@ -335,7 +335,7 @@
     <!-- ================= 4. MODAL POPUP CHI TIẾT NHÂN VẬT ================= -->
     <div id="char-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative transform transition-all scale-95 opacity-0 duration-300 max-h-[90vh] overflow-y-auto" id="modal-content-box">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
             
             <div class="flex items-center gap-4 mb-4">
                 <div id="modal-icon" class="text-4xl sm:text-5xl bg-purple-100 rounded-2xl flex items-center justify-center w-20 h-20 overflow-hidden flex-shrink-0"></div>
@@ -358,10 +358,36 @@
                     <p class="font-bold text-purple-900 mb-2">🔗 Đường vào giấc mơ:</p>
                     <div id="modal-links-box" class="flex flex-wrap gap-2"></div>
                 </div>
+
+                <!-- 👇 KHU VỰC MỚI: ALBUM HÌNH ẢNH GIẤC MƠ (HIỆN 4 ẢNH VUÔNG MỖI TRANG + NÚT QUA TRÁI/PHẢI 4 ẢNH) -->
+                <div id="modal-gallery-section" class="hidden pt-3 border-t border-purple-100">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <p id="modal-gallery-title" class="font-bold text-purple-900">🖼️ Hình ảnh giấc mơ (0 ảnh):</p>
+                        <span id="modal-gallery-page-indicator" class="text-xs font-semibold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full"></span>
+                    </div>
+
+                    <div class="relative flex items-center">
+                        <!-- Nút mũi tên lùi 4 ảnh trước -->
+                        <button type="button" id="modal-gallery-prev" onclick="prevModalGalleryPage()" class="hidden absolute -left-3 sm:-left-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh trước">
+                            ❮
+                        </button>
+
+                        <!-- Grid 4 ảnh preview hình vuông 1:1 -->
+                        <div id="modal-gallery-grid" class="grid grid-cols-4 gap-2 sm:gap-2.5 w-full">
+                            <!-- Render bằng JS -->
+                        </div>
+
+                        <!-- Nút mũi tên tiến 4 ảnh sau -->
+                        <button type="button" id="modal-gallery-next" onclick="nextModalGalleryPage()" class="hidden absolute -right-3 sm:-right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh tiếp theo">
+                            ❯
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-purple-500 italic mt-1.5 text-center">Chạm vào từng ảnh để xem kích thước thật (Full Size) & tải về máy ✨</p>
+                </div>
             </div>
 
             <div class="mt-6 text-center">
-                <button onclick="closeModal()" class="px-6 py-2.5 bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold rounded-full text-sm transition shadow-sm">
+                <button onclick="closeModal()" class="px-6 py-2.5 bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold rounded-full text-sm transition shadow-sm cursor-pointer">
                     Đóng cửa sổ
                 </button>
             </div>
@@ -369,10 +395,42 @@
     </div>
 
 
+    <!-- ================= 4B. LIGHTBOX XEM ẢNH FULL SIZE & TẢI VỀ MÁY ================= -->
+    <div id="image-lightbox-modal" class="fixed inset-0 z-[70] hidden bg-purple-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeImageLightbox()">
+        <!-- Thanh công cụ trên cùng -->
+        <div class="w-full max-w-4xl flex items-center justify-between mb-3 px-2" onclick="event.stopPropagation()">
+            <span id="lightbox-counter" class="text-white/90 text-xs sm:text-sm font-bold bg-white/15 px-3.5 py-1.5 rounded-full backdrop-blur-sm">
+                Ảnh 1 / 1
+            </span>
+            <div class="flex items-center gap-2.5">
+                <button type="button" id="lightbox-download-btn" onclick="downloadCurrentLightboxImage()" class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs sm:text-sm font-bold shadow-lg transition hover:scale-105">
+                    <span>⬇️</span> <span>Tải ảnh về máy</span>
+                </button>
+                <button type="button" onclick="closeImageLightbox()" class="cursor-pointer w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white text-lg font-bold flex items-center justify-center transition" title="Đóng">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- Khung chứa ảnh Full Size kèm nút qua lại -->
+        <div class="relative flex items-center justify-center w-full max-w-4xl max-h-[80vh]" onclick="event.stopPropagation()">
+            <button type="button" id="lightbox-prev-btn" onclick="navigateLightbox(-1)" class="absolute left-2 sm:left-4 z-20 w-10 h-10 rounded-full bg-purple-950/70 hover:bg-purple-900 text-white font-bold flex items-center justify-center shadow-lg border border-white/20 transition hover:scale-110 cursor-pointer">
+                ❮
+            </button>
+
+            <img id="lightbox-full-img" src="" referrerpolicy="no-referrer" alt="Full size preview" class="max-w-full max-h-[78vh] w-auto h-auto object-contain rounded-2xl shadow-2xl border border-white/20">
+
+            <button type="button" id="lightbox-next-btn" onclick="navigateLightbox(1)" class="absolute right-2 sm:right-4 z-20 w-10 h-10 rounded-full bg-purple-950/70 hover:bg-purple-900 text-white font-bold flex items-center justify-center shadow-lg border border-white/20 transition hover:scale-110 cursor-pointer">
+                ❯
+            </button>
+        </div>
+    </div>
+
+
     <!-- ================= 5. MODAL THÊM / SỬA NHÂN VẬT (ADMIN FORM) ================= -->
     <div id="admin-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeAdminForm()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
+            <button onclick="closeAdminForm()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
             
             <h3 id="admin-form-title" class="font-script text-3xl text-purple-900 mb-4">✨ Thêm Giấc Mơ Mới</h3>
             
@@ -390,7 +448,7 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-1">Icon (Emoji, Link ảnh hoặc Chọn ảnh từ máy):</label>
+                    <label class="block font-semibold mb-1">Ảnh đại diện chính (Emoji, Link ảnh hoặc Chọn từ máy):</label>
                     <input type="text" id="form-icon" oninput="updateIconPreview()" placeholder="VD: 👔 hoặc dán link https://..." required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                     
                     <div class="mt-2 flex items-center justify-between gap-3 bg-purple-50/60 p-2.5 rounded-xl border border-purple-100">
@@ -398,7 +456,7 @@
                             <div id="form-icon-preview" class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl overflow-hidden border border-purple-200 flex-shrink-0">
                                 ✨
                             </div>
-                            <span id="form-icon-status" class="text-xs text-purple-700">Xem trước ảnh / icon</span>
+                            <span id="form-icon-status" class="text-xs text-purple-700">Xem trước ảnh đại diện</span>
                         </div>
                         <label class="cursor-pointer bg-purple-200 hover:bg-purple-300 text-purple-900 font-bold px-3 py-1.5 rounded-lg text-xs transition flex-shrink-0">
                             📁 Chọn ảnh từ máy
@@ -439,9 +497,28 @@
                     </div>
                 </div>
 
+                <!-- 👇 MỤC MỚI TRONG FORM ADMIN: THÊM KHÔNG GIỚI HẠN ẢNH VÀO ALBUM "HÌNH ẢNH GIẤC MƠ" -->
+                <div class="pt-2 border-t border-purple-100">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <label class="block font-semibold">🖼️ Album Hình ảnh giấc mơ (Không giới hạn số ảnh):</label>
+                        <div class="flex items-center gap-1.5">
+                            <label class="cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold px-3 py-1 rounded-full text-xs transition flex items-center gap-1 shadow-xs">
+                                <span>📁 Chọn nhiều ảnh từ máy</span>
+                                <input type="file" accept="image/*" multiple class="hidden" onchange="handleGalleryFilesUpload(event)">
+                            </label>
+                            <button type="button" onclick="addGalleryImageField('')" class="px-3 py-1 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition cursor-pointer" title="Thêm ô dán link ảnh">
+                                <span>+ Dán link ảnh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="form-gallery-container" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                        <!-- Các dòng ảnh trong album sẽ hiện ở đây -->
+                    </div>
+                </div>
+
                 <div class="pt-4 flex justify-end gap-3">
-                    <button type="button" onclick="closeAdminForm()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition">Hủy</button>
-                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md">Lưu Lại ✨</button>
+                    <button type="button" onclick="closeAdminForm()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md cursor-pointer">Lưu Lại ✨</button>
                 </div>
             </form>
         </div>
@@ -451,7 +528,7 @@
     <!-- ================= 6. MODAL QUẢN LÝ LINK MẠNG XÃ HỘI CỦA HUYÊN HUYÊN ================= -->
     <div id="social-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeSocialModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition">✕</button>
+            <button onclick="closeSocialModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
             
             <h3 class="font-script text-3xl text-purple-900 mb-2">✨ Liên Kết Mạng Xã Hội</h3>
             <p class="text-xs text-purple-700 mb-4">Gắn các đường dẫn mạng xã hội hoặc trang cá nhân của Huyên Huyên (bấm dấu + để thêm nhiều link):</p>
@@ -470,7 +547,7 @@
                 </div>
 
                 <div class="pt-4 flex justify-end gap-3">
-                    <button type="button" onclick="closeSocialModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition">Hủy</button>
+                    <button type="button" onclick="closeSocialModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
                     <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md cursor-pointer">Lưu Liên Kết 💜</button>
                 </div>
             </form>
@@ -480,17 +557,6 @@
 
     <!-- ================= JAVASCRIPT LOGIC & MULTI-CLOUD REALTIME SYNC ================= -->
     <script>
-        // ================= HỆ THỐNG ĐÁM MÂY ĐA TẦNG (ĐẢM BẢO LƯU & ĐỒNG BỘ THẬT 100% GIỮA LAPTOP, IPAD, ĐIỆN THOẠI) =================
-        // Sử dụng 2 kho đám mây dự phòng có kiểm tra trạng thái HTTP nghiêm ngặt (chỉ báo thành công khi server trả về status 200 OK)
-        const CLOUD_ENDPOINTS = [
-            'https://api.keyvalue.xyz/3e8f9a2b1c4d5e6f7a8b9c0d/huyenhuyen_dream_store',
-            'https://bytebin.lucko.me/huyenhuyen_dream_v2'
-        ];
-        // Kênh đồng bộ JSON trực tuyến cố định chuyên dụng cho trang của Huyên Huyên
-        const PRIMARY_SYNC_API = 'https://jsonblob.com/api/jsonBlob/1349875648392019968';
-        // Kênh phụ tự động dự phòng qua REST KV
-        const BACKUP_SYNC_API = 'https://kvdb.io/6Wa9pL3kM8vR2wQ5nZ7jB9/huyenhuyen_dreams_v2';
-
         const defaultCharacters = [
             {
                 id: 1,
@@ -499,9 +565,10 @@
                 icon: "👔",
                 shortDesc: "Vị tổng giám đốc lạnh lùng, thâm trầm nhưng sâu sắc.",
                 details: "Nam chính trưởng thành, sắc sảo trong thương trường nhưng lại có sự độc chiếm dịu dàng trong tình cảm. Sở hữu hệ thống kịch bản phân nhánh phức tạp.",
-                quote: "Em nghĩ bản thân có thể trốn thoát khỏi tầm mắt của tôi sao, Lâm Nguyệt?",
+                quote: "Quy tắc và đạo đức chỉ là xiềng xích dành cho kẻ yếu; thứ Phó Lăng Tiêu tôi đã muốn, dù phải đạp đổ mọi giới hạn cũng phải nắm gọn trong lòng bàn tay.",
                 hashtags: ["#CEO", "#Romance", "#Mature", "#CharNam"],
-                links: []
+                links: [],
+                gallery: []
             },
             {
                 id: 2,
@@ -512,7 +579,8 @@
                 details: "Nhân vật nữ được thiết kế với tâm lý chiều sâu, đối thoại thông minh và các nút thắt cảm xúc đời thường cực kỳ chân thực.",
                 quote: "Đôi khi, bình yên không phải là sở hữu tất cả, mà là học cách buông tay những điều không thuộc về mình.",
                 hashtags: ["#NữChính", "#TrảiNghiệm", "#Healing", "#CharNữ"],
-                links: []
+                links: [],
+                gallery: []
             },
             {
                 id: 3,
@@ -523,7 +591,8 @@
                 details: "Nhân vật trợ lý ảo siêu dễ thương, chuyên trò chuyện chữa lành tâm trạng và kể chuyện cổ tích trước giờ đi ngủ cho người dùng.",
                 quote: "Hôm nay bạn đã vất vả rồi, hãy thả lỏng và cùng Thỏ bay vào giấc mơ ngọt ngào nhé!",
                 hashtags: ["#Chibi", "#Mascot", "#ChữaLành"],
-                links: []
+                links: [],
+                gallery: []
             },
             {
                 id: 4,
@@ -534,7 +603,8 @@
                 details: "Bot tương tác phong cách slice-of-life, luôn chờ sẵn với ly trà sữa ấm áp và những công thức bánh ngọt xoa dịu tâm hồn.",
                 quote: "Một ngụm trà sữa, một chút ngọt ngào — mọi muộn phiền cứ để tôi lo!",
                 hashtags: ["#Sweet", "#SliceOfLife", "#QuảnGia"],
-                links: []
+                links: [],
+                gallery: []
             }
         ];
 
@@ -547,11 +617,13 @@
             }
         ];
 
-        // Khôi phục dữ liệu từ máy hiện tại (và tự động sửa link ảnh cũ bị hỏng nếu có)
         let charactersData = JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters;
         charactersData.forEach(c => {
             if (c.icon === 'https://files.catbox.moe/69gmu5.png') {
                 c.icon = '👔';
+            }
+            if (!Array.isArray(c.gallery)) {
+                c.gallery = [];
             }
         });
 
@@ -563,13 +635,17 @@
         let isAdmin = false;
         let selectedHashtags = [];
 
+        // Biến quản lý Album ảnh trong Modal chi tiết {char} & Lightbox Full Size
+        let currentModalGallery = [];
+        let currentModalGalleryPage = 0; // Mỗi trang chứa đúng 4 ảnh
+        let currentLightboxIndex = 0;
+
         window.addEventListener('DOMContentLoaded', () => {
             initSnow('snow-container', 60);
             initSnow('main-snow-container', 55);
             renderAll();
-            loadDataFromCloud(); // Tải ngay dữ liệu mới nhất khi mở trang
+            loadDataFromCloud();
 
-            // Tự động đồng bộ mỗi 8 giây để mọi thiết bị (iPad, Điện thoại, Laptop) cập nhật theo thời gian thực
             setInterval(loadDataFromCloud, 8000);
         });
 
@@ -582,26 +658,14 @@
                 : "bg-white/20 text-white px-3 py-1 rounded-full font-semibold";
         }
 
-        // Hàm đọc dữ liệu từ Đám Mây (Thử qua 3 cổng Cloud độc lập để không bao giờ bị chặn mạng ở Việt Nam)
         async function fetchCloudState() {
-            // Cổng 1: npoint / jsonstorage / patchdb thông qua दुर-key cố định
             const gateways = [
                 {
                     name: 'KVDB-Auto',
                     read: async () => {
-                        // Sử dụng bucket công khai đã kích hoạt sẵn
                         const r = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', { cache: 'no-store' });
                         if (!r.ok) throw new Error('Status ' + r.status);
                         return await r.json();
-                    },
-                    write: async (data) => {
-                        const r = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(data)
-                        });
-                        if (!r.ok) throw new Error('Status ' + r.status);
-                        return true;
                     }
                 },
                 {
@@ -612,15 +676,6 @@
                         const text = await r.text();
                         if (!text || !text.trim()) return null;
                         return JSON.parse(text);
-                    },
-                    write: async (data) => {
-                        const r = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain' },
-                            body: JSON.stringify(data)
-                        });
-                        if (!r.ok) throw new Error('Status ' + r.status);
-                        return true;
                     }
                 }
             ];
@@ -631,9 +686,7 @@
                     if (data && typeof data === 'object' && (Array.isArray(data.characters) || Array.isArray(data.whispers))) {
                         return { data, gateway: gw.name };
                     }
-                } catch (e) {
-                    // Chuyển sang cổng tiếp theo
-                }
+                } catch (e) {}
             }
             return null;
         }
@@ -641,7 +694,6 @@
         async function writeCloudState(payload) {
             let successCount = 0;
 
-            // Ghi đồng thời lên cả 2 cổng Cloud để đảm bảo iPad/iPhone mạng nào cũng đọc được
             try {
                 const r1 = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', {
                     method: 'POST',
@@ -663,11 +715,9 @@
             return successCount > 0;
         }
 
-        // Tải dữ liệu từ Đám Mây về thiết bị hiện tại
         async function loadDataFromCloud() {
             const result = await fetchCloudState();
             if (!result || !result.data) {
-                // Nếu trên Đám Mây chưa có gì mà máy hiện tại đã có dữ liệu, tự động đẩy lên Đám Mây
                 if (localUpdatedAt > 0 || charactersData.length > 0) {
                     await saveDataToCloud(false);
                 }
@@ -677,7 +727,6 @@
             const cloudData = result.data;
             const cloudTime = Number(cloudData.updatedAt) || 0;
 
-            // Hợp nhất danh sách bình luận (Whispers) để không bao giờ mất bình luận từ bất kỳ máy nào
             if (Array.isArray(cloudData.whispers)) {
                 const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
                 const mergedMap = new Map();
@@ -695,7 +744,6 @@
                 }
             }
 
-            // Nếu bản trên Đám Mây mới hơn máy hiện tại (hoặc máy hiện tại chưa từng sửa), cập nhật {char} và MXH
             if (cloudTime >= localUpdatedAt) {
                 if (Array.isArray(cloudData.characters) && cloudData.characters.length > 0) {
                     charactersData = cloudData.characters;
@@ -713,7 +761,6 @@
             renderAll();
         }
 
-        // Lưu dữ liệu từ máy hiện tại lên Đám Mây (Có kiểm tra thành công thực tế)
         async function saveDataToCloud(showAlert = false) {
             localUpdatedAt = Date.now();
             localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
@@ -737,12 +784,12 @@
             if (ok) {
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
                 if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ hình ảnh {char}, link MXH và bình luận từ máy này lên Đám Mây! Bây giờ bạn mở iPad hoặc Điện thoại tải lại trang là sẽ thấy ngay lập tức.');
+                    alert('✅ Đã đẩy toàn bộ {char}, album ảnh, link MXH và bình luận từ máy này lên Đám Mây! Bây giờ bạn mở iPad hoặc Điện thoại tải lại trang là sẽ thấy ngay lập tức.');
                 }
             } else {
-                setCloudBadge('⚠️ Lỗi mạng đám mây (Đã lưu trên máy)', true);
+                setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
                 if (showAlert) {
-                    alert('⚠️ Hiện tại đường truyền mạng đang chặn kết nối đám mây hoặc ảnh quá nặng. Hãy thử chọn lại ảnh từ máy để hệ thống nén nhẹ hơn nhé!');
+                    alert('⚠️ Đã lưu trên trình duyệt của máy này! Nếu bạn đăng quá nhiều ảnh nặng từ máy cùng lúc, hãy ưu tiên dán link ảnh Catbox để đồng bộ qua đám mây nhanh nhất nhé.');
                 }
             }
         }
@@ -820,7 +867,6 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span>Đang gửi...</span>';
 
-            // Đọc dữ liệu đám mây mới nhất trước khi thêm bình luận mới
             const latest = await fetchCloudState();
             if (latest && latest.data && Array.isArray(latest.data.whispers)) {
                 const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
@@ -944,7 +990,7 @@
             await saveDataToCloud(false);
         }
 
-        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} (TỰ ĐỘNG VƯỢT CHẶN ẢNH TRÊN ĐIỆN THOẠI/IPAD) =================
+        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} =================
         function initSnow(containerId, particleCount) {
             const snowContainer = document.getElementById(containerId);
             if (snowContainer) {
@@ -982,7 +1028,6 @@
             return s.startsWith('http://') || s.startsWith('https://') || s.startsWith('data:image/');
         }
 
-        // Xử lý khi link ảnh bị chặn trên mạng Điện thoại/iPad: Tự động thử tải qua Proxy wsrv.nl trước khi báo lỗi
         function handleCharImageError(imgEl) {
             const rawSrc = imgEl.getAttribute('data-raw-src') || '';
             if (!imgEl.dataset.retried && rawSrc.startsWith('http')) {
@@ -1115,6 +1160,11 @@
                 `;
             }
 
+            const galleryCount = Array.isArray(char.gallery) ? char.gallery.filter(u => u && u.trim()).length : 0;
+            const galleryBadge = galleryCount > 0
+                ? `<span class="text-[10px] bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full font-bold">🖼️ ${galleryCount} ảnh</span>`
+                : '';
+
             card.innerHTML = `
                 ${adminButtonsHtml}
                 <div>
@@ -1122,7 +1172,10 @@
                     <div class="square-box aspect-square w-full rounded-2xl bg-purple-100/70 mb-4 overflow-hidden flex items-center justify-center text-6xl group-hover:scale-[1.03] transition duration-300 shadow-inner">
                         ${iconHtml}
                     </div>
-                    <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full">${char.platform}</span>
+                    <div class="flex items-center justify-between gap-1 flex-wrap">
+                        <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full">${char.platform}</span>
+                        ${galleryBadge}
+                    </div>
                     <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-2">${char.name}</h3>
                     <p class="text-xs text-purple-700/80 mt-1.5 leading-relaxed">${char.shortDesc}</p>
                     <div class="flex flex-wrap gap-1 mt-3">${tagsHtml}</div>
@@ -1227,6 +1280,177 @@
             }).filter(item => item.url.length > 0);
         }
 
+        // ================= XỬ LÝ ALBUM HÌNH ẢNH GIẤC MƠ TRONG MODAL CHI TIẾT (4 ẢNH / TRANG) =================
+        function renderModalGallery() {
+            const gallerySection = document.getElementById('modal-gallery-section');
+            const galleryTitle = document.getElementById('modal-gallery-title');
+            const pageIndicator = document.getElementById('modal-gallery-page-indicator');
+            const grid = document.getElementById('modal-gallery-grid');
+            const prevBtn = document.getElementById('modal-gallery-prev');
+            const nextBtn = document.getElementById('modal-gallery-next');
+
+            const totalImages = currentModalGallery.length;
+
+            if (totalImages === 0) {
+                gallerySection.classList.add('hidden');
+                grid.innerHTML = '';
+                return;
+            }
+
+            gallerySection.classList.remove('hidden');
+            galleryTitle.innerText = `🖼️ Hình ảnh giấc mơ (${totalImages} ảnh):`;
+
+            const pageSize = 4; // Luôn cố định 4 ảnh mỗi lần hiển thị
+            const totalPages = Math.ceil(totalImages / pageSize);
+
+            if (currentModalGalleryPage >= totalPages) currentModalGalleryPage = 0;
+            if (currentModalGalleryPage < 0) currentModalGalleryPage = totalPages - 1;
+
+            if (totalPages > 1) {
+                pageIndicator.innerText = `Trang ${currentModalGalleryPage + 1} / ${totalPages}`;
+                pageIndicator.classList.remove('hidden');
+                prevBtn.classList.remove('hidden');
+                prevBtn.classList.add('flex');
+                nextBtn.classList.remove('hidden');
+                nextBtn.classList.add('flex');
+            } else {
+                pageIndicator.classList.add('hidden');
+                prevBtn.classList.add('hidden');
+                prevBtn.classList.remove('flex');
+                nextBtn.classList.add('hidden');
+                nextBtn.classList.remove('flex');
+            }
+
+            grid.innerHTML = '';
+            const startIndex = currentModalGalleryPage * pageSize;
+            const pageItems = currentModalGallery.slice(startIndex, startIndex + pageSize);
+
+            pageItems.forEach((imgUrl, idx) => {
+                const actualIndex = startIndex + idx;
+                const safeSrc = imgUrl.replace(/"/g, '&quot;');
+                const thumbWrapper = document.createElement('div');
+                thumbWrapper.className = "square-box aspect-square rounded-xl overflow-hidden bg-purple-100 border border-purple-200 shadow-xs cursor-pointer group relative";
+                thumbWrapper.onclick = () => openImageLightbox(actualIndex);
+
+                thumbWrapper.innerHTML = `
+                    <img src="${safeSrc}" data-raw-src="${safeSrc}" referrerpolicy="no-referrer" alt="Ảnh giấc mơ ${actualIndex + 1}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300" onerror="handleCharImageError(this)">
+                    <div class="absolute inset-0 bg-purple-950/0 group-hover:bg-purple-950/20 transition flex items-center justify-center">
+                        <span class="opacity-0 group-hover:opacity-100 text-white text-xs font-bold drop-shadow">🔍</span>
+                    </div>
+                `;
+                grid.appendChild(thumbWrapper);
+            });
+        }
+
+        // Bấm mũi tên phải: Chuyển hẳn sang 4 ảnh tiếp theo
+        function nextModalGalleryPage() {
+            const totalPages = Math.ceil(currentModalGallery.length / 4);
+            if (totalPages <= 1) return;
+            currentModalGalleryPage = (currentModalGalleryPage + 1) % totalPages;
+            renderModalGallery();
+        }
+
+        // Bấm mũi tên trái: Lùi hẳn về 4 ảnh trước đó
+        function prevModalGalleryPage() {
+            const totalPages = Math.ceil(currentModalGallery.length / 4);
+            if (totalPages <= 1) return;
+            currentModalGalleryPage = (currentModalGalleryPage - 1 + totalPages) % totalPages;
+            renderModalGallery();
+        }
+
+        // ================= XỬ LÝ LIGHTBOX XEM ẢNH FULL SIZE & TẢI ẢNH VỀ MÁY =================
+        function openImageLightbox(index) {
+            if (!currentModalGallery || currentModalGallery.length === 0) return;
+            currentLightboxIndex = index;
+            updateLightboxView();
+            document.getElementById('image-lightbox-modal').classList.remove('hidden');
+        }
+
+        function closeImageLightbox() {
+            document.getElementById('image-lightbox-modal').classList.add('hidden');
+            document.getElementById('lightbox-full-img').src = '';
+        }
+
+        function navigateLightbox(step) {
+            const total = currentModalGallery.length;
+            if (total <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex + step + total) % total;
+            updateLightboxView();
+        }
+
+        function updateLightboxView() {
+            const total = currentModalGallery.length;
+            const imgUrl = currentModalGallery[currentLightboxIndex] || '';
+            const fullImg = document.getElementById('lightbox-full-img');
+            const counter = document.getElementById('lightbox-counter');
+            const prevBtn = document.getElementById('lightbox-prev-btn');
+            const nextBtn = document.getElementById('lightbox-next-btn');
+
+            counter.innerText = `Ảnh ${currentLightboxIndex + 1} / ${total}`;
+            fullImg.removeAttribute('data-retried');
+            fullImg.setAttribute('data-raw-src', imgUrl);
+            fullImg.onerror = function() {
+                if (!this.dataset.retried && imgUrl.startsWith('http')) {
+                    this.dataset.retried = '1';
+                    this.src = 'https://wsrv.nl/?url=' + encodeURIComponent(imgUrl);
+                }
+            };
+            fullImg.src = imgUrl;
+
+            if (total > 1) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        // Tải ảnh đang xem ở chế độ Full Size về máy (Hỗ trợ cả DataURL lẫn Link ảnh bên ngoài)
+        async function downloadCurrentLightboxImage() {
+            const imgUrl = currentModalGallery[currentLightboxIndex];
+            if (!imgUrl) return;
+
+            const btn = document.getElementById('lightbox-download-btn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span>⏳ Đang tải...</span>';
+            btn.disabled = true;
+
+            const fileName = `giac-mo-huyen-huyen-${currentLightboxIndex + 1}.jpg`;
+
+            try {
+                if (imgUrl.startsWith('data:image/')) {
+                    const a = document.createElement('a');
+                    a.href = imgUrl;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    // Tải qua proxy wsrv để tránh lỗi chặn CORS khi lưu file trực tiếp về máy
+                    const fetchUrl = 'https://wsrv.nl/?url=' + encodeURIComponent(imgUrl) + '&output=jpg';
+                    const response = await fetch(fetchUrl);
+                    if (!response.ok) throw new Error('Network error');
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+                }
+            } catch (err) {
+                // Nếu trình duyệt di động chặn tải tự động, mở thẳng ảnh gốc ở tab mới để người dùng nhấn giữ lưu ảnh
+                window.open(imgUrl, '_blank');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
         function openModal(id) {
             const char = charactersData.find(c => c.id === id);
             if (!char) return;
@@ -1259,6 +1483,13 @@
                 linksSection.classList.add('hidden');
                 linksBox.innerHTML = '';
             }
+
+            // Khởi tạo dữ liệu Album ảnh của {char} đang mở
+            currentModalGallery = Array.isArray(char.gallery)
+                ? char.gallery.map(u => (u || '').trim()).filter(u => u.length > 0)
+                : [];
+            currentModalGalleryPage = 0;
+            renderModalGallery();
 
             const modal = document.getElementById('char-modal');
             const box = document.getElementById('modal-content-box');
@@ -1302,9 +1533,8 @@
                 document.getElementById('edit-social-btn').classList.remove('hidden');
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
-                // Khi Huyên Huyên đăng nhập trên máy đang có dữ liệu mới, đẩy thẳng dữ liệu đó lên Đám Mây
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Dữ liệu trên máy này đã được đồng bộ lên Đám Mây cho iPad & Điện thoại.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể thêm ảnh vào Album của từng {char}, gắn link MXH và quản lý bình luận.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
@@ -1332,7 +1562,6 @@
             }
         }
 
-        // Nén ảnh vuông 300x300 sắc nét và cực nhẹ để đồng bộ qua Đám Mây tức thì sang iPhone / iPad
         function handleImageFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1347,7 +1576,6 @@
                     canvas.height = targetSize;
                     const ctx = canvas.getContext('2d');
 
-                    // Cắt chính giữa ảnh theo tỷ lệ vuông 1:1 để không bị méo hình
                     const minSide = Math.min(img.width, img.height);
                     const sx = (img.width - minSide) / 2;
                     const sy = (img.height - minSide) / 2;
@@ -1361,6 +1589,93 @@
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
+        }
+
+        // ================= QUẢN LÝ ALBUM ẢNH TRONG FORM THÊM/SỬA ADMIN =================
+        function addGalleryImageField(url = '') {
+            const container = document.getElementById('form-gallery-container');
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 gallery-image-row bg-purple-50/50 p-1.5 rounded-xl border border-purple-100';
+            const safeUrl = url.replace(/"/g, '&quot;');
+            
+            row.innerHTML = `
+                <div class="w-9 h-9 rounded-lg bg-purple-100 overflow-hidden flex-shrink-0 flex items-center justify-center border border-purple-200">
+                    ${url ? `<img src="${safeUrl}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="this.style.display='none'">` : '<span class="text-xs">🖼️</span>'}
+                </div>
+                <input type="text" value="${safeUrl}" oninput="updateRowThumbPreview(this)" placeholder="Dán link ảnh https://... hoặc chọn từ máy" class="gallery-image-url w-full px-3 py-1.5 rounded-lg border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs">
+                <button type="button" onclick="removeGalleryImageField(this)" class="w-7 h-7 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Xóa ảnh này">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function updateRowThumbPreview(inputEl) {
+            const val = inputEl.value.trim();
+            const thumbBox = inputEl.parentElement.querySelector('div');
+            if (isImageUrl(val)) {
+                const safeVal = val.replace(/"/g, '&quot;');
+                thumbBox.innerHTML = `<img src="${safeVal}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="if(!this.dataset.retried && '${safeVal}'.startsWith('http')){this.dataset.retried='1';this.src='https://wsrv.nl/?url='+encodeURIComponent('${safeVal}')+'&w=100&h=100&fit=cover';}">`;
+            } else {
+                thumbBox.innerHTML = '<span class="text-xs">🖼️</span>';
+            }
+        }
+
+        function removeGalleryImageField(btn) {
+            const container = document.getElementById('form-gallery-container');
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                const input = btn.parentElement.querySelector('.gallery-image-url');
+                input.value = '';
+                updateRowThumbPreview(input);
+            }
+        }
+
+        // Cho phép chọn nhiều ảnh cùng lúc từ máy vào Album (giữ nguyên tỉ lệ gốc để xem Full Size đẹp nhất)
+        function handleGalleryFilesUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+
+            const container = document.getElementById('form-gallery-container');
+            // Nếu dòng đầu tiên đang trống thì xóa đi trước khi chèn ảnh mới
+            if (container.children.length === 1) {
+                const firstInput = container.querySelector('.gallery-image-url');
+                if (firstInput && !firstInput.value.trim()) {
+                    container.innerHTML = '';
+                }
+            }
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const maxDim = 900; // Giữ nguyên tỉ lệ khung hình gốc (dọc/ngang) cho chế độ Full Size
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height && width > maxDim) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else if (height > maxDim) {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        addGalleryImageField(dataUrl);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = '';
         }
 
         function addDreamLinkField(label = '', url = '') {
@@ -1394,6 +1709,10 @@
             linksContainer.innerHTML = '';
             addDreamLinkField('Dokichat', '');
 
+            const galleryContainer = document.getElementById('form-gallery-container');
+            galleryContainer.innerHTML = '';
+            addGalleryImageField('');
+
             updateIconPreview();
             document.getElementById('admin-form-modal').classList.remove('hidden');
         }
@@ -1419,6 +1738,15 @@
                 normalized.forEach(item => addDreamLinkField(item.label, item.url));
             } else {
                 addDreamLinkField('Dokichat', '');
+            }
+
+            const galleryContainer = document.getElementById('form-gallery-container');
+            galleryContainer.innerHTML = '';
+            const existingGallery = Array.isArray(char.gallery) ? char.gallery.filter(u => u && u.trim()) : [];
+            if (existingGallery.length > 0) {
+                existingGallery.forEach(imgUrl => addGalleryImageField(imgUrl));
+            } else {
+                addGalleryImageField('');
             }
 
             updateIconPreview();
@@ -1454,14 +1782,17 @@
                 };
             }).filter(item => item.url.length > 0);
 
+            const galleryInputs = document.querySelectorAll('.gallery-image-url');
+            const gallery = Array.from(galleryInputs).map(input => input.value.trim()).filter(val => val.length > 0);
+
             if (id) {
                 const index = charactersData.findIndex(c => c.id == id);
                 if (index !== -1) {
-                    charactersData[index] = { id: Number(id), name, platform, icon, shortDesc, details, quote, hashtags, links };
+                    charactersData[index] = { id: Number(id), name, platform, icon, shortDesc, details, quote, hashtags, links, gallery };
                 }
             } else {
                 const newId = charactersData.length > 0 ? Math.max(...charactersData.map(c => c.id)) + 1 : 1;
-                charactersData.push({ id: newId, name, platform, icon, shortDesc, details, quote, hashtags, links });
+                charactersData.push({ id: newId, name, platform, icon, shortDesc, details, quote, hashtags, links, gallery });
             }
 
             closeAdminForm();
