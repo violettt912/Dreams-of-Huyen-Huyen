@@ -13,7 +13,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Fraunces & Great Vibes -->
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         @font-face {
             font-family: 'UVF Champion Script Pro';
@@ -56,6 +56,13 @@
         .square-box {
             aspect-ratio: 1 / 1;
             width: 100%;
+        }
+
+        /* Style cho mục thu gọn giống hình 3 */
+        .dream-accordion-line {
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(147, 51, 234, 0.35), rgba(147, 51, 234, 0.03));
         }
     </style>
 </head>
@@ -129,7 +136,7 @@
             <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, album ảnh, trả lời bình luận đều được đồng bộ trực tuyến!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể thêm/sửa {char}, trả lời bình luận thì thầm và đồng bộ trực tuyến!</span>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
@@ -141,7 +148,7 @@
         </div>
 
         <!-- MAIN CONTENT VIEW -->
-        <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full space-y-16 relative z-10">
+        <main class="max-w-5xl mx-auto px-6 py-10 flex-grow w-full space-y-16 relative z-10">
 
             <!-- VIEW 1: TRANG CHỦ -->
             <div id="home-view" class="space-y-16">
@@ -176,19 +183,16 @@
                     </div>
                 </section>
 
-                <!-- Gallery Section (Hiển thị 4 {char} mỗi trang + Nút qua trái/phải chuyển hẳn 4 {char} + Hiện số trang 1/6) -->
+                <!-- Gallery Section (Hiển thị 4 {char} mỗi trang + Số trang 1/6 + Chuyển 4 {char} mỗi lần bấm) -->
                 <section id="gallery" class="space-y-5">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/75 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-100 shadow-xs">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
-                                <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
-                            </h2>
-                            <!-- Huy hiệu hiển thị số trang (Ví dụ: 1/6) -->
-                            <span id="char-page-indicator" class="text-xs sm:text-sm font-bold text-purple-800 bg-purple-100/90 border border-purple-200 px-3.5 py-1 rounded-full shadow-xs">
-                                1 / 1
+                        <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
+                            <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
+                        </h2>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span id="char-page-indicator" class="text-xs font-bold text-purple-800 bg-white/90 border border-purple-200 px-3.5 py-1.5 rounded-full shadow-xs">
+                                Trang 1/1
                             </span>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
                             <button id="home-add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md cursor-pointer">
                                 + Thêm Giấc Mơ Mới
                             </button>
@@ -199,38 +203,54 @@
                         </div>
                     </div>
 
-                    <!-- Thanh lọc Hashtag trên Trang chủ -->
-                    <div class="bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-purple-100 shadow-xs space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-purple-800 flex items-center gap-1.5">
-                                <span>🏷️</span> Lọc giấc mơ theo Hashtag (chọn nhiều để tìm chính xác):
-                            </span>
-                            <button id="clear-filter-home" onclick="clearHashtagFilter()" class="hidden text-xs font-bold text-pink-600 hover:text-pink-700 underline cursor-pointer">
-                                ✕ Bỏ chọn hết
-                            </button>
+                    <!-- 👇 KHUNG TÌM KIẾM THEO TÊN & LỌC HASHTAG TRÊN TRANG CHỦ -->
+                    <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs space-y-4">
+                        <!-- Tìm theo tên {char} -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 border-b border-purple-100">
+                            <label for="home-search-input" class="text-xs sm:text-sm font-bold text-purple-900 flex items-center gap-1.5 flex-shrink-0">
+                                <span>🔍</span> Bạn muốn tìm giấc mơ nào?
+                            </label>
+                            <div class="relative w-full sm:max-w-xs">
+                                <input type="text" id="home-search-input" oninput="handleSearchInput(this.value)" placeholder="Nhập tên giấc mơ / nhân vật..." class="w-full pl-4 pr-9 py-2 rounded-full border border-purple-200 bg-purple-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                                <button id="clear-search-home" onclick="handleSearchInput('')" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-700 text-xs font-bold cursor-pointer" title="Xóa tìm kiếm">✕</button>
+                            </div>
                         </div>
-                        <div id="home-hashtag-bar" class="flex flex-wrap gap-2 pt-1">
-                            <!-- Render bằng JS -->
+
+                        <!-- Lọc theo Hashtag -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-purple-800 flex items-center gap-1.5">
+                                    <span>🏷️</span> Lọc giấc mơ theo Hashtag (chọn nhiều để tìm chính xác):
+                                </span>
+                                <button id="clear-filter-home" onclick="clearHashtagFilter()" class="hidden text-xs font-bold text-pink-600 hover:text-pink-700 underline cursor-pointer">
+                                    ✕ Bỏ chọn hết
+                                </button>
+                            </div>
+                            <div id="home-hashtag-bar" class="flex flex-wrap gap-2 pt-1">
+                                <!-- Render bằng JS -->
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Khung 4 ô {char} kèm nút lật trang 4 ô trước / 4 ô sau -->
                     <div class="relative flex items-center">
-                        <button id="char-prev-btn" onclick="prevSlide()" class="absolute -left-3 sm:-left-5 z-20 bg-white/95 hover:bg-purple-100 text-purple-900 w-10 h-10 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer flex items-center justify-center font-bold" title="Xem 4 giấc mơ trước">
+                        <!-- Nút mũi tên lùi 4 {char} trước -->
+                        <button id="char-prev-btn" onclick="prevSlide()" class="absolute -left-4 sm:-left-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer" title="Xem 4 giấc mơ trước">
                             ❮
                         </button>
 
-                        <div id="carousel-track" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full px-2">
-                            <!-- Render 4 ô {char} bằng JS -->
+                        <!-- Lưới hiển thị 4 {char} mỗi trang -->
+                        <div id="carousel-track" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 w-full px-2">
+                            <!-- Render bằng JS -->
                         </div>
 
-                        <button id="char-next-btn" onclick="nextSlide()" class="absolute -right-3 sm:-right-5 z-20 bg-white/95 hover:bg-purple-100 text-purple-900 w-10 h-10 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer flex items-center justify-center font-bold" title="Xem 4 giấc mơ tiếp theo">
+                        <!-- Nút mũi tên tiến 4 {char} sau -->
+                        <button id="char-next-btn" onclick="nextSlide()" class="absolute -right-4 sm:-right-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer" title="Xem 4 giấc mơ tiếp theo">
                             ❯
                         </button>
                     </div>
                 </section>
 
-                <!-- ================= PHẦN LỜI THÌ THẦM (SỔ LƯU BÚT TRỰC TUYẾN + TÍNH NĂNG ADMIN TRẢ LỜI) ================= -->
+                <!-- ================= PHẦN LỜI THÌ THẦM (SỔ LƯU BÚT TRỰC TUYẾN CHO KHÁCH GHÉ THĂM + ADMIN REPLY) ================= -->
                 <section id="diary" class="space-y-6">
                     <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
                         <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
@@ -290,22 +310,34 @@
                     </div>
                 </div>
 
-                <!-- Thanh lọc Hashtag trên Trang danh sách -->
-                <div class="bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-purple-100 shadow-xs space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-purple-800 flex items-center gap-1.5">
-                            <span>🏷️</span> Lọc giấc mơ theo Hashtag (chọn nhiều để tìm chính xác):
-                        </span>
-                        <button id="clear-filter-list" onclick="clearHashtagFilter()" class="hidden text-xs font-bold text-pink-600 hover:text-pink-700 underline cursor-pointer">
-                            ✕ Bỏ chọn hết
-                        </button>
+                <!-- KHUNG TÌM KIẾM THEO TÊN & LỌC HASHTAG TRÊN TRANG DANH SÁCH -->
+                <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 border-b border-purple-100">
+                        <label for="list-search-input" class="text-xs sm:text-sm font-bold text-purple-900 flex items-center gap-1.5 flex-shrink-0">
+                            <span>🔍</span> Bạn muốn tìm giấc mơ nào?
+                        </label>
+                        <div class="relative w-full sm:max-w-xs">
+                            <input type="text" id="list-search-input" oninput="handleSearchInput(this.value)" placeholder="Nhập tên giấc mơ / nhân vật..." class="w-full pl-4 pr-9 py-2 rounded-full border border-purple-200 bg-purple-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                            <button id="clear-search-list" onclick="handleSearchInput('')" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-700 text-xs font-bold cursor-pointer" title="Xóa tìm kiếm">✕</button>
+                        </div>
                     </div>
-                    <div id="list-hashtag-bar" class="flex flex-wrap gap-2 pt-1">
-                        <!-- Render bằng JS -->
+
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-purple-800 flex items-center gap-1.5">
+                                <span>🏷️</span> Lọc giấc mơ theo Hashtag (chọn nhiều để tìm chính xác):
+                            </span>
+                            <button id="clear-filter-list" onclick="clearHashtagFilter()" class="hidden text-xs font-bold text-pink-600 hover:text-pink-700 underline cursor-pointer">
+                                ✕ Bỏ chọn hết
+                            </button>
+                        </div>
+                        <div id="list-hashtag-bar" class="flex flex-wrap gap-2 pt-1">
+                            <!-- Render bằng JS -->
+                        </div>
                     </div>
                 </div>
 
-                <div id="full-list-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+                <div id="full-list-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                     <!-- Render bằng JS -->
                 </div>
             </div>
@@ -339,7 +371,7 @@
     </div>
 
 
-    <!-- ================= 4. MODAL POPUP CHI TIẾT NHÂN VẬT ================= -->
+    <!-- ================= 4. MODAL POPUP CHI TIẾT NHÂN VẬT (ĐÃ CẬP NHẬT BỐ CỤC MỚI & 4 MỤC THU GỌN) ================= -->
     <div id="char-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative transform transition-all scale-95 opacity-0 duration-300 max-h-[90vh] overflow-y-auto" id="modal-content-box">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
@@ -352,12 +384,69 @@
                 </div>
             </div>
 
-            <div class="space-y-3 text-sm text-purple-800/90 leading-relaxed border-t border-purple-100 pt-4">
+            <div class="space-y-3.5 text-sm text-purple-800/90 leading-relaxed border-t border-purple-100 pt-4">
+                <!-- 1. Mô tả giấc mơ (Giữ nguyên ở trên cùng) -->
                 <p><strong>🌸 Mô tả giấc mơ:</strong> <span id="modal-desc"></span></p>
-                <p><strong>✨ Tính cách & Bối cảnh:</strong> <span id="modal-details"></span></p>
-                <div id="modal-hashtags-box" class="flex flex-wrap gap-1.5 pt-1"></div>
-                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100 text-purple-900 italic text-xs sm:text-sm mt-2">
+
+                <!-- 2. Câu thoại đặc trưng (Quote - Đưa lên ngay dưới Mô tả giấc mơ) -->
+                <div id="modal-quote-box" class="bg-purple-50/90 p-4 rounded-2xl border border-purple-100 text-purple-900 italic text-xs sm:text-sm">
                     “<span id="modal-quote"></span>”
+                </div>
+
+                <!-- 3. Các nhãn Hashtag -->
+                <div id="modal-hashtags-box" class="flex flex-wrap gap-1.5 pt-0.5"></div>
+
+                <!-- 4. BỐN MỤC THU GỌN (ACCORDION GIỐNG HÌNH 3: ẤN VÀO MŨI TÊN XOAY XUỐNG & HIỆN THÔNG TIN) -->
+                <div class="space-y-2.5 pt-2">
+                    
+                    <!-- Mục 1: Thông tin chi tiết về giấc mơ -->
+                    <div class="dream-accordion-item">
+                        <button type="button" onclick="toggleDreamAccordion('acc-dream-info')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
+                            <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Thông tin chi tiết về giấc mơ</span>
+                            <span id="arrow-acc-dream-info" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
+                            <span class="dream-accordion-line"></span>
+                        </button>
+                        <div id="content-acc-dream-info" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm">
+                            <!-- Render các dòng [In đậm] + [In nghiêng] bằng JS -->
+                        </div>
+                    </div>
+
+                    <!-- Mục 2: Thông tin người mơ -->
+                    <div class="dream-accordion-item">
+                        <button type="button" onclick="toggleDreamAccordion('acc-dreamer-info')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
+                            <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Thông tin người mơ</span>
+                            <span id="arrow-acc-dreamer-info" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
+                            <span class="dream-accordion-line"></span>
+                        </button>
+                        <div id="content-acc-dreamer-info" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+
+                    <!-- Mục 3: Những người sẽ xuất hiện trong giấc mơ -->
+                    <div class="dream-accordion-item">
+                        <button type="button" onclick="toggleDreamAccordion('acc-appearing-chars')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
+                            <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Những người sẽ xuất hiện trong giấc mơ</span>
+                            <span id="arrow-acc-appearing-chars" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
+                            <span class="dream-accordion-line"></span>
+                        </button>
+                        <div id="content-acc-appearing-chars" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+
+                    <!-- Mục 4: Bối cảnh mở đầu giấc mơ -->
+                    <div class="dream-accordion-item">
+                        <button type="button" onclick="toggleDreamAccordion('acc-opening-scene')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
+                            <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Bối cảnh mở đầu giấc mơ</span>
+                            <span id="arrow-acc-opening-scene" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
+                            <span class="dream-accordion-line"></span>
+                        </button>
+                        <div id="content-acc-opening-scene" class="hidden pl-3.5 pr-3 py-3 mt-1 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm text-purple-900/90 italic whitespace-pre-line leading-relaxed">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Khu vực hiển thị các Đường vào giấc mơ -->
@@ -429,9 +518,9 @@
     </div>
 
 
-    <!-- ================= 5. MODAL THÊM / SỬA NHÂN VẬT (ADMIN FORM) ================= -->
+    <!-- ================= 5. MODAL THÊM / SỬA NHÂN VẬT (ADMIN FORM VỚI 4 MỤC MỚI) ================= -->
     <div id="admin-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-purple-200 relative max-h-[92vh] overflow-y-auto">
             <button onclick="closeAdminForm()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
             
             <h3 id="admin-form-title" class="font-script text-3xl text-purple-900 mb-4">✨ Thêm Giấc Mơ Mới</h3>
@@ -439,14 +528,16 @@
             <form id="char-form" onsubmit="handleFormSubmit(event)" class="space-y-4 text-sm text-purple-900">
                 <input type="hidden" id="form-char-id">
                 
-                <div>
-                    <label class="block font-semibold mb-1">Giấc mơ này là về:</label>
-                    <input type="text" id="form-name" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
-                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold mb-1">Giấc mơ này là về:</label>
+                        <input type="text" id="form-name" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    </div>
 
-                <div>
-                    <label class="block font-semibold mb-1">Nền tảng / Phân loại:</label>
-                    <input type="text" id="form-platform" placeholder="VD: Dokichat & GGAI" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    <div>
+                        <label class="block font-semibold mb-1">Nền tảng / Phân loại:</label>
+                        <input type="text" id="form-platform" placeholder="VD: Dokichat & GGAI" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    </div>
                 </div>
 
                 <div>
@@ -468,28 +559,80 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-1">Mô tả ngắn:</label>
+                    <label class="block font-semibold mb-1">🌸 Mô tả giấc mơ (Mô tả ngắn):</label>
                     <input type="text" id="form-shortDesc" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-1">Tính cách & Bối cảnh chi tiết:</label>
-                    <textarea id="form-details" rows="3" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400"></textarea>
-                </div>
-
-                <div>
-                    <label class="block font-semibold mb-1">Câu thoại đặc trưng (Quote):</label>
+                    <label class="block font-semibold mb-1">💬 Câu thoại đặc trưng (Quote):</label>
                     <input type="text" id="form-quote" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                 </div>
 
                 <div>
-                    <label class="block font-semibold mb-1">Hashtag (Cách nhau bằng dấu phẩy):</label>
+                    <label class="block font-semibold mb-1">🏷️ Hashtag (Cách nhau bằng dấu phẩy):</label>
                     <input type="text" id="form-hashtags" placeholder="#CEO, #Romance, #Mature" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                 </div>
 
-                <div>
+                <!-- ================= 4 MỤC THÔNG TIN MỚI THAY THẾ CHO TÍNH CÁCH & BỐI CẢNH ================= -->
+                
+                <!-- Mục 1: Thông tin chi tiết về giấc mơ (2 ô: Ô 1 in đậm, Ô 2 in nghiêng + dấu +) -->
+                <div class="pt-2 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-1.5">
-                        <label class="block font-semibold">Đường vào giấc mơ (Tên nút & Link):</label>
+                        <div>
+                            <label class="block font-bold text-purple-900">1. Thông tin chi tiết về giấc mơ:</label>
+                            <span class="text-[11px] text-purple-600">Ô 1 hiển thị <strong>In đậm</strong>, Ô 2 hiển thị <em>In nghiêng</em> (VD: Ô 1 "Tuổi:" - Ô 2 "38")</span>
+                        </div>
+                        <button type="button" onclick="addKeyValueRow('form-dream-info-container', '', '')" class="w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-base flex items-center justify-center shadow-sm transition cursor-pointer flex-shrink-0" title="Thêm dòng mới">
+                            +
+                        </button>
+                    </div>
+                    <div id="form-dream-info-container" class="space-y-2">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+
+                <!-- Mục 2: Thông tin người mơ (2 ô: Ô 1 in đậm, Ô 2 in nghiêng + dấu +) -->
+                <div class="pt-2 border-t border-purple-100">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div>
+                            <label class="block font-bold text-purple-900">2. Thông tin người mơ:</label>
+                            <span class="text-[11px] text-purple-600">Ô 1 <strong>In đậm</strong>, Ô 2 <em>In nghiêng</em> (VD: Ô 1 "Vai trò:" - Ô 2 "Thư ký riêng")</span>
+                        </div>
+                        <button type="button" onclick="addKeyValueRow('form-dreamer-info-container', '', '')" class="w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-base flex items-center justify-center shadow-sm transition cursor-pointer flex-shrink-0" title="Thêm dòng mới">
+                            +
+                        </button>
+                    </div>
+                    <div id="form-dreamer-info-container" class="space-y-2">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+
+                <!-- Mục 3: Những người sẽ xuất hiện trong giấc mơ (2 ô: Ô 1 in đậm, Ô 2 in nghiêng + dấu +) -->
+                <div class="pt-2 border-t border-purple-100">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div>
+                            <label class="block font-bold text-purple-900">3. Những người sẽ xuất hiện trong giấc mơ:</label>
+                            <span class="text-[11px] text-purple-600">Ô 1 <strong>In đậm</strong>, Ô 2 <em>In nghiêng</em> (VD: Ô 1 "Trợ lý Trần:" - Ô 2 "Cánh tay phải đắc lực")</span>
+                        </div>
+                        <button type="button" onclick="addKeyValueRow('form-appearing-chars-container', '', '')" class="w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-base flex items-center justify-center shadow-sm transition cursor-pointer flex-shrink-0" title="Thêm dòng mới">
+                            +
+                        </button>
+                    </div>
+                    <div id="form-appearing-chars-container" class="space-y-2">
+                        <!-- Render bằng JS -->
+                    </div>
+                </div>
+
+                <!-- Mục 4: Bối cảnh mở đầu giấc mơ (Ô văn bản tự do) -->
+                <div class="pt-2 border-t border-purple-100">
+                    <label class="block font-bold text-purple-900 mb-1">4. Bối cảnh mở đầu giấc mơ:</label>
+                    <textarea id="form-opening-scene" rows="3" placeholder="Nhập bối cảnh mở đầu giấc mơ..." class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 italic"></textarea>
+                </div>
+
+                <!-- Đường vào giấc mơ -->
+                <div class="pt-2 border-t border-purple-100">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block font-semibold">🔗 Đường vào giấc mơ (Tên nút & Link):</label>
                         <button type="button" onclick="addDreamLinkField('', '')" class="w-7 h-7 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-base flex items-center justify-center shadow-sm transition cursor-pointer" title="Thêm link mới">
                             +
                         </button>
@@ -499,6 +642,7 @@
                     </div>
                 </div>
 
+                <!-- MỤC ALBUM HÌNH ẢNH GIẤC MƠ -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <label class="block font-semibold">🖼️ Album Hình ảnh giấc mơ (Không giới hạn số ảnh):</label>
@@ -565,9 +709,20 @@
                 platform: "Dokichat & GGAI",
                 icon: "👔",
                 shortDesc: "Vị tổng giám đốc lạnh lùng, thâm trầm nhưng sâu sắc.",
-                details: "Nam chính trưởng thành, sắc sảo trong thương trường nhưng lại có sự độc chiếm dịu dàng trong tình cảm. Sở hữu hệ thống kịch bản phân nhánh phức tạp.",
                 quote: "Quy tắc và đạo đức chỉ là xiềng xích dành cho kẻ yếu; thứ Phó Lăng Tiêu tôi đã muốn, dù phải đạp đổ mọi giới hạn cũng phải nắm gọn trong lòng bàn tay.",
                 hashtags: ["#CEO", "#Romance", "#Mature", "#CharNam"],
+                dreamInfo: [
+                    { bold: "Tuổi:", italic: "35 tuổi" },
+                    { bold: "Thân phận:", italic: "Tổng giám đốc Tập đoàn Đế Phong" },
+                    { bold: "Tính cách:", italic: "Lạnh lùng, thâm trầm, độc chiếm cao" }
+                ],
+                dreamerInfo: [
+                    { bold: "Vai trò:", italic: "Người giữ vị trí đặc biệt bên cạnh Phó Lăng Tiêu" }
+                ],
+                appearingChars: [
+                    { bold: "Phó Lăng Tiêu:", italic: "Nam chính nắm quyền lực tối cao" }
+                ],
+                openingScene: "Trong căn phòng tổng giám đốc ngập ánh đèn vàng ấm áp nhìn ra toàn cảnh thành phố về đêm, Phó Lăng Tiêu chậm rãi xoay ly rượu vang trên tay, ánh mắt sắc lạnh dừng lại trên người bạn...",
                 links: [],
                 gallery: []
             },
@@ -577,9 +732,19 @@
                 platform: "Dokichat (32 tuổi - Nữ chính)",
                 icon: "🌙",
                 shortDesc: "Người phụ nữ tinh tế, mang vẻ đẹp dịu dàng và từng trải.",
-                details: "Nhân vật nữ được thiết kế với tâm lý chiều sâu, đối thoại thông minh và các nút thắt cảm xúc đời thường cực kỳ chân thực.",
                 quote: "Đôi khi, bình yên không phải là sở hữu tất cả, mà là học cách buông tay những điều không thuộc về mình.",
                 hashtags: ["#NữChính", "#TrảiNghiệm", "#Healing", "#CharNữ"],
+                dreamInfo: [
+                    { bold: "Tuổi:", italic: "32 tuổi" },
+                    { bold: "Khí chất:", italic: "Dịu dàng, tinh tế và sâu sắc" }
+                ],
+                dreamerInfo: [
+                    { bold: "Mối quan hệ:", italic: "Người đồng hành tâm giao" }
+                ],
+                appearingChars: [
+                    { bold: "Lâm Nguyệt:", italic: "Nữ chính dịu dàng, từng trải" }
+                ],
+                openingScene: "Một buổi chiều mưa phùn nhẹ rơi ngoài hiên quán nhỏ, Lâm Nguyệt khẽ đặt tách trà nóng xuống bàn và mỉm cười nhìn bạn...",
                 links: [],
                 gallery: []
             },
@@ -589,9 +754,19 @@
                 platform: "AI Studio (Chibi Mascot)",
                 icon: "🐰",
                 shortDesc: "Sứ giả dẫn đường đến những giấc mơ màu tím lavender.",
-                details: "Nhân vật trợ lý ảo siêu dễ thương, chuyên trò chuyện chữa lành tâm trạng và kể chuyện cổ tích trước giờ đi ngủ cho người dùng.",
                 quote: "Hôm nay bạn đã vất vả rồi, hãy thả lỏng và cùng Thỏ bay vào giấc mơ ngọt ngào nhé!",
                 hashtags: ["#Chibi", "#Mascot", "#ChữaLành"],
+                dreamInfo: [
+                    { bold: "Chủng loài:", italic: "Thỏ tiên canh gác giấc mơ" },
+                    { bold: "Sở thích:", italic: "Kể chuyện cổ tích và pha trà hoa oải hương" }
+                ],
+                dreamerInfo: [
+                    { bold: "Thân phận:", italic: "Vị khách ghé thăm lâu đài mộng mơ" }
+                ],
+                appearingChars: [
+                    { bold: "Thỏ Mây:", italic: "Sứ giả dẫn đường đáng yêu" }
+                ],
+                openingScene: "Giữa biển mây bồng bềnh sắc tím pastel, một chú thỏ nhỏ đội vương miện lấp lánh vẫy đôi tai mềm mại chào đón bạn...",
                 links: [],
                 gallery: []
             },
@@ -601,9 +776,19 @@
                 platform: "AI Studio (Interactive Companion)",
                 icon: "🧸",
                 shortDesc: "Chàng quản gia ngọt ngào chuyên pha trà và làm bánh.",
-                details: "Bot tương tác phong cách slice-of-life, luôn chờ sẵn với ly trà sữa ấm áp và những công thức bánh ngọt xoa dịu tâm hồn.",
                 quote: "Một ngụm trà sữa, một chút ngọt ngào — mọi muộn phiền cứ để tôi lo!",
                 hashtags: ["#Sweet", "#SliceOfLife", "#QuảnGia"],
+                dreamInfo: [
+                    { bold: "Công việc:", italic: "Quản gia tiệm trà sữa & bánh ngọt" },
+                    { bold: "Món tủ:", italic: "Trà sữa khoai môn kem trứng nướng" }
+                ],
+                dreamerInfo: [
+                    { bold: "Vai trò:", italic: "Chủ nhân nhỏ được cưng chiều hết mực" }
+                ],
+                appearingChars: [
+                    { bold: "Bé Gấu:", italic: "Quản gia ấm áp, chu đáo" }
+                ],
+                openingScene: "Hương thơm ngọt ngào của bơ sữa và trà mới pha lan tỏa khắp căn bếp nhỏ, Bé Gấu mỉm cười đưa cho bạn ly trà sữa trân châu ấm nóng...",
                 links: [],
                 gallery: []
             }
@@ -619,30 +804,37 @@
             }
         ];
 
-        let charactersData = JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters;
-        charactersData.forEach(c => {
+        // Chuẩn hóa dữ liệu {char} để tương thích ngược với dữ liệu cũ của Huyên Huyên
+        function normalizeCharacterObject(c) {
+            if (!c || typeof c !== 'object') return c;
             if (c.icon === 'https://files.catbox.moe/69gmu5.png') {
                 c.icon = '👔';
             }
-            if (!Array.isArray(c.gallery)) {
-                c.gallery = [];
+            if (!Array.isArray(c.gallery)) c.gallery = [];
+            if (!Array.isArray(c.links)) c.links = [];
+            if (!Array.isArray(c.dreamInfo)) {
+                c.dreamInfo = c.details ? [{ bold: "Giới thiệu:", italic: c.details }] : [];
             }
-        });
+            if (!Array.isArray(c.dreamerInfo)) c.dreamerInfo = [];
+            if (!Array.isArray(c.appearingChars)) c.appearingChars = [];
+            if (typeof c.openingScene !== 'string') c.openingScene = '';
+            return c;
+        }
 
+        let charactersData = (JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters).map(normalizeCharacterObject);
         let socialLinksData = JSON.parse(localStorage.getItem('huyen_social_links')) || [];
         let whispersData = JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers;
         let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
         
-        // Quản lý phân trang 4 {char} mỗi trang trên Trang Chủ
-        let currentCharPage = 0; 
+        let currentCharPage = 0;
         const CHARS_PER_PAGE = 4;
 
         let isAdmin = false;
         let selectedHashtags = [];
+        let searchQuery = ''; // Từ khóa tìm kiếm tên {char}
 
-        // Biến quản lý Album ảnh trong Modal chi tiết {char} & Lightbox Full Size
         let currentModalGallery = [];
-        let currentModalGalleryPage = 0; // Mỗi trang chứa đúng 4 ảnh
+        let currentModalGalleryPage = 0;
         let currentLightboxIndex = 0;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -721,11 +913,8 @@
         }
 
         async function loadDataFromCloud() {
-            // Nếu Admin đang gõ dở câu trả lời bình luận thì tạm hoãn render lại để không mất chữ đang gõ
-            const activeEl = document.activeElement;
-            if (activeEl && activeEl.classList && activeEl.classList.contains('admin-reply-input')) {
-                return;
-            }
+            const activeReplyInput = document.querySelector('.admin-reply-box:not(.hidden)');
+            if (activeReplyInput) return;
 
             const result = await fetchCloudState();
             if (!result || !result.data) {
@@ -742,17 +931,16 @@
                 const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
                 const mergedMap = new Map();
                 
-                // Hợp nhất cả bình luận lẫn câu trả lời (reply) mới nhất của Huyên Huyên
                 [...whispersData, ...cloudData.whispers].forEach(w => {
                     if (w && w.id && !deletedIds.includes(w.id)) {
                         const existing = mergedMap.get(w.id);
                         if (!existing) {
                             mergedMap.set(w.id, w);
                         } else {
-                            const existingReplyTime = Number(existing.replyUpdatedAt) || 0;
-                            const newReplyTime = Number(w.replyUpdatedAt) || 0;
-                            if (newReplyTime >= existingReplyTime && w.reply !== undefined) {
-                                mergedMap.set(w.id, { ...existing, ...w });
+                            const wReplyTime = Number(w.replyUpdatedAt) || 0;
+                            const exReplyTime = Number(existing.replyUpdatedAt) || 0;
+                            if (wReplyTime > exReplyTime || (w.reply && !existing.reply)) {
+                                mergedMap.set(w.id, w);
                             }
                         }
                     }
@@ -767,7 +955,7 @@
 
             if (cloudTime >= localUpdatedAt) {
                 if (Array.isArray(cloudData.characters) && cloudData.characters.length > 0) {
-                    charactersData = cloudData.characters;
+                    charactersData = cloudData.characters.map(normalizeCharacterObject);
                     localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
                 }
                 if (Array.isArray(cloudData.socials)) {
@@ -805,7 +993,7 @@
             if (ok) {
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
                 if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ {char}, album ảnh, link MXH và câu trả lời bình luận lên Đám Mây! Bây giờ bạn mở iPad hoặc Điện thoại tải lại trang là sẽ thấy ngay lập tức.');
+                    alert('✅ Đã đẩy toàn bộ {char}, album ảnh, link MXH và các câu trả lời bình luận lên Đám Mây!');
                 }
             } else {
                 setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
@@ -823,7 +1011,7 @@
             renderWhispers();
         }
 
-        // ================= XỬ LÝ LỜI THÌ THẦM & TÍNH NĂNG ADMIN TRẢ LỜI BÌNH LUẬN =================
+        // ================= XỬ LÝ LỜI THÌ THẦM & TRẢ LỜI BÌNH LUẬN CỦA HUYÊN HUYÊN =================
         function escapeHtml(str) {
             return String(str || '')
                 .replace(/&/g, '&amp;')
@@ -848,94 +1036,106 @@
 
             whispersData.forEach((item, index) => {
                 const article = document.createElement('article');
-                article.className = "bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition relative space-y-3";
+                article.className = "bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition relative";
 
-                const deleteBtnHtml = isAdmin
-                    ? `<button onclick="deleteWhisper(${item.id})" class="ml-2 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Xóa bình luận này">🗑️ Xóa</button>`
-                    : '';
-
-                // Hiển thị câu trả lời của Huyên Huyên (nếu có) với đúng mẫu:
-                // Huyên Huyên đã thì thầm vào giấc mơ bạn là "..." 💜
                 const hasReply = item.reply && item.reply.trim().length > 0;
-                const replyDisplayHtml = hasReply
-                    ? `
-                        <div class="mt-3 ml-3 sm:ml-6 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-purple-100/90 via-pink-50/90 to-purple-50/90 border-l-4 border-purple-500 shadow-xs flex items-start gap-2.5">
-                            <span class="text-lg leading-none select-none">🌙</span>
-                            <p class="text-xs sm:text-sm text-purple-950 font-semibold leading-relaxed">
-                                Huyên Huyên đã thì thầm vào giấc mơ bạn là <span class="text-pink-700 italic">“${escapeHtml(item.reply.trim())}”</span> 💜
-                            </p>
-                        </div>
-                    `
+
+                const adminActionsHtml = isAdmin
+                    ? `<div class="flex items-center gap-1.5 ml-2">
+                        <button onclick="toggleReplyForm(${item.id})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Trả lời bình luận này">
+                            💬 ${hasReply ? 'Sửa trả lời' : 'Trả lời'}
+                        </button>
+                        <button onclick="deleteWhisper(${item.id})" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Xóa bình luận này">
+                            🗑️ Xóa
+                        </button>
+                       </div>`
                     : '';
 
-                // Khung nhập câu trả lời chỉ dành riêng cho Huyên Huyên khi đã đăng nhập Admin
-                const safeCurrentReply = hasReply ? item.reply.trim().replace(/"/g, '&quot;') : '';
-                const adminReplyBoxHtml = isAdmin
-                    ? `
-                        <div class="pt-2 border-t border-purple-100/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <input type="text" id="reply-input-${item.id}" value="${safeCurrentReply}" placeholder="Nhập lời thì thầm trả lời ${escapeHtml(item.nickname)} (VD: yêu bạn)..." class="admin-reply-input flex-grow px-3.5 py-2 rounded-xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs text-purple-950">
+                const replyDisplayHtml = hasReply
+                    ? `<div class="mt-3.5 ml-3 sm:ml-6 p-3.5 rounded-2xl bg-gradient-to-r from-purple-100/90 via-pink-50/90 to-purple-50/90 border border-purple-200/80 shadow-xs flex items-start justify-between gap-2">
+                        <p class="text-xs sm:text-sm text-purple-900 font-semibold italic leading-relaxed">
+                            <span class="not-italic">🌙</span> Huyên Huyên đã thì thầm vào giấc mơ bạn là “<span class="text-pink-700 font-bold">${escapeHtml(item.reply.trim())}</span>” <span class="not-italic">💜</span>
+                        </p>
+                        ${isAdmin ? `<button onclick="removeWhisperReply(${item.id})" class="text-[11px] text-pink-500 hover:text-pink-700 font-bold flex-shrink-0 cursor-pointer" title="Xóa câu trả lời này">✕</button>` : ''}
+                       </div>`
+                    : '';
+
+                const replyFormHtml = isAdmin
+                    ? `<div id="reply-box-${item.id}" class="admin-reply-box hidden mt-3 ml-3 sm:ml-6 pt-3 border-t border-purple-100">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <input type="text" id="reply-input-${item.id}" value="${escapeHtml(item.reply || '')}" placeholder="Nhập lời thì thầm gửi lại ${escapeHtml(item.nickname)} (VD: yêu bạn)..." class="w-full px-4 py-2 rounded-full border border-purple-300 bg-purple-50/60 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
                             <div class="flex items-center gap-1.5 flex-shrink-0">
-                                <button type="button" onclick="saveWhisperReply(${item.id})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1">
-                                    <span>💬</span> <span>${hasReply ? 'Cập nhật trả lời' : 'Trả lời'}</span>
+                                <button type="button" onclick="saveWhisperReply(${item.id})" class="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold px-4 py-2 rounded-full text-xs shadow-sm transition cursor-pointer">
+                                    Gửi trả lời 💜
                                 </button>
-                                ${hasReply ? `<button type="button" onclick="clearWhisperReply(${item.id})" class="bg-pink-100 hover:bg-pink-200 text-pink-700 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer" title="Xóa câu trả lời">✕</button>` : ''}
+                                <button type="button" onclick="toggleReplyForm(${item.id})" class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold px-3 py-2 rounded-full text-xs transition cursor-pointer">
+                                    Hủy
+                                </button>
                             </div>
                         </div>
-                    `
+                       </div>`
                     : '';
 
                 article.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between mb-2 gap-2">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-pink-700 font-bold bg-pink-100/90 px-3 py-1 rounded-full flex items-center gap-1">
-                                    <span>✨</span> <span>${escapeHtml(item.nickname)}</span>
-                                </span>
-                                <span class="text-[11px] text-purple-400 font-semibold">#${whispersData.length - index}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="text-xs text-purple-400 font-semibold">${escapeHtml(item.date)}</span>
-                                ${deleteBtnHtml}
-                            </div>
+                    <div class="flex flex-wrap items-center justify-between mb-2 gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-pink-700 font-bold bg-pink-100/90 px-3 py-1 rounded-full flex items-center gap-1">
+                                <span>✨</span> <span>${escapeHtml(item.nickname)}</span>
+                            </span>
+                            <span class="text-[11px] text-purple-400 font-semibold">#${whispersData.length - index}</span>
                         </div>
-                        <p class="text-sm text-purple-900/90 leading-relaxed italic pl-1">
-                            “${escapeHtml(item.message)}”
-                        </p>
-                        ${replyDisplayHtml}
+                        <div class="flex items-center">
+                            <span class="text-xs text-purple-400 font-semibold">${escapeHtml(item.date)}</span>
+                            ${adminActionsHtml}
+                        </div>
                     </div>
-                    ${adminReplyBoxHtml}
+                    <p class="text-sm text-purple-900/90 leading-relaxed italic pl-1">
+                        “${escapeHtml(item.message)}”
+                    </p>
+                    ${replyDisplayHtml}
+                    ${replyFormHtml}
                 `;
                 container.appendChild(article);
             });
         }
 
-        // Lưu câu trả lời của Huyên Huyên cho bình luận
-        async function saveWhisperReply(id) {
+        function toggleReplyForm(whisperId) {
+            const box = document.getElementById(`reply-box-${whisperId}`);
+            if (!box) return;
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                const input = document.getElementById(`reply-input-${whisperId}`);
+                if (input) input.focus();
+            }
+        }
+
+        async function saveWhisperReply(whisperId) {
             if (!isAdmin) return;
-            const inputEl = document.getElementById(`reply-input-${id}`);
-            if (!inputEl) return;
+            const input = document.getElementById(`reply-input-${whisperId}`);
+            if (!input) return;
 
-            const replyText = inputEl.value.trim();
-            const itemIndex = whispersData.findIndex(w => w.id === id);
-            if (itemIndex === -1) return;
+            const replyText = input.value.trim();
+            const target = whispersData.find(w => w.id === whisperId);
+            if (!target) return;
 
-            whispersData[itemIndex].reply = replyText;
-            whispersData[itemIndex].replyUpdatedAt = Date.now();
+            target.reply = replyText;
+            target.replyUpdatedAt = Date.now();
 
             renderWhispers();
             await saveDataToCloud(false);
         }
 
-        async function clearWhisperReply(id) {
+        async function removeWhisperReply(whisperId) {
             if (!isAdmin) return;
-            const itemIndex = whispersData.findIndex(w => w.id === id);
-            if (itemIndex === -1) return;
-
-            whispersData[itemIndex].reply = '';
-            whispersData[itemIndex].replyUpdatedAt = Date.now();
-
-            renderWhispers();
-            await saveDataToCloud(false);
+            if (confirm("Huyên Huyên muốn xóa câu trả lời này phải không?")) {
+                const target = whispersData.find(w => w.id === whisperId);
+                if (target) {
+                    target.reply = "";
+                    target.replyUpdatedAt = Date.now();
+                    renderWhispers();
+                    await saveDataToCloud(false);
+                }
+            }
         }
 
         async function handleWhisperSubmit(e) {
@@ -956,7 +1156,12 @@
                 const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
                 const mergedMap = new Map();
                 [...whispersData, ...latest.data.whispers].forEach(w => {
-                    if (w && w.id && !deletedIds.includes(w.id)) mergedMap.set(w.id, w);
+                    if (w && w.id && !deletedIds.includes(w.id)) {
+                        const ex = mergedMap.get(w.id);
+                        if (!ex || (Number(w.replyUpdatedAt) || 0) >= (Number(ex.replyUpdatedAt) || 0)) {
+                            mergedMap.set(w.id, w);
+                        }
+                    }
                 });
                 whispersData = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
             }
@@ -1076,7 +1281,7 @@
             await saveDataToCloud(false);
         }
 
-        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} (4 Ô / TRANG + SỐ TRANG 1/6) =================
+        // ================= TÌM KIẾM THEO TÊN & LỌC HASHTAG =================
         function initSnow(containerId, particleCount) {
             const snowContainer = document.getElementById(containerId);
             if (snowContainer) {
@@ -1152,11 +1357,39 @@
             return Array.from(tagMap.values());
         }
 
-        function getFilteredCharacters() {
-            if (selectedHashtags.length === 0) {
-                return charactersData;
+        // Xử lý khi người dùng nhập tên giấc mơ vào ô "Bạn muốn tìm giấc mơ nào?"
+        function handleSearchInput(val) {
+            searchQuery = (val || '').trim();
+            
+            const homeInput = document.getElementById('home-search-input');
+            const listInput = document.getElementById('list-search-input');
+            const clearHome = document.getElementById('clear-search-home');
+            const clearList = document.getElementById('clear-search-list');
+
+            if (homeInput && homeInput.value !== val) homeInput.value = val;
+            if (listInput && listInput.value !== val) listInput.value = val;
+
+            if (searchQuery.length > 0) {
+                if (clearHome) clearHome.classList.remove('hidden');
+                if (clearList) clearList.classList.remove('hidden');
+            } else {
+                if (clearHome) clearHome.classList.add('hidden');
+                if (clearList) clearList.classList.add('hidden');
             }
+
+            currentCharPage = 0;
+            renderCarousel();
+            renderFullList();
+        }
+
+        // Lọc kết hợp cả Tên giấc mơ + Tất cả các Hashtag đang chọn
+        function getFilteredCharacters() {
+            const q = searchQuery.toLowerCase();
             return charactersData.filter(char => {
+                const matchName = !q || (char.name || '').toLowerCase().includes(q);
+                if (!matchName) return false;
+
+                if (selectedHashtags.length === 0) return true;
                 const charTagsLower = (char.hashtags || []).map(t => t.trim().toLowerCase());
                 return selectedHashtags.every(selTag => charTagsLower.includes(selTag.toLowerCase()));
             });
@@ -1176,6 +1409,7 @@
 
         function clearHashtagFilter() {
             selectedHashtags = [];
+            handleSearchInput('');
             currentCharPage = 0;
             renderAll();
         }
@@ -1205,7 +1439,11 @@
                     ? "px-3 py-1 rounded-full text-xs font-bold bg-purple-600 text-white shadow-sm transition cursor-pointer"
                     : "px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
                 allBtn.innerText = "Tất cả ✨";
-                allBtn.onclick = () => clearHashtagFilter();
+                allBtn.onclick = () => {
+                    selectedHashtags = [];
+                    currentCharPage = 0;
+                    renderAll();
+                };
                 container.appendChild(allBtn);
 
                 allTags.forEach(tag => {
@@ -1239,9 +1477,9 @@
             let adminButtonsHtml = '';
             if (isAdmin) {
                 adminButtonsHtml = `
-                    <div class="absolute top-3 right-3 z-20 flex gap-1.5" onclick="event.stopPropagation()">
-                        <button onclick="openEditModal(${char.id})" class="bg-blue-500 hover:bg-blue-600 text-white p-1.5 sm:p-2 rounded-full text-xs shadow-md cursor-pointer" title="Sửa">✏️</button>
-                        <button onclick="deleteCharacter(${char.id})" class="bg-pink-500 hover:bg-pink-600 text-white p-1.5 sm:p-2 rounded-full text-xs shadow-md cursor-pointer" title="Xóa">🗑️</button>
+                    <div class="absolute top-3.5 right-3.5 z-20 flex gap-1.5" onclick="event.stopPropagation()">
+                        <button onclick="openEditModal(${char.id})" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full text-xs shadow-md cursor-pointer" title="Sửa">✏️</button>
+                        <button onclick="deleteCharacter(${char.id})" class="bg-pink-500 hover:bg-pink-600 text-white p-2 rounded-full text-xs shadow-md cursor-pointer" title="Xóa">🗑️</button>
                     </div>
                 `;
             }
@@ -1255,18 +1493,18 @@
                 ${adminButtonsHtml}
                 <div>
                     <!-- Khung ảnh cố định hình vuông 1:1 bo góc trên cả Điện thoại, iPad và Laptop -->
-                    <div class="square-box aspect-square w-full rounded-2xl bg-purple-100/70 mb-3.5 overflow-hidden flex items-center justify-center text-5xl sm:text-6xl group-hover:scale-[1.03] transition duration-300 shadow-inner">
+                    <div class="square-box aspect-square w-full rounded-2xl bg-purple-100/70 mb-3.5 overflow-hidden flex items-center justify-center text-6xl group-hover:scale-[1.03] transition duration-300 shadow-inner">
                         ${iconHtml}
                     </div>
                     <div class="flex items-center justify-between gap-1 flex-wrap">
                         <span class="text-[11px] font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">${char.platform}</span>
                         ${galleryBadge}
                     </div>
-                    <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-1.5 leading-tight">${char.name}</h3>
-                    <p class="text-xs text-purple-700/80 mt-1 leading-relaxed line-clamp-2">${char.shortDesc}</p>
+                    <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-2">${char.name}</h3>
+                    <p class="text-xs text-purple-700/80 mt-1 leading-relaxed">${char.shortDesc}</p>
                     <div class="flex flex-wrap gap-1 mt-2.5">${tagsHtml}</div>
                 </div>
-                <div class="mt-3.5 pt-2.5 border-t border-purple-50 flex items-center justify-between text-[11px] sm:text-xs font-semibold text-purple-600">
+                <div class="mt-4 pt-3 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-600">
                     <span>Chạm để khám phá</span>
                     <span class="group-hover:translate-x-1 transition">✨</span>
                 </div>
@@ -1274,7 +1512,6 @@
             return card;
         }
 
-        // Render 4 ô {char} mỗi trang trên Trang Chủ + Hiển thị số trang (VD: 1 / 6)
         function renderCarousel() {
             const track = document.getElementById('carousel-track');
             const pageIndicator = document.getElementById('char-page-indicator');
@@ -1283,11 +1520,11 @@
             const filteredChars = getFilteredCharacters();
 
             if (filteredChars.length === 0) {
-                if (pageIndicator) pageIndicator.innerText = '0 / 0';
+                pageIndicator.innerText = 'Trang 0/0';
                 track.innerHTML = `
-                    <div class="col-span-2 lg:col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
-                        <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào có đủ các hashtag đang chọn rồi 🥺💜</p>
-                        <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition">Xem lại tất cả giấc mơ</button>
+                    <div class="col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
+                        <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào khớp với tìm kiếm của bạn rồi 🥺💜</p>
+                        <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition cursor-pointer">Xem lại tất cả giấc mơ</button>
                     </div>`;
                 return;
             }
@@ -1296,9 +1533,7 @@
             if (currentCharPage >= totalPages) currentCharPage = 0;
             if (currentCharPage < 0) currentCharPage = totalPages - 1;
 
-            if (pageIndicator) {
-                pageIndicator.innerText = `Trang ${currentCharPage + 1} / ${totalPages}`;
-            }
+            pageIndicator.innerText = `Trang ${currentCharPage + 1}/${totalPages}`;
 
             const startIndex = currentCharPage * CHARS_PER_PAGE;
             const pageChars = filteredChars.slice(startIndex, startIndex + CHARS_PER_PAGE);
@@ -1308,7 +1543,6 @@
             });
         }
 
-        // Bấm mũi tên phải: Lật sang 4 {char} tiếp theo
         function nextSlide() {
             const filteredChars = getFilteredCharacters();
             const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
@@ -1317,7 +1551,6 @@
             renderCarousel();
         }
 
-        // Bấm mũi tên trái: Lật về 4 {char} trước đó
         function prevSlide() {
             const filteredChars = getFilteredCharacters();
             const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
@@ -1334,9 +1567,9 @@
 
             if (filteredChars.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-2 sm:col-span-3 lg:col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
-                        <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào có đủ các hashtag đang chọn rồi 🥺💜</p>
-                        <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition">Xem lại tất cả giấc mơ</button>
+                    <div class="col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
+                        <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào khớp với tìm kiếm của bạn rồi 🥺💜</p>
+                        <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition cursor-pointer">Xem lại tất cả giấc mơ</button>
                     </div>`;
                 return;
             }
@@ -1382,6 +1615,45 @@
             }).filter(item => item.url.length > 0);
         }
 
+        // ================= XỬ LÝ 4 MỤC THU GỌN (ACCORDION) TRONG MODAL CHI TIẾT {CHAR} =================
+        function toggleDreamAccordion(sectionKey) {
+            const contentEl = document.getElementById(`content-${sectionKey}`);
+            const arrowEl = document.getElementById(`arrow-${sectionKey}`);
+            if (!contentEl || !arrowEl) return;
+
+            const isHidden = contentEl.classList.contains('hidden');
+            if (isHidden) {
+                contentEl.classList.remove('hidden');
+                arrowEl.innerText = '▾'; // Mũi tên hướng xuống khi mở ra
+            } else {
+                contentEl.classList.add('hidden');
+                arrowEl.innerText = '▸'; // Mũi tên hướng sang phải khi thu gọn
+            }
+        }
+
+        function renderKeyValueAccordionList(containerId, items) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const validItems = Array.isArray(items)
+                ? items.filter(it => it && ((it.bold && it.bold.trim()) || (it.italic && it.italic.trim())))
+                : [];
+
+            if (validItems.length === 0) {
+                container.innerHTML = `<p class="text-purple-400 italic text-xs">Chưa có thông tin chi tiết cho mục này ✨</p>`;
+                return;
+            }
+
+            container.innerHTML = validItems.map(it => {
+                const bText = escapeHtml((it.bold || '').trim());
+                const iText = escapeHtml((it.italic || '').trim());
+                return `<div class="leading-relaxed text-purple-950">
+                    ${bText ? `<strong class="font-bold text-purple-900 mr-1.5">${bText}</strong>` : ''}
+                    ${iText ? `<em class="italic text-purple-800/95">${iText}</em>` : ''}
+                </div>`;
+            }).join('');
+        }
+
         // ================= XỬ LÝ ALBUM HÌNH ẢNH GIẤC MƠ TRONG MODAL CHI TIẾT (4 ẢNH / TRANG) =================
         function renderModalGallery() {
             const gallerySection = document.getElementById('modal-gallery-section');
@@ -1402,7 +1674,7 @@
             gallerySection.classList.remove('hidden');
             galleryTitle.innerText = `🖼️ Hình ảnh giấc mơ (${totalImages} ảnh):`;
 
-            const pageSize = 4; // Luôn cố định 4 ảnh mỗi lần hiển thị
+            const pageSize = 4;
             const totalPages = Math.ceil(totalImages / pageSize);
 
             if (currentModalGalleryPage >= totalPages) currentModalGalleryPage = 0;
@@ -1416,6 +1688,7 @@
                 nextBtn.classList.remove('hidden');
                 nextBtn.classList.add('flex');
             } else {
+                pageIndicator.innerText = 'Trang 1 / 1';
                 pageIndicator.classList.add('hidden');
                 prevBtn.classList.add('hidden');
                 prevBtn.classList.remove('flex');
@@ -1556,12 +1829,31 @@
             document.getElementById('modal-platform').innerText = char.platform;
             document.getElementById('modal-name').innerText = char.name;
             document.getElementById('modal-desc').innerText = char.shortDesc;
-            document.getElementById('modal-details').innerText = char.details;
             document.getElementById('modal-quote').innerText = char.quote;
 
             const tagsBox = document.getElementById('modal-hashtags-box');
             tagsBox.innerHTML = (char.hashtags || []).map(tag => `<span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-semibold">${tag}</span>`).join('');
 
+            // Đổ dữ liệu vào 4 mục thu gọn và đặt trạng thái mặc định là thu gọn (mũi tên ▸)
+            renderKeyValueAccordionList('content-acc-dream-info', char.dreamInfo);
+            renderKeyValueAccordionList('content-acc-dreamer-info', char.dreamerInfo);
+            renderKeyValueAccordionList('content-acc-appearing-chars', char.appearingChars);
+
+            const openingEl = document.getElementById('content-acc-opening-scene');
+            if (char.openingScene && char.openingScene.trim()) {
+                openingEl.innerText = char.openingScene.trim();
+            } else {
+                openingEl.innerHTML = `<span class="text-purple-400 text-xs">Chưa có bối cảnh mở đầu cho giấc mơ này ✨</span>`;
+            }
+
+            ['acc-dream-info', 'acc-dreamer-info', 'acc-appearing-chars', 'acc-opening-scene'].forEach(key => {
+                const cEl = document.getElementById(`content-${key}`);
+                const aEl = document.getElementById(`arrow-${key}`);
+                if (cEl) cEl.classList.add('hidden');
+                if (aEl) aEl.innerText = '▸';
+            });
+
+            // Hiển thị các nút Đường vào giấc mơ
             const linksSection = document.getElementById('modal-links-section');
             const linksBox = document.getElementById('modal-links-box');
             const validLinks = normalizeLinks(char.links);
@@ -1630,7 +1922,7 @@
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể sửa {char}, thêm ảnh Album và trả lời các bình luận ở mục Lời thì thầm.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể thêm/sửa {char} với 4 mục thu gọn mới và trả lời bình luận nhé.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
@@ -1685,6 +1977,41 @@
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
+        }
+
+        // ================= QUẢN LÝ CÁC CẶP Ô [IN ĐẬM] + [IN NGHIÊNG] TRONG FORM ADMIN =================
+        function addKeyValueRow(containerId, boldVal = '', italicVal = '') {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 kv-pair-row';
+            row.innerHTML = `
+                <input type="text" value="${boldVal.replace(/"/g, '&quot;')}" placeholder="Ô 1 - In đậm (VD: Tuổi:)" class="kv-bold-input w-2/5 px-3 py-2 rounded-xl border border-purple-200 bg-purple-50/40 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                <input type="text" value="${italicVal.replace(/"/g, '&quot;')}" placeholder="Ô 2 - In nghiêng (VD: 38)" class="kv-italic-input w-3/5 px-3 py-2 rounded-xl border border-purple-200 bg-purple-50/40 italic focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-900">
+                <button type="button" onclick="removeKeyValueRow(this, '${containerId}')" class="w-8 h-8 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Xóa dòng này">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeKeyValueRow(btn, containerId) {
+            const container = document.getElementById(containerId);
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                btn.parentElement.querySelector('.kv-bold-input').value = '';
+                btn.parentElement.querySelector('.kv-italic-input').value = '';
+            }
+        }
+
+        function collectKeyValueRows(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return [];
+            const rows = container.querySelectorAll('.kv-pair-row');
+            return Array.from(rows).map(row => ({
+                bold: row.querySelector('.kv-bold-input').value.trim(),
+                italic: row.querySelector('.kv-italic-input').value.trim()
+            })).filter(item => item.bold.length > 0 || item.italic.length > 0);
         }
 
         // ================= QUẢN LÝ ALBUM ẢNH TRONG FORM THÊM/SỬA ADMIN =================
@@ -1799,6 +2126,17 @@
             document.getElementById('char-form').reset();
             document.getElementById('form-char-id').value = '';
             
+            document.getElementById('form-dream-info-container').innerHTML = '';
+            addKeyValueRow('form-dream-info-container', 'Tuổi:', '');
+
+            document.getElementById('form-dreamer-info-container').innerHTML = '';
+            addKeyValueRow('form-dreamer-info-container', 'Vai trò:', '');
+
+            document.getElementById('form-appearing-chars-container').innerHTML = '';
+            addKeyValueRow('form-appearing-chars-container', '', '');
+
+            document.getElementById('form-opening-scene').value = '';
+
             const linksContainer = document.getElementById('form-links-container');
             linksContainer.innerHTML = '';
             addDreamLinkField('Dokichat', '');
@@ -1821,9 +2159,38 @@
             document.getElementById('form-platform').value = char.platform;
             document.getElementById('form-icon').value = char.icon;
             document.getElementById('form-shortDesc').value = char.shortDesc;
-            document.getElementById('form-details').value = char.details;
             document.getElementById('form-quote').value = char.quote;
             document.getElementById('form-hashtags').value = (char.hashtags || []).join(', ');
+
+            // Mục 1: Thông tin chi tiết về giấc mơ
+            const dreamInfoContainer = document.getElementById('form-dream-info-container');
+            dreamInfoContainer.innerHTML = '';
+            if (Array.isArray(char.dreamInfo) && char.dreamInfo.length > 0) {
+                char.dreamInfo.forEach(item => addKeyValueRow('form-dream-info-container', item.bold || '', item.italic || ''));
+            } else {
+                addKeyValueRow('form-dream-info-container', 'Tuổi:', '');
+            }
+
+            // Mục 2: Thông tin người mơ
+            const dreamerInfoContainer = document.getElementById('form-dreamer-info-container');
+            dreamerInfoContainer.innerHTML = '';
+            if (Array.isArray(char.dreamerInfo) && char.dreamerInfo.length > 0) {
+                char.dreamerInfo.forEach(item => addKeyValueRow('form-dreamer-info-container', item.bold || '', item.italic || ''));
+            } else {
+                addKeyValueRow('form-dreamer-info-container', 'Vai trò:', '');
+            }
+
+            // Mục 3: Những người sẽ xuất hiện trong giấc mơ
+            const appearingContainer = document.getElementById('form-appearing-chars-container');
+            appearingContainer.innerHTML = '';
+            if (Array.isArray(char.appearingChars) && char.appearingChars.length > 0) {
+                char.appearingChars.forEach(item => addKeyValueRow('form-appearing-chars-container', item.bold || '', item.italic || ''));
+            } else {
+                addKeyValueRow('form-appearing-chars-container', '', '');
+            }
+
+            // Mục 4: Bối cảnh mở đầu giấc mơ
+            document.getElementById('form-opening-scene').value = char.openingScene || '';
 
             const linksContainer = document.getElementById('form-links-container');
             linksContainer.innerHTML = '';
@@ -1858,7 +2225,6 @@
             const platform = document.getElementById('form-platform').value.trim();
             const icon = document.getElementById('form-icon').value.trim();
             const shortDesc = document.getElementById('form-shortDesc').value.trim();
-            const details = document.getElementById('form-details').value.trim();
             const quote = document.getElementById('form-quote').value.trim();
             const hashtagsRaw = document.getElementById('form-hashtags').value;
             
@@ -1867,6 +2233,11 @@
                 if (!tag) return '';
                 return tag.startsWith('#') ? tag : '#' + tag;
             }).filter(tag => tag.length > 1);
+
+            const dreamInfo = collectKeyValueRows('form-dream-info-container');
+            const dreamerInfo = collectKeyValueRows('form-dreamer-info-container');
+            const appearingChars = collectKeyValueRows('form-appearing-chars-container');
+            const openingScene = document.getElementById('form-opening-scene').value.trim();
 
             const linkRows = document.querySelectorAll('.dream-link-row');
             const links = Array.from(linkRows).map(row => {
@@ -1879,14 +2250,29 @@
             const galleryInputs = document.querySelectorAll('.gallery-image-url');
             const gallery = Array.from(galleryInputs).map(input => input.value.trim()).filter(val => val.length > 0);
 
+            const charPayload = {
+                id: id ? Number(id) : (charactersData.length > 0 ? Math.max(...charactersData.map(c => c.id)) + 1 : 1),
+                name,
+                platform,
+                icon,
+                shortDesc,
+                quote,
+                hashtags,
+                dreamInfo,
+                dreamerInfo,
+                appearingChars,
+                openingScene,
+                links,
+                gallery
+            };
+
             if (id) {
                 const index = charactersData.findIndex(c => c.id == id);
                 if (index !== -1) {
-                    charactersData[index] = { id: Number(id), name, platform, icon, shortDesc, details, quote, hashtags, links, gallery };
+                    charactersData[index] = charPayload;
                 }
             } else {
-                const newId = charactersData.length > 0 ? Math.max(...charactersData.map(c => c.id)) + 1 : 1;
-                charactersData.push({ id: newId, name, platform, icon, shortDesc, details, quote, hashtags, links, gallery });
+                charactersData.push(charPayload);
             }
 
             closeAdminForm();
