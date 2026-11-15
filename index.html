@@ -111,7 +111,7 @@
 
         <!-- Header / Navigation (Giữ nguyên icon trăng khuyết 🌙 ở góc trái) -->
         <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
-            <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
+            <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
                 <a href="#" onclick="openPasswordModal(event)" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
                     <span class="group-hover:scale-110 transition duration-300">🌙</span> 
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
@@ -126,10 +126,10 @@
 
         <!-- Thanh trạng thái Admin (Chỉ hiện khi đăng nhập đúng pass) -->
         <div id="admin-sync-banner" class="hidden bg-gradient-to-r from-purple-900 via-purple-800 to-pink-800 text-white px-4 py-2.5 shadow-md relative z-30">
-            <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+            <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, album ảnh, MXH và bình luận đều được đồng bộ trực tuyến!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Mọi chỉnh sửa {char}, album ảnh, trả lời bình luận đều được đồng bộ trực tuyến!</span>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
@@ -141,7 +141,7 @@
         </div>
 
         <!-- MAIN CONTENT VIEW -->
-        <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-16 relative z-10">
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full space-y-16 relative z-10">
 
             <!-- VIEW 1: TRANG CHỦ -->
             <div id="home-view" class="space-y-16">
@@ -176,12 +176,18 @@
                     </div>
                 </section>
 
-                <!-- Gallery Section -->
+                <!-- Gallery Section (Hiển thị 4 {char} mỗi trang + Nút qua trái/phải chuyển hẳn 4 {char} + Hiện số trang 1/6) -->
                 <section id="gallery" class="space-y-5">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/75 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-100 shadow-xs">
-                        <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
-                            <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
-                        </h2>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
+                                <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
+                            </h2>
+                            <!-- Huy hiệu hiển thị số trang (Ví dụ: 1/6) -->
+                            <span id="char-page-indicator" class="text-xs sm:text-sm font-bold text-purple-800 bg-purple-100/90 border border-purple-200 px-3.5 py-1 rounded-full shadow-xs">
+                                1 / 1
+                            </span>
+                        </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <button id="home-add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md cursor-pointer">
                                 + Thêm Giấc Mơ Mới
@@ -208,22 +214,23 @@
                         </div>
                     </div>
                     
+                    <!-- Khung 4 ô {char} kèm nút lật trang 4 ô trước / 4 ô sau -->
                     <div class="relative flex items-center">
-                        <button onclick="prevSlide()" class="absolute -left-4 sm:-left-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer">
+                        <button id="char-prev-btn" onclick="prevSlide()" class="absolute -left-3 sm:-left-5 z-20 bg-white/95 hover:bg-purple-100 text-purple-900 w-10 h-10 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer flex items-center justify-center font-bold" title="Xem 4 giấc mơ trước">
                             ❮
                         </button>
 
-                        <div id="carousel-track" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full px-2">
-                            <!-- Render bằng JS -->
+                        <div id="carousel-track" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 w-full px-2">
+                            <!-- Render 4 ô {char} bằng JS -->
                         </div>
 
-                        <button onclick="nextSlide()" class="absolute -right-4 sm:-right-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer">
+                        <button id="char-next-btn" onclick="nextSlide()" class="absolute -right-3 sm:-right-5 z-20 bg-white/95 hover:bg-purple-100 text-purple-900 w-10 h-10 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer flex items-center justify-center font-bold" title="Xem 4 giấc mơ tiếp theo">
                             ❯
                         </button>
                     </div>
                 </section>
 
-                <!-- ================= PHẦN LỜI THÌ THẦM (SỔ LƯU BÚT TRỰC TUYẾN CHO KHÁCH GHÉ THĂM) ================= -->
+                <!-- ================= PHẦN LỜI THÌ THẦM (SỔ LƯU BÚT TRỰC TUYẾN + TÍNH NĂNG ADMIN TRẢ LỜI) ================= -->
                 <section id="diary" class="space-y-6">
                     <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
                         <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
@@ -259,7 +266,7 @@
                         </form>
                     </div>
 
-                    <!-- Danh sách tất cả các lời nhắn (Tất cả mọi người đều xem được) -->
+                    <!-- Danh sách tất cả các lời nhắn (Tất cả mọi người đều xem được + Hiển thị câu trả lời của Huyên Huyên) -->
                     <div id="whispers-list" class="space-y-4">
                         <!-- Render bằng JS -->
                     </div>
@@ -298,7 +305,7 @@
                     </div>
                 </div>
 
-                <div id="full-list-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div id="full-list-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
                     <!-- Render bằng JS -->
                 </div>
             </div>
@@ -359,7 +366,7 @@
                     <div id="modal-links-box" class="flex flex-wrap gap-2"></div>
                 </div>
 
-                <!-- 👇 KHU VỰC MỚI: ALBUM HÌNH ẢNH GIẤC MƠ (HIỆN 4 ẢNH VUÔNG MỖI TRANG + NÚT QUA TRÁI/PHẢI 4 ẢNH) -->
+                <!-- KHU VỰC ALBUM HÌNH ẢNH GIẤC MƠ (HIỆN 4 ẢNH VUÔNG MỖI TRANG + NÚT QUA TRÁI/PHẢI 4 ẢNH) -->
                 <div id="modal-gallery-section" class="hidden pt-3 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-2.5">
                         <p id="modal-gallery-title" class="font-bold text-purple-900">🖼️ Hình ảnh giấc mơ (0 ảnh):</p>
@@ -367,17 +374,14 @@
                     </div>
 
                     <div class="relative flex items-center">
-                        <!-- Nút mũi tên lùi 4 ảnh trước -->
                         <button type="button" id="modal-gallery-prev" onclick="prevModalGalleryPage()" class="hidden absolute -left-3 sm:-left-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh trước">
                             ❮
                         </button>
 
-                        <!-- Grid 4 ảnh preview hình vuông 1:1 -->
                         <div id="modal-gallery-grid" class="grid grid-cols-4 gap-2 sm:gap-2.5 w-full">
                             <!-- Render bằng JS -->
                         </div>
 
-                        <!-- Nút mũi tên tiến 4 ảnh sau -->
                         <button type="button" id="modal-gallery-next" onclick="nextModalGalleryPage()" class="hidden absolute -right-3 sm:-right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh tiếp theo">
                             ❯
                         </button>
@@ -397,7 +401,6 @@
 
     <!-- ================= 4B. LIGHTBOX XEM ẢNH FULL SIZE & TẢI VỀ MÁY ================= -->
     <div id="image-lightbox-modal" class="fixed inset-0 z-[70] hidden bg-purple-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeImageLightbox()">
-        <!-- Thanh công cụ trên cùng -->
         <div class="w-full max-w-4xl flex items-center justify-between mb-3 px-2" onclick="event.stopPropagation()">
             <span id="lightbox-counter" class="text-white/90 text-xs sm:text-sm font-bold bg-white/15 px-3.5 py-1.5 rounded-full backdrop-blur-sm">
                 Ảnh 1 / 1
@@ -412,7 +415,6 @@
             </div>
         </div>
 
-        <!-- Khung chứa ảnh Full Size kèm nút qua lại -->
         <div class="relative flex items-center justify-center w-full max-w-4xl max-h-[80vh]" onclick="event.stopPropagation()">
             <button type="button" id="lightbox-prev-btn" onclick="navigateLightbox(-1)" class="absolute left-2 sm:left-4 z-20 w-10 h-10 rounded-full bg-purple-950/70 hover:bg-purple-900 text-white font-bold flex items-center justify-center shadow-lg border border-white/20 transition hover:scale-110 cursor-pointer">
                 ❮
@@ -497,7 +499,6 @@
                     </div>
                 </div>
 
-                <!-- 👇 MỤC MỚI TRONG FORM ADMIN: THÊM KHÔNG GIỚI HẠN ẢNH VÀO ALBUM "HÌNH ẢNH GIẤC MƠ" -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <label class="block font-semibold">🖼️ Album Hình ảnh giấc mơ (Không giới hạn số ảnh):</label>
@@ -512,7 +513,7 @@
                         </div>
                     </div>
                     <div id="form-gallery-container" class="space-y-2 max-h-52 overflow-y-auto pr-1">
-                        <!-- Các dòng ảnh trong album sẽ hiện ở đây -->
+                        <!-- Render bằng JS -->
                     </div>
                 </div>
 
@@ -613,7 +614,8 @@
                 id: 101,
                 nickname: "Huyên Huyên 💜",
                 message: "Chào mừng các tình iu đã ghé thăm góc nhỏ của mình! Nếu có tâm sự, góp ý hay lời nhắn nhủ nào thì đừng ngại viết vào đây cho mình đọc với nha ✨",
-                date: "15.11.2026"
+                date: "15.11.2026",
+                reply: ""
             }
         ];
 
@@ -631,7 +633,10 @@
         let whispersData = JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers;
         let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
         
-        let currentIndex = 0;
+        // Quản lý phân trang 4 {char} mỗi trang trên Trang Chủ
+        let currentCharPage = 0; 
+        const CHARS_PER_PAGE = 4;
+
         let isAdmin = false;
         let selectedHashtags = [];
 
@@ -716,6 +721,12 @@
         }
 
         async function loadDataFromCloud() {
+            // Nếu Admin đang gõ dở câu trả lời bình luận thì tạm hoãn render lại để không mất chữ đang gõ
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.classList && activeEl.classList.contains('admin-reply-input')) {
+                return;
+            }
+
             const result = await fetchCloudState();
             if (!result || !result.data) {
                 if (localUpdatedAt > 0 || charactersData.length > 0) {
@@ -731,9 +742,19 @@
                 const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
                 const mergedMap = new Map();
                 
-                [...cloudData.whispers, ...whispersData].forEach(w => {
+                // Hợp nhất cả bình luận lẫn câu trả lời (reply) mới nhất của Huyên Huyên
+                [...whispersData, ...cloudData.whispers].forEach(w => {
                     if (w && w.id && !deletedIds.includes(w.id)) {
-                        mergedMap.set(w.id, w);
+                        const existing = mergedMap.get(w.id);
+                        if (!existing) {
+                            mergedMap.set(w.id, w);
+                        } else {
+                            const existingReplyTime = Number(existing.replyUpdatedAt) || 0;
+                            const newReplyTime = Number(w.replyUpdatedAt) || 0;
+                            if (newReplyTime >= existingReplyTime && w.reply !== undefined) {
+                                mergedMap.set(w.id, { ...existing, ...w });
+                            }
+                        }
                     }
                 });
 
@@ -784,7 +805,7 @@
             if (ok) {
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
                 if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ {char}, album ảnh, link MXH và bình luận từ máy này lên Đám Mây! Bây giờ bạn mở iPad hoặc Điện thoại tải lại trang là sẽ thấy ngay lập tức.');
+                    alert('✅ Đã đẩy toàn bộ {char}, album ảnh, link MXH và câu trả lời bình luận lên Đám Mây! Bây giờ bạn mở iPad hoặc Điện thoại tải lại trang là sẽ thấy ngay lập tức.');
                 }
             } else {
                 setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
@@ -802,7 +823,7 @@
             renderWhispers();
         }
 
-        // ================= XỬ LÝ LỜI THÌ THẦM (GUESTBOOK COMMENTS) =================
+        // ================= XỬ LÝ LỜI THÌ THẦM & TÍNH NĂNG ADMIN TRẢ LỜI BÌNH LUẬN =================
         function escapeHtml(str) {
             return String(str || '')
                 .replace(/&/g, '&amp;')
@@ -827,31 +848,94 @@
 
             whispersData.forEach((item, index) => {
                 const article = document.createElement('article');
-                article.className = "bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition relative";
+                article.className = "bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition relative space-y-3";
 
                 const deleteBtnHtml = isAdmin
                     ? `<button onclick="deleteWhisper(${item.id})" class="ml-2 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Xóa bình luận này">🗑️ Xóa</button>`
                     : '';
 
+                // Hiển thị câu trả lời của Huyên Huyên (nếu có) với đúng mẫu:
+                // Huyên Huyên đã thì thầm vào giấc mơ bạn là "..." 💜
+                const hasReply = item.reply && item.reply.trim().length > 0;
+                const replyDisplayHtml = hasReply
+                    ? `
+                        <div class="mt-3 ml-3 sm:ml-6 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-purple-100/90 via-pink-50/90 to-purple-50/90 border-l-4 border-purple-500 shadow-xs flex items-start gap-2.5">
+                            <span class="text-lg leading-none select-none">🌙</span>
+                            <p class="text-xs sm:text-sm text-purple-950 font-semibold leading-relaxed">
+                                Huyên Huyên đã thì thầm vào giấc mơ bạn là <span class="text-pink-700 italic">“${escapeHtml(item.reply.trim())}”</span> 💜
+                            </p>
+                        </div>
+                    `
+                    : '';
+
+                // Khung nhập câu trả lời chỉ dành riêng cho Huyên Huyên khi đã đăng nhập Admin
+                const safeCurrentReply = hasReply ? item.reply.trim().replace(/"/g, '&quot;') : '';
+                const adminReplyBoxHtml = isAdmin
+                    ? `
+                        <div class="pt-2 border-t border-purple-100/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <input type="text" id="reply-input-${item.id}" value="${safeCurrentReply}" placeholder="Nhập lời thì thầm trả lời ${escapeHtml(item.nickname)} (VD: yêu bạn)..." class="admin-reply-input flex-grow px-3.5 py-2 rounded-xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs text-purple-950">
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                <button type="button" onclick="saveWhisperReply(${item.id})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1">
+                                    <span>💬</span> <span>${hasReply ? 'Cập nhật trả lời' : 'Trả lời'}</span>
+                                </button>
+                                ${hasReply ? `<button type="button" onclick="clearWhisperReply(${item.id})" class="bg-pink-100 hover:bg-pink-200 text-pink-700 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer" title="Xóa câu trả lời">✕</button>` : ''}
+                            </div>
+                        </div>
+                    `
+                    : '';
+
                 article.innerHTML = `
-                    <div class="flex items-center justify-between mb-2 gap-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-pink-700 font-bold bg-pink-100/90 px-3 py-1 rounded-full flex items-center gap-1">
-                                <span>✨</span> <span>${escapeHtml(item.nickname)}</span>
-                            </span>
-                            <span class="text-[11px] text-purple-400 font-semibold">#${whispersData.length - index}</span>
+                    <div>
+                        <div class="flex items-center justify-between mb-2 gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-pink-700 font-bold bg-pink-100/90 px-3 py-1 rounded-full flex items-center gap-1">
+                                    <span>✨</span> <span>${escapeHtml(item.nickname)}</span>
+                                </span>
+                                <span class="text-[11px] text-purple-400 font-semibold">#${whispersData.length - index}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-xs text-purple-400 font-semibold">${escapeHtml(item.date)}</span>
+                                ${deleteBtnHtml}
+                            </div>
                         </div>
-                        <div class="flex items-center">
-                            <span class="text-xs text-purple-400 font-semibold">${escapeHtml(item.date)}</span>
-                            ${deleteBtnHtml}
-                        </div>
+                        <p class="text-sm text-purple-900/90 leading-relaxed italic pl-1">
+                            “${escapeHtml(item.message)}”
+                        </p>
+                        ${replyDisplayHtml}
                     </div>
-                    <p class="text-sm text-purple-900/90 leading-relaxed italic pl-1">
-                        “${escapeHtml(item.message)}”
-                    </p>
+                    ${adminReplyBoxHtml}
                 `;
                 container.appendChild(article);
             });
+        }
+
+        // Lưu câu trả lời của Huyên Huyên cho bình luận
+        async function saveWhisperReply(id) {
+            if (!isAdmin) return;
+            const inputEl = document.getElementById(`reply-input-${id}`);
+            if (!inputEl) return;
+
+            const replyText = inputEl.value.trim();
+            const itemIndex = whispersData.findIndex(w => w.id === id);
+            if (itemIndex === -1) return;
+
+            whispersData[itemIndex].reply = replyText;
+            whispersData[itemIndex].replyUpdatedAt = Date.now();
+
+            renderWhispers();
+            await saveDataToCloud(false);
+        }
+
+        async function clearWhisperReply(id) {
+            if (!isAdmin) return;
+            const itemIndex = whispersData.findIndex(w => w.id === id);
+            if (itemIndex === -1) return;
+
+            whispersData[itemIndex].reply = '';
+            whispersData[itemIndex].replyUpdatedAt = Date.now();
+
+            renderWhispers();
+            await saveDataToCloud(false);
         }
 
         async function handleWhisperSubmit(e) {
@@ -871,7 +955,7 @@
             if (latest && latest.data && Array.isArray(latest.data.whispers)) {
                 const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
                 const mergedMap = new Map();
-                [...latest.data.whispers, ...whispersData].forEach(w => {
+                [...whispersData, ...latest.data.whispers].forEach(w => {
                     if (w && w.id && !deletedIds.includes(w.id)) mergedMap.set(w.id, w);
                 });
                 whispersData = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
@@ -884,7 +968,9 @@
                 id: Date.now(),
                 nickname: nickname,
                 message: message,
-                date: dateStr
+                date: dateStr,
+                reply: "",
+                replyUpdatedAt: 0
             };
 
             whispersData.unshift(newWhisper);
@@ -990,7 +1076,7 @@
             await saveDataToCloud(false);
         }
 
-        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} =================
+        // ================= HIỆU ỨNG TUYẾT RƠI & HIỂN THỊ {CHAR} (4 Ô / TRANG + SỐ TRANG 1/6) =================
         function initSnow(containerId, particleCount) {
             const snowContainer = document.getElementById(containerId);
             if (snowContainer) {
@@ -1084,13 +1170,13 @@
             } else {
                 selectedHashtags.push(tag);
             }
-            currentIndex = 0;
+            currentCharPage = 0;
             renderAll();
         }
 
         function clearHashtagFilter() {
             selectedHashtags = [];
-            currentIndex = 0;
+            currentCharPage = 0;
             renderAll();
         }
 
@@ -1137,7 +1223,7 @@
 
         function createCharCardElement(char) {
             const card = document.createElement('div');
-            card.className = "bg-white/90 backdrop-blur-sm p-5 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col justify-between relative";
+            card.className = "bg-white/90 backdrop-blur-sm p-4 sm:p-5 rounded-3xl shadow-sm border border-purple-100 hover:shadow-md hover:-translate-y-1 transition duration-300 group cursor-pointer flex flex-col justify-between relative";
             card.onclick = () => openModal(char.id);
 
             const iconHtml = getIconHtml(char.icon);
@@ -1153,9 +1239,9 @@
             let adminButtonsHtml = '';
             if (isAdmin) {
                 adminButtonsHtml = `
-                    <div class="absolute top-4 right-4 z-20 flex gap-2" onclick="event.stopPropagation()">
-                        <button onclick="openEditModal(${char.id})" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full text-xs shadow-md cursor-pointer" title="Sửa">✏️</button>
-                        <button onclick="deleteCharacter(${char.id})" class="bg-pink-500 hover:bg-pink-600 text-white p-2 rounded-full text-xs shadow-md cursor-pointer" title="Xóa">🗑️</button>
+                    <div class="absolute top-3 right-3 z-20 flex gap-1.5" onclick="event.stopPropagation()">
+                        <button onclick="openEditModal(${char.id})" class="bg-blue-500 hover:bg-blue-600 text-white p-1.5 sm:p-2 rounded-full text-xs shadow-md cursor-pointer" title="Sửa">✏️</button>
+                        <button onclick="deleteCharacter(${char.id})" class="bg-pink-500 hover:bg-pink-600 text-white p-1.5 sm:p-2 rounded-full text-xs shadow-md cursor-pointer" title="Xóa">🗑️</button>
                     </div>
                 `;
             }
@@ -1169,18 +1255,18 @@
                 ${adminButtonsHtml}
                 <div>
                     <!-- Khung ảnh cố định hình vuông 1:1 bo góc trên cả Điện thoại, iPad và Laptop -->
-                    <div class="square-box aspect-square w-full rounded-2xl bg-purple-100/70 mb-4 overflow-hidden flex items-center justify-center text-6xl group-hover:scale-[1.03] transition duration-300 shadow-inner">
+                    <div class="square-box aspect-square w-full rounded-2xl bg-purple-100/70 mb-3.5 overflow-hidden flex items-center justify-center text-5xl sm:text-6xl group-hover:scale-[1.03] transition duration-300 shadow-inner">
                         ${iconHtml}
                     </div>
                     <div class="flex items-center justify-between gap-1 flex-wrap">
-                        <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-full">${char.platform}</span>
+                        <span class="text-[11px] font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">${char.platform}</span>
                         ${galleryBadge}
                     </div>
-                    <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-2">${char.name}</h3>
-                    <p class="text-xs text-purple-700/80 mt-1.5 leading-relaxed">${char.shortDesc}</p>
-                    <div class="flex flex-wrap gap-1 mt-3">${tagsHtml}</div>
+                    <h3 class="font-script text-2xl sm:text-3xl text-purple-900 mt-1.5 leading-tight">${char.name}</h3>
+                    <p class="text-xs text-purple-700/80 mt-1 leading-relaxed line-clamp-2">${char.shortDesc}</p>
+                    <div class="flex flex-wrap gap-1 mt-2.5">${tagsHtml}</div>
                 </div>
-                <div class="mt-4 pt-3 border-t border-purple-50 flex items-center justify-between text-xs font-semibold text-purple-600">
+                <div class="mt-3.5 pt-2.5 border-t border-purple-50 flex items-center justify-between text-[11px] sm:text-xs font-semibold text-purple-600">
                     <span>Chạm để khám phá</span>
                     <span class="group-hover:translate-x-1 transition">✨</span>
                 </div>
@@ -1188,39 +1274,55 @@
             return card;
         }
 
+        // Render 4 ô {char} mỗi trang trên Trang Chủ + Hiển thị số trang (VD: 1 / 6)
         function renderCarousel() {
             const track = document.getElementById('carousel-track');
+            const pageIndicator = document.getElementById('char-page-indicator');
             track.innerHTML = '';
 
             const filteredChars = getFilteredCharacters();
 
             if (filteredChars.length === 0) {
+                if (pageIndicator) pageIndicator.innerText = '0 / 0';
                 track.innerHTML = `
-                    <div class="col-span-3 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
+                    <div class="col-span-2 lg:col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
                         <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào có đủ các hashtag đang chọn rồi 🥺💜</p>
                         <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition">Xem lại tất cả giấc mơ</button>
                     </div>`;
                 return;
             }
 
-            for (let i = 0; i < Math.min(3, filteredChars.length); i++) {
-                const charIndex = (currentIndex + i) % filteredChars.length;
-                const char = filteredChars[charIndex];
-                track.appendChild(createCharCardElement(char));
+            const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
+            if (currentCharPage >= totalPages) currentCharPage = 0;
+            if (currentCharPage < 0) currentCharPage = totalPages - 1;
+
+            if (pageIndicator) {
+                pageIndicator.innerText = `Trang ${currentCharPage + 1} / ${totalPages}`;
             }
+
+            const startIndex = currentCharPage * CHARS_PER_PAGE;
+            const pageChars = filteredChars.slice(startIndex, startIndex + CHARS_PER_PAGE);
+
+            pageChars.forEach(char => {
+                track.appendChild(createCharCardElement(char));
+            });
         }
 
+        // Bấm mũi tên phải: Lật sang 4 {char} tiếp theo
         function nextSlide() {
             const filteredChars = getFilteredCharacters();
-            if (filteredChars.length === 0) return;
-            currentIndex = (currentIndex + 1) % filteredChars.length;
+            const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
+            if (totalPages <= 1) return;
+            currentCharPage = (currentCharPage + 1) % totalPages;
             renderCarousel();
         }
 
+        // Bấm mũi tên trái: Lật về 4 {char} trước đó
         function prevSlide() {
             const filteredChars = getFilteredCharacters();
-            if (filteredChars.length === 0) return;
-            currentIndex = (currentIndex - 1 + filteredChars.length) % filteredChars.length;
+            const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
+            if (totalPages <= 1) return;
+            currentCharPage = (currentCharPage - 1 + totalPages) % totalPages;
             renderCarousel();
         }
 
@@ -1232,7 +1334,7 @@
 
             if (filteredChars.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-3 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
+                    <div class="col-span-2 sm:col-span-3 lg:col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
                         <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào có đủ các hashtag đang chọn rồi 🥺💜</p>
                         <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition">Xem lại tất cả giấc mơ</button>
                     </div>`;
@@ -1342,7 +1444,6 @@
             });
         }
 
-        // Bấm mũi tên phải: Chuyển hẳn sang 4 ảnh tiếp theo
         function nextModalGalleryPage() {
             const totalPages = Math.ceil(currentModalGallery.length / 4);
             if (totalPages <= 1) return;
@@ -1350,7 +1451,6 @@
             renderModalGallery();
         }
 
-        // Bấm mũi tên trái: Lùi hẳn về 4 ảnh trước đó
         function prevModalGalleryPage() {
             const totalPages = Math.ceil(currentModalGallery.length / 4);
             if (totalPages <= 1) return;
@@ -1406,7 +1506,6 @@
             }
         }
 
-        // Tải ảnh đang xem ở chế độ Full Size về máy (Hỗ trợ cả DataURL lẫn Link ảnh bên ngoài)
         async function downloadCurrentLightboxImage() {
             const imgUrl = currentModalGallery[currentLightboxIndex];
             if (!imgUrl) return;
@@ -1427,7 +1526,6 @@
                     a.click();
                     a.remove();
                 } else {
-                    // Tải qua proxy wsrv để tránh lỗi chặn CORS khi lưu file trực tiếp về máy
                     const fetchUrl = 'https://wsrv.nl/?url=' + encodeURIComponent(imgUrl) + '&output=jpg';
                     const response = await fetch(fetchUrl);
                     if (!response.ok) throw new Error('Network error');
@@ -1443,7 +1541,6 @@
                     setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
                 }
             } catch (err) {
-                // Nếu trình duyệt di động chặn tải tự động, mở thẳng ảnh gốc ở tab mới để người dùng nhấn giữ lưu ảnh
                 window.open(imgUrl, '_blank');
             } finally {
                 btn.innerHTML = originalHtml;
@@ -1484,7 +1581,6 @@
                 linksBox.innerHTML = '';
             }
 
-            // Khởi tạo dữ liệu Album ảnh của {char} đang mở
             currentModalGallery = Array.isArray(char.gallery)
                 ? char.gallery.map(u => (u || '').trim()).filter(u => u.length > 0)
                 : [];
@@ -1534,7 +1630,7 @@
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể thêm ảnh vào Album của từng {char}, gắn link MXH và quản lý bình luận.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể sửa {char}, thêm ảnh Album và trả lời các bình luận ở mục Lời thì thầm.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
@@ -1630,13 +1726,11 @@
             }
         }
 
-        // Cho phép chọn nhiều ảnh cùng lúc từ máy vào Album (giữ nguyên tỉ lệ gốc để xem Full Size đẹp nhất)
         function handleGalleryFilesUpload(event) {
             const files = Array.from(event.target.files || []);
             if (files.length === 0) return;
 
             const container = document.getElementById('form-gallery-container');
-            // Nếu dòng đầu tiên đang trống thì xóa đi trước khi chèn ảnh mới
             if (container.children.length === 1) {
                 const firstInput = container.querySelector('.gallery-image-url');
                 if (firstInput && !firstInput.value.trim()) {
@@ -1650,7 +1744,7 @@
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const maxDim = 900; // Giữ nguyên tỉ lệ khung hình gốc (dọc/ngang) cho chế độ Full Size
+                        const maxDim = 900;
                         let width = img.width;
                         let height = img.height;
 
