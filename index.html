@@ -6,9 +6,9 @@
     <title>Những giấc mơ của Huyên Huyên 🌙✨</title>
     
     <!-- Logo trên tab trình duyệt -->
-    <link rel="icon" type="image/png" href="https://wsrv.nl/?url=files.catbox.moe/n07y30.jfif&w=64&h=64&output=png">
-    <link rel="shortcut icon" type="image/png" href="https://wsrv.nl/?url=files.catbox.moe/n07y30.jfif&w=64&h=64&output=png">
-    <link rel="apple-touch-icon" href="https://wsrv.nl/?url=files.catbox.moe/n07y30.jfif&w=180&h=180&output=png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/bMf4wBzD/ok.png">
+    <link rel="shortcut icon" type="image/png" href="https://i.ibb.co/bMf4wBzD/ok.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/bMf4wBzD/ok.png">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,6 +33,15 @@
             font-family: 'Fraunces', serif;
         }
         
+        /* Ẩn thanh cuộn ngang cho header trên màn hình cực nhỏ */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         /* Hiệu ứng tuyết động / hạt sáng bay phủ khắp màn hình */
         @keyframes magicalFall {
             0% { transform: translateY(-10px) translateX(0); opacity: 0; }
@@ -156,30 +165,30 @@
     </div>
 
 
-    <!-- ================= 2. GIAO DIỆN CHÍNH (ĐÓNG BĂNG HEADER TRÊN ĐẦU) ================= -->
+    <!-- ================= 2. GIAO DIỆN CHÍNH (ĐÓNG BĂNG HEADER TRÊN ĐẦU, TRÀN ĐỀU 2 BÊN LỀ 1 HÀNG) ================= -->
     <div id="main-website" class="hidden flex flex-col min-h-screen justify-between relative overflow-x-clip z-10">
         
         <!-- Hiệu ứng tuyết động cho Trang chủ & Các mục -->
         <div id="main-snow-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-        <!-- Header / Navigation (Đóng băng cố định trên đầu khi cuộn trang) -->
+        <!-- Header / Navigation (Tràn đều 2 bên lề, nằm gọn trên 1 hàng duy nhất, đóng băng khi cuộn) -->
         <header class="w-full bg-white/85 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col md:flex-row justify-between items-center gap-2.5 md:gap-4 relative z-10">
-                <a href="#" onclick="openPasswordModal(event)" class="font-script text-2xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
+            <div class="w-full px-4 sm:px-8 lg:px-12 py-3 sm:py-3.5 flex flex-nowrap justify-between items-center gap-3 sm:gap-6 relative z-10 overflow-x-auto no-scrollbar">
+                <a href="#" onclick="openPasswordModal(event)" class="font-script text-2xl sm:text-3xl lg:text-4xl text-purple-800 flex items-center gap-2 group whitespace-nowrap flex-shrink-0" title="Chạm vào đây để đăng nhập quản trị">
                     <span class="group-hover:scale-110 transition duration-300">🌙</span> 
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
                 </a>
-                <nav class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 font-semibold text-xs sm:text-base text-purple-700">
-                    <button type="button" id="nav-tab-about" onclick="switchTab('about')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs">
+                <nav class="flex flex-nowrap items-center gap-1.5 sm:gap-2.5 lg:gap-4 font-semibold text-xs sm:text-sm lg:text-base text-purple-700 whitespace-nowrap flex-shrink-0">
+                    <button type="button" id="nav-tab-about" onclick="switchTab('about')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs whitespace-nowrap">
                         Về Huyên Huyên
                     </button>
-                    <button type="button" id="nav-tab-dreams" onclick="switchTab('dreams')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900">
+                    <button type="button" id="nav-tab-dreams" onclick="switchTab('dreams')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
                         Dreams
                     </button>
-                    <button type="button" id="nav-tab-whispers" onclick="switchTab('whispers')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900">
+                    <button type="button" id="nav-tab-whispers" onclick="switchTab('whispers')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
                         Lời thì thầm
                     </button>
-                    <button type="button" id="nav-tab-guide" onclick="switchTab('guide')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900">
+                    <button type="button" id="nav-tab-guide" onclick="switchTab('guide')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
                         Chỉ dẫn
                     </button>
                 </nav>
@@ -1036,9 +1045,9 @@
                 const btn = document.getElementById(`nav-tab-${key}`);
                 if (!btn) return;
                 if (key === tabName) {
-                    btn.className = "nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs";
+                    btn.className = "nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs whitespace-nowrap";
                 } else {
-                    btn.className = "nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900";
+                    btn.className = "nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap";
                 }
             });
 
