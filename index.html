@@ -114,7 +114,7 @@
         <div id="hidden-yt-player"></div>
     </div>
 
-    <!-- ================= HÌNH NỀN CỐ ĐỊNH CHO TRANG CHỦ & TRANG DANH SÁCH ================= -->
+    <!-- ================= HÌNH NỀN CỐ ĐỊNH CHO TOÀN BỘ WEBSITE ================= -->
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <img src="https://files.catbox.moe/5jzpfs.png"
              referrerpolicy="no-referrer"
@@ -149,7 +149,6 @@
                 <span class="text-base sm:text-xl group-hover:rotate-12 transition duration-300">✨</span>
             </button>
             
-            <!-- Đã đổi câu dưới nút bấm theo yêu cầu -->
             <p class="mt-3 text-xs sm:text-sm text-white/95 font-semibold drop-shadow tracking-wide">
                 Nơi những giấc mơ hóa thành nhân vật và câu chuyện 💜
             </p>
@@ -157,23 +156,32 @@
     </div>
 
 
-    <!-- ================= 2. TRANG CHỦ & TRANG DANH SÁCH (MAIN & LIST CONTAINER) ================= -->
-    <div id="main-website" class="hidden flex flex-col min-h-screen justify-between relative overflow-hidden z-10">
+    <!-- ================= 2. GIAO DIỆN CHÍNH (ĐÓNG BĂNG HEADER TRÊN ĐẦU) ================= -->
+    <div id="main-website" class="hidden flex flex-col min-h-screen justify-between relative overflow-x-clip z-10">
         
-        <!-- Hiệu ứng tuyết động cho Trang chủ & Trang danh sách -->
+        <!-- Hiệu ứng tuyết động cho Trang chủ & Các mục -->
         <div id="main-snow-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-        <!-- Header / Navigation (Giữ nguyên icon trăng khuyết 🌙 ở góc trái) -->
-        <header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
-            <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center relative z-10">
-                <a href="#" onclick="openPasswordModal(event)" class="font-script text-3xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
+        <!-- Header / Navigation (Đóng băng cố định trên đầu khi cuộn trang) -->
+        <header class="w-full bg-white/85 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col md:flex-row justify-between items-center gap-2.5 md:gap-4 relative z-10">
+                <a href="#" onclick="openPasswordModal(event)" class="font-script text-2xl sm:text-4xl text-purple-800 flex items-center gap-2 group" title="Chạm vào đây để đăng nhập quản trị">
                     <span class="group-hover:scale-110 transition duration-300">🌙</span> 
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
                 </a>
-                <nav class="flex gap-4 sm:gap-6 font-semibold text-sm sm:text-base text-purple-700">
-                    <a href="#about" onclick="showHomeView()" class="hover:text-purple-500 transition">Giới thiệu</a>
-                    <a href="#" onclick="showHomeView()" class="hover:text-purple-500 transition">Dreams</a>
-                    <a href="#diary" onclick="showHomeView()" class="hover:text-purple-500 transition">Lời thì thầm</a>
+                <nav class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 font-semibold text-xs sm:text-base text-purple-700">
+                    <button type="button" id="nav-tab-about" onclick="switchTab('about')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs">
+                        Về Huyên Huyên
+                    </button>
+                    <button type="button" id="nav-tab-dreams" onclick="switchTab('dreams')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900">
+                        Dreams
+                    </button>
+                    <button type="button" id="nav-tab-whispers" onclick="switchTab('whispers')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900">
+                        Lời thì thầm
+                    </button>
+                    <button type="button" id="nav-tab-guide" onclick="switchTab('guide')" class="nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900">
+                        Chỉ dẫn
+                    </button>
                 </nav>
             </div>
         </header>
@@ -183,7 +191,7 @@
             <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể thêm/sửa {char}, trả lời bình luận thì thầm và đồng bộ trực tuyến!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể chỉnh sửa giới thiệu, thêm/sửa {char}, trả lời bình luận và đồng bộ trực tuyến!</span>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
@@ -195,12 +203,12 @@
         </div>
 
         <!-- MAIN CONTENT VIEW -->
-        <main class="max-w-5xl mx-auto px-6 py-10 flex-grow w-full space-y-16 relative z-10">
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-grow w-full relative z-10">
 
-            <!-- VIEW 1: TRANG CHỦ -->
-            <div id="home-view" class="space-y-16">
-                <!-- Hero Section (Đã xóa icon ✨ mờ ở góc phải) -->
-                <section id="about" class="flex flex-col md:flex-row items-center gap-8 bg-white/85 backdrop-blur-md p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 relative overflow-hidden">
+            <!-- ================= TAB 1: VỀ HUYÊN HUYÊN (HERO + GIỚI THIỆU BẢN THÂN & WEB) ================= -->
+            <div id="about-view" class="space-y-8 sm:space-y-10">
+                <!-- Hero Section (Đã xóa dòng tagline và canh giữa thanh nhạc với tiêu đề) -->
+                <section id="about" class="flex flex-col md:flex-row items-center gap-6 sm:gap-8 bg-white/85 backdrop-blur-md p-6 sm:p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 relative overflow-hidden">
                     <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
                         <img src="https://files.catbox.moe/3c24gw.jpg"
                              referrerpolicy="no-referrer"
@@ -208,16 +216,15 @@
                              alt="Avatar Huyên Huyên"
                              class="w-full h-full object-cover">
                     </div>
-                    <div class="text-center md:text-left space-y-3 relative z-10 flex-grow w-full">
-                        <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng các tình iu đến với</span>
-                        <h1 class="font-script text-5xl sm:text-6xl text-purple-900">Những giấc mơ của Huyên Huyên</h1>
-                        <p class="text-purple-800/90 leading-relaxed text-sm md:text-base italic">
-                            “Nơi những giấc mơ hóa thành nhân vật và câu chuyện 💜”
-                        </p>
 
-                        <!-- 👇 THANH NHẠC BÍ MẬT TỐI GIẢN (KHÔNG HIỆN TÊN BÀI HÁT, KHÔNG HIỆN LINK, TỰ LẶP LẠI) -->
-                        <div class="pt-1 flex items-center justify-center md:justify-start">
-                            <div class="w-full max-w-md flex items-center gap-3 bg-purple-100/75 hover:bg-purple-100/95 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-200/80 shadow-xs transition">
+                    <!-- Khối tiêu đề & thanh nhạc canh giữa đồng bộ -->
+                    <div class="flex flex-col items-center text-center space-y-3.5 relative z-10 flex-grow w-full">
+                        <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng các tình iu đến với</span>
+                        <h1 class="font-script text-4xl sm:text-6xl text-purple-900 leading-tight">Những giấc mơ của Huyên Huyên</h1>
+
+                        <!-- THANH NHẠC BÍ MẬT TỐI GIẢN CANH GIỮA -->
+                        <div class="w-full flex items-center justify-center pt-0.5">
+                            <div class="w-full max-w-md mx-auto flex items-center gap-3 bg-purple-100/75 hover:bg-purple-100/95 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-200/80 shadow-xs transition">
                                 <!-- Nút Play / Pause -->
                                 <button type="button" id="music-toggle-btn" onclick="toggleDreamMusic()" class="w-8 h-8 rounded-full bg-white text-purple-700 hover:text-purple-900 hover:scale-105 shadow-xs border border-purple-200 flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Phát / Tạm dừng nhạc nền">
                                     <svg id="music-icon-play" class="w-3.5 h-3.5 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -235,8 +242,8 @@
                         </div>
 
                         <!-- KHU VỰC HIỂN THỊ LINK MẠNG XÃ HỘI & NÚT + KHI Ở CHẾ ĐỘ SỬA -->
-                        <div id="social-links-wrapper" class="pt-1 flex flex-wrap items-center justify-center md:justify-start gap-2">
-                            <div id="social-links-list" class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                        <div id="social-links-wrapper" class="pt-1 flex flex-wrap items-center justify-center gap-2">
+                            <div id="social-links-list" class="flex flex-wrap items-center justify-center gap-2">
                                 <!-- Render bằng JS -->
                             </div>
                             <button id="edit-social-btn" onclick="openSocialModal()" class="hidden cursor-pointer inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md hover:scale-105 transition" title="Thêm / Sửa các link mạng xã hội của bạn">
@@ -247,124 +254,32 @@
                     </div>
                 </section>
 
-                <!-- Gallery Section -->
-                <section id="gallery" class="space-y-5">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/75 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-100 shadow-xs">
-                        <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
-                            <span>🔮</span> Bạn Muốn Vào Xem Giấc Mơ Nào?
+                <!-- Khung Giới Thiệu Về Huyên Huyên & Trang Web (Admin có quyền chỉnh sửa) -->
+                <section id="about-bio-card" class="bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
+                        <h2 id="bio-display-title" class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2.5">
+                            <span>🌙</span> <span>Đôi nét về Huyên Huyên & Góc nhỏ mộng mơ</span>
                         </h2>
-                        <div class="flex flex-wrap items-center gap-2.5">
-                            <span id="char-page-indicator" class="text-xs font-bold text-purple-800 bg-white/90 border border-purple-200 px-3.5 py-1.5 rounded-full shadow-xs">
-                                Trang 1/1
-                            </span>
-                            <button id="home-add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md cursor-pointer">
-                                + Thêm Giấc Mơ Mới
-                            </button>
-                            <button onclick="showListView()" class="group cursor-pointer inline-flex items-center gap-2 text-xs text-purple-700 font-bold bg-purple-100 hover:bg-purple-200 px-4 py-2 rounded-full transition shadow-xs">
-                                <span>Xem tất cả các giấc mơ</span>
-                                <span class="group-hover:translate-x-1 transition">✨</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- KHUNG TÌM KIẾM THEO TÊN & LỌC HASHTAG TRÊN TRANG CHỦ -->
-                    <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 border-b border-purple-100">
-                            <label for="home-search-input" class="text-xs sm:text-sm font-bold text-purple-900 flex items-center gap-1.5 flex-shrink-0">
-                                <span>🔍</span> Bạn muốn tìm giấc mơ nào?
-                            </label>
-                            <div class="relative w-full sm:max-w-xs">
-                                <input type="text" id="home-search-input" oninput="handleSearchInput(this.value)" placeholder="Nhập tên giấc mơ / nhân vật..." class="w-full pl-4 pr-9 py-2 rounded-full border border-purple-200 bg-purple-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
-                                <button id="clear-search-home" onclick="handleSearchInput('')" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-700 text-xs font-bold cursor-pointer" title="Xóa tìm kiếm">✕</button>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-purple-800 flex items-center gap-1.5">
-                                    <span>🏷️</span> Lọc giấc mơ theo Hashtag (chọn nhiều để tìm chính xác):
-                                </span>
-                                <button id="clear-filter-home" onclick="clearHashtagFilter()" class="hidden text-xs font-bold text-pink-600 hover:text-pink-700 underline cursor-pointer">
-                                    ✕ Bỏ chọn hết
-                                </button>
-                            </div>
-                            <div id="home-hashtag-bar" class="flex flex-wrap gap-2 pt-1">
-                                <!-- Render bằng JS -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="relative flex items-center">
-                        <button id="char-prev-btn" onclick="prevSlide()" class="absolute -left-4 sm:-left-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer" title="Xem 4 giấc mơ trước">
-                            ❮
-                        </button>
-
-                        <div id="carousel-track" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 w-full px-2">
-                            <!-- Render bằng JS -->
-                        </div>
-
-                        <button id="char-next-btn" onclick="nextSlide()" class="absolute -right-4 sm:-right-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer" title="Xem 4 giấc mơ tiếp theo">
-                            ❯
+                        <button id="edit-bio-btn" onclick="openBioModal()" class="hidden self-start sm:self-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs shadow-md transition cursor-pointer flex items-center gap-1.5 flex-shrink-0">
+                            <span>✏️</span> <span>Chỉnh sửa giới thiệu</span>
                         </button>
                     </div>
-                </section>
 
-                <!-- ================= PHẦN LỜI THÌ THẦM ================= -->
-                <section id="diary" class="space-y-6">
-                    <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
-                        <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
-                            <span>📖</span> Lời thì thầm
-                        </h2>
-                    </div>
-
-                    <div class="bg-white/90 backdrop-blur-md p-6 sm:p-7 rounded-3xl shadow-sm border border-purple-200/80 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-base sm:text-lg font-bold text-purple-900 flex items-center gap-2">
-                                <span>💌</span> Gửi lời thì thầm, tâm sự hoặc góp ý cho Huyên Huyên
-                            </h3>
-                            <span class="text-[11px] text-purple-600 bg-purple-50 px-3 py-1 rounded-full font-semibold">Ai cũng có thể nhắn ✨</span>
-                        </div>
-
-                        <form id="whisper-form" onsubmit="handleWhisperSubmit(event)" class="space-y-3">
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <div class="sm:w-1/3">
-                                    <label class="block text-xs font-bold text-purple-800 mb-1">Biệt danh của bạn:</label>
-                                    <input type="text" id="whisper-nickname" maxlength="35" placeholder="VD: Người lạ mộng mơ..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
-                                </div>
-                                <div class="sm:w-2/3">
-                                    <label class="block text-xs font-bold text-purple-800 mb-1">Lời nhắn nhủ / Tâm sự:</label>
-                                    <div class="flex gap-2">
-                                        <input type="text" id="whisper-message" maxlength="400" placeholder="Viết đôi dòng nhắn gửi đến Huyên Huyên nhé..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
-                                        <button type="submit" id="whisper-submit-btn" class="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold px-5 py-2.5 rounded-2xl text-xs sm:text-sm shadow-md hover:scale-105 transition flex-shrink-0 cursor-pointer flex items-center gap-1.5">
-                                            <span>Gửi</span> <span>💜</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div id="whispers-list" class="space-y-4">
-                        <!-- Render bằng JS -->
+                    <div id="bio-display-content" class="space-y-3.5 text-sm sm:text-base text-purple-900/90 leading-relaxed whitespace-pre-line">
+                        <!-- Render nội dung giới thiệu bằng JS -->
                     </div>
                 </section>
             </div>
 
 
-            <!-- VIEW 2: TRANG DANH SÁCH (LIST VIEW - SHOW HẾT TẤT CẢ) -->
-            <div id="list-view" class="hidden space-y-6">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-4 rounded-3xl border border-purple-200 shadow-xs">
-                    <button onclick="showHomeView()" class="group inline-flex items-center gap-2 text-sm font-bold text-purple-800 bg-purple-50 hover:bg-purple-100 px-4 py-2.5 rounded-full shadow-xs border border-purple-200 transition cursor-pointer">
-                        <span class="group-hover:-translate-x-1 transition">❮</span>
-                        <span>Quay lại trang chủ</span>
-                    </button>
+            <!-- ================= TAB 2: DREAMS (TẤT CẢ CÁC GIẤC MƠ - BỎ QUAY LẠI TRANG CHỦ) ================= -->
+            <div id="dreams-view" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/85 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-200 shadow-xs">
+                    <span class="font-script text-3xl sm:text-5xl text-purple-900 text-center sm:text-left">✨ Tất Cả Các Giấc Mơ ✨</span>
                     
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="font-script text-3xl sm:text-4xl text-purple-900">✨ Tất Cả Các Giấc Mơ ✨</span>
-                        <button id="add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md flex items-center gap-1 cursor-pointer">
-                            <span>+ Thêm Giấc Mơ Mới</span>
-                        </button>
-                    </div>
+                    <button id="add-char-btn" onclick="openAddModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md flex items-center gap-1 cursor-pointer">
+                        <span>+ Thêm Giấc Mơ Mới</span>
+                    </button>
                 </div>
 
                 <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs space-y-4">
@@ -398,6 +313,66 @@
                 </div>
             </div>
 
+
+            <!-- ================= TAB 3: LỜI THÌ THẦM ================= -->
+            <div id="whispers-view" class="hidden space-y-6">
+                <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
+                    <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
+                        <span>📖</span> Lời thì thầm
+                    </h2>
+                </div>
+
+                <div class="bg-white/90 backdrop-blur-md p-6 sm:p-7 rounded-3xl shadow-sm border border-purple-200/80 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base sm:text-lg font-bold text-purple-900 flex items-center gap-2">
+                            <span>💌</span> Gửi lời thì thầm, tâm sự hoặc góp ý cho Huyên Huyên
+                        </h3>
+                        <span class="text-[11px] text-purple-600 bg-purple-50 px-3 py-1 rounded-full font-semibold">Ai cũng có thể nhắn ✨</span>
+                    </div>
+
+                    <form id="whisper-form" onsubmit="handleWhisperSubmit(event)" class="space-y-3">
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="sm:w-1/3">
+                                <label class="block text-xs font-bold text-purple-800 mb-1">Biệt danh của bạn:</label>
+                                <input type="text" id="whisper-nickname" maxlength="35" placeholder="VD: Người lạ mộng mơ..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                            </div>
+                            <div class="sm:w-2/3">
+                                <label class="block text-xs font-bold text-purple-800 mb-1">Lời nhắn nhủ / Tâm sự:</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="whisper-message" maxlength="400" placeholder="Viết đôi dòng nhắn gửi đến Huyên Huyên nhé..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                                    <button type="submit" id="whisper-submit-btn" class="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold px-5 py-2.5 rounded-2xl text-xs sm:text-sm shadow-md hover:scale-105 transition flex-shrink-0 cursor-pointer flex items-center gap-1.5">
+                                        <span>Gửi</span> <span>💜</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="whispers-list" class="space-y-4">
+                    <!-- Render bằng JS -->
+                </div>
+            </div>
+
+
+            <!-- ================= TAB 4: CHỈ DẪN ================= -->
+            <div id="guide-view" class="hidden space-y-6">
+                <section class="bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
+                        <h2 id="guide-display-title" class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2.5">
+                            <span>✨</span> <span>Chỉ dẫn bước vào thế giới giấc mơ</span>
+                        </h2>
+                        <button id="edit-guide-btn" onclick="openGuideModal()" class="hidden self-start sm:self-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs shadow-md transition cursor-pointer flex items-center gap-1.5 flex-shrink-0">
+                            <span>✏️</span> <span>Chỉnh sửa chỉ dẫn</span>
+                        </button>
+                    </div>
+
+                    <div id="guide-display-content" class="space-y-3.5 text-sm sm:text-base text-purple-900/90 leading-relaxed whitespace-pre-line">
+                        <!-- Render nội dung chỉ dẫn bằng JS -->
+                    </div>
+                </section>
+            </div>
+
         </main>
 
         <!-- Footer -->
@@ -417,12 +392,64 @@
             <h3 class="font-script text-2xl text-purple-900 mb-2">Chào mừng Huyên Huyên đã quay trở lại giấc mơ</h3>
             
             <div class="mt-4 flex items-center justify-center gap-2">
-                <input type="password" id="admin-pass-input" placeholder="Nhập mật khẩu..." class="px-4 py-2.5 rounded-full border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm w-full bg-purple-50/50">
+                <input type="password" id="admin-pass-input" onkeydown="if(event.key==='Enter') verifyAdminPassword()" placeholder="Nhập mật khẩu..." class="px-4 py-2.5 rounded-full border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm w-full bg-purple-50/50">
                 <button onclick="verifyAdminPassword()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-full text-lg shadow-md transition flex-shrink-0 cursor-pointer" title="Xác nhận">
                     💜
                 </button>
             </div>
             <p id="pass-error-msg" class="text-xs text-pink-600 mt-3 font-semibold hidden"></p>
+        </div>
+    </div>
+
+
+    <!-- ================= 3B. MODAL CHỈNH SỬA GIỚI THIỆU (VỀ HUYÊN HUYÊN) ================= -->
+    <div id="bio-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-purple-200 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeBioModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
+            
+            <h3 class="font-script text-3xl text-purple-900 mb-2">✏️ Chỉnh Sửa Giới Thiệu</h3>
+            <p class="text-xs text-purple-700 mb-4">Cập nhật lời giới thiệu về bản thân Huyên Huyên và ngôi nhà giấc mơ này:</p>
+            
+            <form onsubmit="handleBioSubmit(event)" class="space-y-4 text-sm text-purple-900">
+                <div>
+                    <label class="block font-bold mb-1">Tiêu đề khung giới thiệu:</label>
+                    <input type="text" id="bio-input-title" required class="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Nội dung giới thiệu về Huyên Huyên & trang web:</label>
+                    <textarea id="bio-input-content" rows="8" required placeholder="Viết lời giới thiệu về bản thân bạn và ý nghĩa của trang web này..." class="w-full px-4 py-3 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 leading-relaxed"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeBioModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md cursor-pointer">Lưu Giới Thiệu 💜</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ================= 3C. MODAL CHỈNH SỬA CHỈ DẪN ================= -->
+    <div id="guide-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-purple-200 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeGuideModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
+            
+            <h3 class="font-script text-3xl text-purple-900 mb-2">✏️ Chỉnh Sửa Chỉ Dẫn</h3>
+            <p class="text-xs text-purple-700 mb-4">Cập nhật hướng dẫn dành cho khách ghé thăm giấc mơ:</p>
+            
+            <form onsubmit="handleGuideSubmit(event)" class="space-y-4 text-sm text-purple-900">
+                <div>
+                    <label class="block font-bold mb-1">Tiêu đề khung chỉ dẫn:</label>
+                    <input type="text" id="guide-input-title" required class="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">Nội dung chỉ dẫn:</label>
+                    <textarea id="guide-input-content" rows="8" required placeholder="Nhập nội dung chỉ dẫn..." class="w-full px-4 py-3 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 leading-relaxed"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeGuideModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md cursor-pointer">Lưu Chỉ Dẫn ✨</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -727,7 +754,6 @@
         let isSeekingMusic = false;
         let pendingAutoPlay = false;
 
-        // Nạp thư viện YouTube IFrame API
         (function loadYouTubeIframeAPI() {
             const tag = document.createElement('script');
             tag.src = "https://www.youtube.com/iframe_api";
@@ -767,7 +793,6 @@
                             isMusicPlaying = false;
                             updateMusicButtonUI(false);
                         } else if (event.data === YT.PlayerState.ENDED) {
-                            // Tự động lặp lại ngay khi hết bài
                             event.target.seekTo(0);
                             event.target.playVideo();
                         }
@@ -812,7 +837,6 @@
             }
         }
 
-        // Cập nhật thanh trượt tiến độ mỗi 500ms
         setInterval(() => {
             if (!ytMusicPlayer || typeof ytMusicPlayer.getCurrentTime !== 'function') return;
             if (isMusicPlaying && !isSeekingMusic) {
@@ -825,7 +849,17 @@
             }
         }, 500);
 
-        // ================= DỮ LIỆU & LOGIC TRANG WEB =================
+        // ================= DỮ LIỆU MẶC ĐỊNH & LOGIC TRANG WEB =================
+        const defaultBioData = {
+            title: "Đôi nét về Huyên Huyên & Góc nhỏ mộng mơ",
+            content: "Xin chào các tình iu đã lạc bước vào “Những giấc mơ của Huyên Huyên” 💜\n\nMình là Huyên Huyên — một người yêu cái đẹp nhẹ nhàng của sắc trắng và tím pastel, thích dệt nên những câu chuyện cùng các nhân vật mang màu sắc riêng trên Dokichat, Google AI Studio và nhiều thế giới nhập vai khác.\n\nTrang web nhỏ này là nơi mình lưu giữ trọn vẹn từng “giấc mơ” đã tạo nên: từ hồ sơ nhân vật, bối cảnh mở đầu, album hình ảnh cho đến những lời nhắn nhủ thân thương từ các bạn. Chúc bạn có những phút giây thật thư giãn và tìm thấy nhân vật đồng điệu với tâm hồn mình tại đây nhé ✨"
+        };
+
+        const defaultGuideData = {
+            title: "Chỉ dẫn bước vào thế giới giấc mơ",
+            content: "1. Mục “Về Huyên Huyên”: Nơi lắng nghe giai điệu nền thư giãn, tìm hiểu đôi nét về Huyên Huyên và kết nối qua các kênh mạng xã hội.\n\n2. Mục “Dreams”: Khám phá toàn bộ các nhân vật & giấc mơ. Bạn có thể gõ tên để tìm nhanh hoặc bấm chọn nhiều Hashtag cùng lúc để lọc đúng thể loại yêu thích. Chạm vào từng thẻ để xem chi tiết, mở các mục thu gọn, tải ảnh Full Size trong album hoặc bấm vào đường dẫn để trò chuyện trực tiếp.\n\n3. Mục “Lời thì thầm”: Nơi bạn có thể gửi tâm sự, góp ý hoặc lời nhắn nhủ cho Huyên Huyên.\n\n4. Thanh nhạc nền: Có thể bật/tắt hoặc tua bất cứ lúc nào ở trang Về Huyên Huyên, nhạc sẽ tiếp tục phát êm ái khi bạn dạo quanh các mục khác 💜"
+        };
+
         const defaultCharacters = [
             {
                 id: 1,
@@ -947,11 +981,11 @@
         let charactersData = (JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters).map(normalizeCharacterObject);
         let socialLinksData = JSON.parse(localStorage.getItem('huyen_social_links')) || [];
         let whispersData = JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers;
+        let bioData = JSON.parse(localStorage.getItem('huyen_bio_data')) || defaultBioData;
+        let guideData = JSON.parse(localStorage.getItem('huyen_guide_data')) || defaultGuideData;
         let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
-        
-        let currentCharPage = 0;
-        const CHARS_PER_PAGE = 4;
 
+        let activeTab = 'about';
         let isAdmin = false;
         let selectedHashtags = [];
         let searchQuery = '';
@@ -977,6 +1011,41 @@
             setInterval(loadDataFromCloud, 8000);
         });
 
+        // ================= CHUYỂN TAB ĐIỀU HƯỚNG (4 MỤC) =================
+        function switchTab(tabName) {
+            activeTab = tabName;
+
+            const views = {
+                about: document.getElementById('about-view'),
+                dreams: document.getElementById('dreams-view'),
+                whispers: document.getElementById('whispers-view'),
+                guide: document.getElementById('guide-view')
+            };
+
+            Object.keys(views).forEach(key => {
+                if (!views[key]) return;
+                if (key === tabName) {
+                    views[key].classList.remove('hidden');
+                } else {
+                    views[key].classList.add('hidden');
+                }
+            });
+
+            const navIds = ['about', 'dreams', 'whispers', 'guide'];
+            navIds.forEach(key => {
+                const btn = document.getElementById(`nav-tab-${key}`);
+                if (!btn) return;
+                if (key === tabName) {
+                    btn.className = "nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs";
+                } else {
+                    btn.className = "nav-tab-btn px-3 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900";
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ================= ĐỒNG BỘ ĐÁM MÂY =================
         function setCloudBadge(text, isError = false) {
             const badge = document.getElementById('cloud-sync-status');
             if (!badge) return;
@@ -1093,6 +1162,14 @@
                     socialLinksData = cloudData.socials;
                     localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
                 }
+                if (cloudData.bio && typeof cloudData.bio === 'object') {
+                    bioData = cloudData.bio;
+                    localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
+                }
+                if (cloudData.guide && typeof cloudData.guide === 'object') {
+                    guideData = cloudData.guide;
+                    localStorage.setItem('huyen_guide_data', JSON.stringify(guideData));
+                }
                 localUpdatedAt = cloudTime;
                 localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
             }
@@ -1107,6 +1184,8 @@
             localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
             localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
             localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
+            localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
+            localStorage.setItem('huyen_guide_data', JSON.stringify(guideData));
 
             const deletedWhisperIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
 
@@ -1116,6 +1195,8 @@
                 characters: charactersData,
                 socials: socialLinksData,
                 whispers: whispersData,
+                bio: bioData,
+                guide: guideData,
                 deletedWhisperIds: deletedWhisperIds,
                 updatedAt: localUpdatedAt
             };
@@ -1124,7 +1205,7 @@
             if (ok) {
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
                 if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ {char}, album ảnh, link MXH và các câu trả lời bình luận lên Đám Mây!');
+                    alert('✅ Đã đẩy toàn bộ giới thiệu, {char}, album ảnh, link MXH và các câu trả lời bình luận lên Đám Mây!');
                 }
             } else {
                 setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
@@ -1135,11 +1216,102 @@
         }
 
         function renderAll() {
+            renderBioSection();
+            renderGuideSection();
             renderSocialLinks();
             renderHashtagFilters();
-            renderCarousel();
             renderFullList();
             renderWhispers();
+        }
+
+        // ================= HIỂN THỊ & CHỈNH SỬA GIỚI THIỆU (VỀ HUYÊN HUYÊN) =================
+        function renderBioSection() {
+            const titleEl = document.getElementById('bio-display-title');
+            const contentEl = document.getElementById('bio-display-content');
+            const editBtn = document.getElementById('edit-bio-btn');
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span>🌙</span> <span>${escapeHtml(bioData.title || defaultBioData.title)}</span>`;
+            }
+            if (contentEl) {
+                contentEl.textContent = bioData.content || defaultBioData.content;
+            }
+            if (editBtn) {
+                if (isAdmin) {
+                    editBtn.classList.remove('hidden');
+                } else {
+                    editBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        function openBioModal() {
+            if (!isAdmin) return;
+            document.getElementById('bio-input-title').value = bioData.title || defaultBioData.title;
+            document.getElementById('bio-input-content').value = bioData.content || defaultBioData.content;
+            document.getElementById('bio-form-modal').classList.remove('hidden');
+        }
+
+        function closeBioModal() {
+            document.getElementById('bio-form-modal').classList.add('hidden');
+        }
+
+        async function handleBioSubmit(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const title = document.getElementById('bio-input-title').value.trim();
+            const content = document.getElementById('bio-input-content').value.trim();
+            if (!title || !content) return;
+
+            bioData = { title, content };
+            closeBioModal();
+            renderBioSection();
+            await saveDataToCloud(false);
+        }
+
+        // ================= HIỂN THỊ & CHỈNH SỬA CHỈ DẪN =================
+        function renderGuideSection() {
+            const titleEl = document.getElementById('guide-display-title');
+            const contentEl = document.getElementById('guide-display-content');
+            const editBtn = document.getElementById('edit-guide-btn');
+
+            if (titleEl) {
+                titleEl.innerHTML = `<span>✨</span> <span>${escapeHtml(guideData.title || defaultGuideData.title)}</span>`;
+            }
+            if (contentEl) {
+                contentEl.textContent = guideData.content || defaultGuideData.content;
+            }
+            if (editBtn) {
+                if (isAdmin) {
+                    editBtn.classList.remove('hidden');
+                } else {
+                    editBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        function openGuideModal() {
+            if (!isAdmin) return;
+            document.getElementById('guide-input-title').value = guideData.title || defaultGuideData.title;
+            document.getElementById('guide-input-content').value = guideData.content || defaultGuideData.content;
+            document.getElementById('guide-form-modal').classList.remove('hidden');
+        }
+
+        function closeGuideModal() {
+            document.getElementById('guide-form-modal').classList.add('hidden');
+        }
+
+        async function handleGuideSubmit(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            const title = document.getElementById('guide-input-title').value.trim();
+            const content = document.getElementById('guide-input-content').value.trim();
+            if (!title || !content) return;
+
+            guideData = { title, content };
+            closeGuideModal();
+            renderGuideSection();
+            await saveDataToCloud(false);
         }
 
         // ================= XỬ LÝ LỜI THÌ THẦM & TRẢ LỜI BÌNH LUẬN =================
@@ -1491,24 +1663,17 @@
         function handleSearchInput(val) {
             searchQuery = (val || '').trim();
             
-            const homeInput = document.getElementById('home-search-input');
             const listInput = document.getElementById('list-search-input');
-            const clearHome = document.getElementById('clear-search-home');
             const clearList = document.getElementById('clear-search-list');
 
-            if (homeInput && homeInput.value !== val) homeInput.value = val;
             if (listInput && listInput.value !== val) listInput.value = val;
 
             if (searchQuery.length > 0) {
-                if (clearHome) clearHome.classList.remove('hidden');
                 if (clearList) clearList.classList.remove('hidden');
             } else {
-                if (clearHome) clearHome.classList.add('hidden');
                 if (clearList) clearList.classList.add('hidden');
             }
 
-            currentCharPage = 0;
-            renderCarousel();
             renderFullList();
         }
 
@@ -1532,59 +1697,51 @@
             } else {
                 selectedHashtags.push(tag);
             }
-            currentCharPage = 0;
             renderAll();
         }
 
         function clearHashtagFilter() {
             selectedHashtags = [];
             handleSearchInput('');
-            currentCharPage = 0;
             renderAll();
         }
 
         function renderHashtagFilters() {
             const allTags = getAllUniqueHashtags();
-            const bars = ['home-hashtag-bar', 'list-hashtag-bar'];
-            
-            const clearHome = document.getElementById('clear-filter-home');
             const clearList = document.getElementById('clear-filter-list');
-            if (selectedHashtags.length > 0) {
-                clearHome.classList.remove('hidden');
-                clearList.classList.remove('hidden');
-            } else {
-                clearHome.classList.add('hidden');
-                clearList.classList.add('hidden');
+            if (clearList) {
+                if (selectedHashtags.length > 0) {
+                    clearList.classList.remove('hidden');
+                } else {
+                    clearList.classList.add('hidden');
+                }
             }
 
-            bars.forEach(barId => {
-                const container = document.getElementById(barId);
-                if (!container) return;
-                container.innerHTML = '';
+            const container = document.getElementById('list-hashtag-bar');
+            if (!container) return;
+            container.innerHTML = '';
 
-                const allBtn = document.createElement('button');
-                const isAllActive = selectedHashtags.length === 0;
-                allBtn.className = isAllActive
-                    ? "px-3 py-1 rounded-full text-xs font-bold bg-purple-600 text-white shadow-sm transition cursor-pointer"
-                    : "px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
-                allBtn.innerText = "Tất cả ✨";
-                allBtn.onclick = () => {
-                    selectedHashtags = [];
-                    currentCharPage = 0;
-                    renderAll();
-                };
-                container.appendChild(allBtn);
+            const allBtn = document.createElement('button');
+            const isAllActive = selectedHashtags.length === 0;
+            allBtn.className = isAllActive
+                ? "px-3 py-1 rounded-full text-xs font-bold bg-purple-600 text-white shadow-sm transition cursor-pointer"
+                : "px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
+            allBtn.innerText = "Tất cả ✨";
+            allBtn.onclick = () => {
+                selectedHashtags = [];
+                renderAll();
+            };
+            container.appendChild(allBtn);
 
-                allTags.forEach(tag => {
-                    const isSelected = selectedHashtags.some(t => t.toLowerCase() === tag.toLowerCase());
-                    const btn = document.createElement('button');
-                    btn.className = isSelected
-                        ? "px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-sm scale-105 transition cursor-pointer flex items-center gap-1"
-                        : "px-3 py-1 rounded-full text-xs font-semibold bg-white text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
-                    btn.innerHTML = isSelected ? `<span>✓</span> <span>${tag}</span>` : tag;
-                    btn.onclick = () => toggleHashtagFilter(tag);
-                    container.appendChild(btn);
-                });
+            allTags.forEach(tag => {
+                const isSelected = selectedHashtags.some(t => t.toLowerCase() === tag.toLowerCase());
+                const btn = document.createElement('button');
+                btn.className = isSelected
+                    ? "px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-sm scale-105 transition cursor-pointer flex items-center gap-1"
+                    : "px-3 py-1 rounded-full text-xs font-semibold bg-white text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
+                btn.innerHTML = isSelected ? `<span>✓</span> <span>${tag}</span>` : tag;
+                btn.onclick = () => toggleHashtagFilter(tag);
+                container.appendChild(btn);
             });
         }
 
@@ -1640,55 +1797,9 @@
             return card;
         }
 
-        function renderCarousel() {
-            const track = document.getElementById('carousel-track');
-            const pageIndicator = document.getElementById('char-page-indicator');
-            track.innerHTML = '';
-
-            const filteredChars = getFilteredCharacters();
-
-            if (filteredChars.length === 0) {
-                pageIndicator.innerText = 'Trang 0/0';
-                track.innerHTML = `
-                    <div class="col-span-4 text-center py-10 bg-white/80 rounded-3xl border border-purple-100 p-6">
-                        <p class="text-purple-800 font-semibold">Không tìm thấy giấc mơ nào khớp với tìm kiếm của bạn rồi 🥺💜</p>
-                        <button onclick="clearHashtagFilter()" class="mt-3 px-4 py-1.5 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-xs font-bold transition cursor-pointer">Xem lại tất cả giấc mơ</button>
-                    </div>`;
-                return;
-            }
-
-            const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
-            if (currentCharPage >= totalPages) currentCharPage = 0;
-            if (currentCharPage < 0) currentCharPage = totalPages - 1;
-
-            pageIndicator.innerText = `Trang ${currentCharPage + 1}/${totalPages}`;
-
-            const startIndex = currentCharPage * CHARS_PER_PAGE;
-            const pageChars = filteredChars.slice(startIndex, startIndex + CHARS_PER_PAGE);
-
-            pageChars.forEach(char => {
-                track.appendChild(createCharCardElement(char));
-            });
-        }
-
-        function nextSlide() {
-            const filteredChars = getFilteredCharacters();
-            const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
-            if (totalPages <= 1) return;
-            currentCharPage = (currentCharPage + 1) % totalPages;
-            renderCarousel();
-        }
-
-        function prevSlide() {
-            const filteredChars = getFilteredCharacters();
-            const totalPages = Math.ceil(filteredChars.length / CHARS_PER_PAGE);
-            if (totalPages <= 1) return;
-            currentCharPage = (currentCharPage - 1 + totalPages) % totalPages;
-            renderCarousel();
-        }
-
         function renderFullList() {
             const grid = document.getElementById('full-list-grid');
+            if (!grid) return;
             grid.innerHTML = '';
 
             const filteredChars = getFilteredCharacters();
@@ -1722,20 +1833,8 @@
             setTimeout(() => {
                 splash.style.display = 'none';
                 mainWeb.classList.remove('hidden');
-                window.scrollTo(0, 0);
+                switchTab('about');
             }, 500);
-        }
-
-        function showHomeView() {
-            document.getElementById('home-view').classList.remove('hidden');
-            document.getElementById('list-view').classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function showListView() {
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('list-view').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function normalizeLinks(rawLinks) {
@@ -2036,6 +2135,7 @@
             document.getElementById('admin-pass-input').value = '';
             document.getElementById('pass-error-msg').classList.add('hidden');
             document.getElementById('password-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('admin-pass-input').focus(), 50);
         }
 
         function closePasswordModal() {
@@ -2050,12 +2150,13 @@
                 isAdmin = true;
                 closePasswordModal();
                 document.getElementById('add-char-btn').classList.remove('hidden');
-                document.getElementById('home-add-char-btn').classList.remove('hidden');
                 document.getElementById('edit-social-btn').classList.remove('hidden');
+                document.getElementById('edit-bio-btn').classList.remove('hidden');
+                document.getElementById('edit-guide-btn').classList.remove('hidden');
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể thêm/sửa {char} và trả lời bình luận nhé.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể chỉnh sửa giới thiệu, thêm/sửa {char} và trả lời bình luận nhé.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
