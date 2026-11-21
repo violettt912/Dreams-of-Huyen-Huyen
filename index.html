@@ -58,6 +58,23 @@ html_content = r'''<!DOCTYPE html>
             background: rgba(147, 51, 234, 0.7);
         }
 
+        /* Thanh cuộn dọc mảnh màu tím pastel cho khung nội dung chính của Chỉ dẫn */
+        .guide-code-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .guide-code-scroll::-webkit-scrollbar-track {
+            background: rgba(168, 85, 247, 0.08);
+            border-radius: 999px;
+        }
+        .guide-code-scroll::-webkit-scrollbar-thumb {
+            background: rgba(147, 51, 234, 0.35);
+            border-radius: 999px;
+        }
+        .guide-code-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(147, 51, 234, 0.65);
+        }
+
         /* Hiệu ứng tuyết động / hạt sáng bay phủ khắp màn hình */
         @keyframes magicalFall {
             0% { transform: translateY(-10px) translateX(0); opacity: 0; }
@@ -216,7 +233,7 @@ html_content = r'''<!DOCTYPE html>
             <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể chỉnh sửa giới thiệu, thêm/sửa {char}, quản lý lời thì thầm và đồng bộ trực tuyến!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể chỉnh sửa giới thiệu, thêm/sửa {char}, chỉ dẫn và quản lý lời thì thầm!</span>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
@@ -339,7 +356,7 @@ html_content = r'''<!DOCTYPE html>
             </div>
 
 
-            <!-- ================= TAB 3: LỜI THÌ THẦM (DẠNG LƯỚI NOTE PASTEL 1-3 CỘT + PHẢN HỒI ĐA NGƯỜI DÙNG KÈM ẢNH) ================= -->
+            <!-- ================= TAB 3: LỜI THÌ THẦM ================= -->
             <div id="whispers-view" class="hidden space-y-6">
                 <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
                     <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
@@ -362,7 +379,7 @@ html_content = r'''<!DOCTYPE html>
                     </div>
 
                     <form id="whisper-form" onsubmit="handleWhisperSubmit(event)" class="space-y-4">
-                        <!-- BƯỚC 1: CHỌN NGƯỜI NHẬN THƯ (HUYÊN HUYÊN + CÁC CHAR ĐÃ ĐĂNG LÊN WEB) -->
+                        <!-- BƯỚC 1: CHỌN NGƯỜI NHẬN THƯ -->
                         <div class="bg-purple-50/70 p-4 sm:p-5 rounded-3xl border border-purple-200/80 space-y-3">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                                 <span id="whisper-recipient-heading" class="text-xs sm:text-sm font-extrabold text-pink-700 uppercase tracking-wide flex items-center gap-1.5">
@@ -383,13 +400,12 @@ html_content = r'''<!DOCTYPE html>
                                 </div>
                             </div>
 
-                            <!-- Hàng thẻ chọn người nhận cuộn ngang -->
                             <div id="whisper-recipients-track" class="recipient-scrollbar flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-1 px-0.5 scroll-smooth">
                                 <!-- Render bằng JS -->
                             </div>
                         </div>
 
-                        <!-- BƯỚC 2: BIỆT DANH + LỜI NHẮN + ĐÍNH KÈM ẢNH TỪ ALBUM ĐIỆN THOẠI/MÁY -->
+                        <!-- BƯỚC 2: BIỆT DANH + LỜI NHẮN + ĐÍNH KÈM ẢNH -->
                         <div class="flex flex-col sm:flex-row gap-3">
                             <div class="sm:w-1/3">
                                 <label class="block text-xs font-bold text-purple-800 mb-1">2. Biệt danh của bạn:</label>
@@ -400,7 +416,6 @@ html_content = r'''<!DOCTYPE html>
                                 <div class="flex items-center gap-2">
                                     <input type="text" id="whisper-message" maxlength="500" placeholder="Viết đôi dòng nhắn gửi đến Huyên Huyên nhé..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
                                     
-                                    <!-- Nút chọn ảnh từ album ảnh điện thoại / máy tính -->
                                     <label class="cursor-pointer bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold px-3.5 py-2.5 rounded-2xl border border-purple-200 text-xs sm:text-sm shadow-2xs hover:scale-105 transition flex-shrink-0 flex items-center gap-1" title="Đính kèm ảnh từ album điện thoại">
                                         <span>🖼️</span>
                                         <span class="hidden md:inline">Ảnh</span>
@@ -414,7 +429,6 @@ html_content = r'''<!DOCTYPE html>
                             </div>
                         </div>
 
-                        <!-- Khung xem trước ảnh người lạ đã chọn đính kèm -->
                         <div id="whisper-image-preview-box" class="hidden flex items-center justify-between gap-3 bg-pink-50/80 p-3 rounded-2xl border border-pink-200">
                             <div class="flex items-center gap-3">
                                 <img id="whisper-image-preview-img" src="" alt="Ảnh đính kèm" class="w-14 h-14 rounded-xl object-cover border border-purple-200 shadow-xs">
@@ -430,29 +444,49 @@ html_content = r'''<!DOCTYPE html>
                     </form>
                 </div>
 
-                <!-- LƯỚI CÁC TỜ NOTE LỜI THÌ THẦM (1 CỘT TRÊN MOBILE, 2 CỘT TRÊN IPAD, 3 CỘT TRÊN LAPTOP) -->
+                <!-- LƯỚI CÁC TỜ NOTE LỜI THÌ THẦM -->
                 <div id="whispers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start pt-2">
                     <!-- Render bằng JS -->
                 </div>
             </div>
 
 
-            <!-- ================= TAB 4: CHỈ DẪN ================= -->
-            <div id="guide-view" class="hidden max-w-5xl mx-auto space-y-6">
-                <section class="bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 space-y-5">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
-                        <h2 id="guide-display-title" class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2.5">
-                            <span>✨</span> <span>Chỉ dẫn bước vào thế giới giấc mơ</span>
-                        </h2>
-                        <button id="edit-guide-btn" onclick="openGuideModal()" class="hidden self-start sm:self-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs shadow-md transition cursor-pointer flex items-center gap-1.5 flex-shrink-0">
-                            <span>✏️</span> <span>Chỉnh sửa chỉ dẫn</span>
+            <!-- ================= TAB 4: CHỈ DẪN (THẺ LỆNH / HƯỚNG DẪN KHÔNG ẢNH, KHÔNG HASHTAG + POPUP XEM HẾT & ALBUM ẢNH) ================= -->
+            <div id="guide-view" class="hidden max-w-6xl mx-auto space-y-6">
+                <!-- Thanh tiêu đề & Nút Thêm Chỉ Dẫn Mới (cho Admin) -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/85 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-200 shadow-xs">
+                    <span class="font-script text-3xl sm:text-5xl text-purple-900 text-center sm:text-left">✨ Kho Chỉ Dẫn & Câu Lệnh ✨</span>
+                    
+                    <button id="add-guide-btn" onclick="openAddGuideModal()" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs transition shadow-md flex items-center gap-1 cursor-pointer">
+                        <span>+ Thêm Chỉ Dẫn Mới</span>
+                    </button>
+                </div>
+
+                <!-- Thanh Tìm Kiếm & Lọc nhanh theo phiên bản HTML / TEXT -->
+                <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-bold text-purple-800 mr-1">🏷️ Phiên bản:</span>
+                        <button type="button" id="guide-filter-all" onclick="setGuideVersionFilter('ALL')" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-purple-600 text-white shadow-xs transition cursor-pointer">
+                            Tất cả ✨
+                        </button>
+                        <button type="button" id="guide-filter-html" onclick="setGuideVersionFilter('HTML')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer">
+                            Bản HTML
+                        </button>
+                        <button type="button" id="guide-filter-text" onclick="setGuideVersionFilter('TEXT')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pink-50 text-pink-700 hover:bg-pink-100 border border-pink-200 transition cursor-pointer">
+                            Bản TEXT
                         </button>
                     </div>
 
-                    <div id="guide-display-content" class="space-y-3.5 text-sm sm:text-base text-purple-900/90 leading-relaxed whitespace-pre-line">
-                        <!-- Render nội dung chỉ dẫn bằng JS -->
+                    <div class="relative w-full sm:max-w-xs">
+                        <input type="text" id="guide-search-input" oninput="handleGuideSearchInput(this.value)" placeholder="🔍 Tìm tên hoặc mô tả chỉ dẫn..." class="w-full pl-4 pr-9 py-2 rounded-full border border-purple-200 bg-purple-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                        <button type="button" id="clear-guide-search" onclick="handleGuideSearchInput('')" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-700 text-xs font-bold cursor-pointer" title="Xóa tìm kiếm">✕</button>
                     </div>
-                </section>
+                </div>
+
+                <!-- Lưới các thẻ Chỉ dẫn (Không ảnh bìa, không hashtag, đúng 5 thành phần từ trên xuống) -->
+                <div id="guides-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+                    <!-- Render bằng JS -->
+                </div>
             </div>
 
         </main>
@@ -510,28 +544,130 @@ html_content = r'''<!DOCTYPE html>
     </div>
 
 
-    <!-- ================= 3C. MODAL CHỈNH SỬA CHỈ DẪN ================= -->
-    <div id="guide-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-purple-200 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeGuideModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
+    <!-- ================= 3C. MODAL THÊM / SỬA CHỈ DẪN (ADMIN FORM) ================= -->
+    <div id="guide-item-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-purple-200 relative max-h-[92vh] overflow-y-auto">
+            <button onclick="closeGuideItemModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
             
-            <h3 class="font-script text-3xl text-purple-900 mb-2">✏️ Chỉnh Sửa Chỉ Dẫn</h3>
-            <p class="text-xs text-purple-700 mb-4">Cập nhật hướng dẫn dành cho khách ghé thăm giấc mơ:</p>
+            <h3 id="guide-form-title" class="font-script text-3xl text-purple-900 mb-4">✨ Thêm Chỉ Dẫn Mới</h3>
             
-            <form onsubmit="handleGuideSubmit(event)" class="space-y-4 text-sm text-purple-900">
+            <form id="guide-item-form" onsubmit="handleGuideItemSubmit(event)" class="space-y-4 text-sm text-purple-900">
+                <input type="hidden" id="guide-form-id">
+
+                <!-- 1. Chọn phiên bản HTML hoặc TEXT -->
                 <div>
-                    <label class="block font-bold mb-1">Tiêu đề khung chỉ dẫn:</label>
-                    <input type="text" id="guide-input-title" required class="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    <label class="block font-bold mb-1.5">1. Chọn phiên bản chỉ dẫn:</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="guide-version-radio" value="HTML" class="peer sr-only" checked>
+                            <div class="text-center py-2.5 px-4 rounded-2xl border-2 border-purple-200 bg-purple-50/40 font-bold text-purple-700 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 transition">
+                                💜 BẢN HTML
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="guide-version-radio" value="TEXT" class="peer sr-only">
+                            <div class="text-center py-2.5 px-4 rounded-2xl border-2 border-pink-200 bg-pink-50/40 font-bold text-pink-700 peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-600 transition">
+                                🌸 BẢN TEXT
+                            </div>
+                        </label>
+                    </div>
                 </div>
+
+                <!-- 2. Tên chỉ dẫn -->
                 <div>
-                    <label class="block font-bold mb-1">Nội dung chỉ dẫn:</label>
-                    <textarea id="guide-input-content" rows="8" required placeholder="Nhập nội dung chỉ dẫn..." class="w-full px-4 py-3 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 leading-relaxed"></textarea>
+                    <label class="block font-bold mb-1">2. Tên chỉ dẫn:</label>
+                    <input type="text" id="guide-form-name" placeholder="VD: 01. /checkphone - Lục điện thoại nhân vật" required class="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                 </div>
-                <div class="pt-2 flex justify-end gap-3">
-                    <button type="button" onclick="closeGuideModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
+
+                <!-- 3. Miêu tả chỉ dẫn -->
+                <div>
+                    <label class="block font-bold mb-1">3. Miêu tả chỉ dẫn:</label>
+                    <input type="text" id="guide-form-desc" placeholder="Mô tả ngắn gọn công dụng của chỉ dẫn này..." required class="w-full px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                </div>
+
+                <!-- 4. Nội dung chính của chỉ dẫn -->
+                <div>
+                    <label class="block font-bold mb-1">4. Nội dung chính của chỉ dẫn (Dùng để sao chép & xem chi tiết):</label>
+                    <textarea id="guide-form-content" rows="7" placeholder="Dán toàn bộ câu lệnh hoặc nội dung chỉ dẫn vào đây..." required class="w-full px-4 py-3 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 leading-relaxed font-mono text-xs sm:text-sm"></textarea>
+                </div>
+
+                <!-- 5. Album ảnh đính kèm (tùy chọn - hiện khi bấm Xem hết chỉ dẫn) -->
+                <div class="pt-2 border-t border-purple-100">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <label class="block font-semibold">🖼️ Album ảnh minh họa đính kèm (Tùy chọn):</label>
+                        <div class="flex items-center gap-1.5">
+                            <label class="cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold px-3 py-1 rounded-full text-xs transition flex items-center gap-1 shadow-xs">
+                                <span>📁 Chọn ảnh từ máy</span>
+                                <input type="file" accept="image/*" multiple class="hidden" onchange="handleGuideGalleryFilesUpload(event)">
+                            </label>
+                            <button type="button" onclick="addGuideGalleryImageField('')" class="px-3 py-1 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition cursor-pointer">
+                                <span>+ Dán link ảnh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="guide-form-gallery-container" class="space-y-2 max-h-44 overflow-y-auto pr-1"></div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeGuideItemModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
                     <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md cursor-pointer">Lưu Chỉ Dẫn ✨</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+
+    <!-- ================= 3D. MODAL POPUP "XEM HẾT CHỈ DẪN" (TOÀN BỘ NỘI DUNG + ALBUM ẢNH ĐÍNH KÈM) ================= -->
+    <div id="guide-detail-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-2xl w-full shadow-2xl border border-purple-200 relative transform transition-all scale-95 opacity-0 duration-300 max-h-[90vh] overflow-y-auto" id="guide-detail-box">
+            <button onclick="closeGuideDetailModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
+
+            <div class="space-y-2 pr-10">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span id="guide-modal-version-badge" class="text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"></span>
+                    <span id="guide-modal-index-badge" class="text-xs font-bold text-purple-400"></span>
+                </div>
+                <h3 id="guide-modal-name" class="text-xl sm:text-2xl font-bold text-purple-950 leading-snug"></h3>
+                <p id="guide-modal-desc" class="text-xs sm:text-sm text-purple-800/90 leading-relaxed"></p>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-purple-100 space-y-4">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-bold text-purple-900 uppercase tracking-wide">📜 Nội dung chi tiết chỉ dẫn:</span>
+                    <button type="button" id="guide-modal-copy-btn" onclick="copyCurrentModalGuideContent()" class="cursor-pointer inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white text-xs font-bold shadow-sm hover:scale-105 transition">
+                        <span>✦</span> <span>Sao chép lệnh</span>
+                    </button>
+                </div>
+
+                <div id="guide-modal-content" class="bg-purple-50/75 p-4 sm:p-5 rounded-2xl border border-purple-200/80 text-xs sm:text-sm text-purple-950 whitespace-pre-wrap break-words leading-relaxed font-mono max-h-[45vh] overflow-y-auto guide-code-scroll"></div>
+
+                <!-- Khu vực Album ảnh đính kèm (nếu có) -->
+                <div id="guide-modal-gallery-section" class="hidden pt-3 border-t border-purple-100">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <p id="guide-modal-gallery-title" class="font-bold text-sm text-purple-900">🖼️ Hình ảnh minh họa đính kèm (0 ảnh):</p>
+                        <span id="guide-modal-gallery-page-indicator" class="text-xs font-semibold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full"></span>
+                    </div>
+
+                    <div class="relative flex items-center">
+                        <button type="button" id="guide-modal-gallery-prev" onclick="prevModalGalleryPage('guide')" class="hidden absolute -left-3 sm:-left-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh trước">
+                            ❮
+                        </button>
+
+                        <div id="guide-modal-gallery-grid" class="grid grid-cols-4 gap-2 sm:gap-2.5 w-full"></div>
+
+                        <button type="button" id="guide-modal-gallery-next" onclick="nextModalGalleryPage('guide')" class="hidden absolute -right-3 sm:-right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh tiếp theo">
+                            ❯
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-purple-500 italic mt-1.5 text-center">Chạm vào từng ảnh để xem kích thước thật (Full Size) & tải về máy ✨</p>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="closeGuideDetailModal()" class="px-6 py-2.5 bg-purple-200 hover:bg-purple-300 text-purple-950 font-bold rounded-full text-sm transition shadow-sm cursor-pointer">
+                    Đóng cửa sổ
+                </button>
+            </div>
         </div>
     </div>
 
@@ -611,13 +747,13 @@ html_content = r'''<!DOCTYPE html>
                     </div>
 
                     <div class="relative flex items-center">
-                        <button type="button" id="modal-gallery-prev" onclick="prevModalGalleryPage()" class="hidden absolute -left-3 sm:-left-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh trước">
+                        <button type="button" id="modal-gallery-prev" onclick="prevModalGalleryPage('char')" class="hidden absolute -left-3 sm:-left-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh trước">
                             ❮
                         </button>
 
                         <div id="modal-gallery-grid" class="grid grid-cols-4 gap-2 sm:gap-2.5 w-full"></div>
 
-                        <button type="button" id="modal-gallery-next" onclick="nextModalGalleryPage()" class="hidden absolute -right-3 sm:-right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh tiếp theo">
+                        <button type="button" id="modal-gallery-next" onclick="nextModalGalleryPage('char')" class="hidden absolute -right-3 sm:-right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh tiếp theo">
                             ❯
                         </button>
                     </div>
@@ -934,7 +1070,6 @@ html_content = r'''<!DOCTYPE html>
         // ================= DỮ LIỆU MẶC ĐỊNH & LOGIC TRANG WEB =================
         const HUYEN_AVATAR_URL = 'https://files.catbox.moe/3c24gw.jpg';
 
-        // Bảng màu pastel nhẹ nhàng đồng bộ với giao diện trắng - tím pastel
         const WHISPER_PASTEL_THEMES = [
             {
                 cardBg: 'bg-purple-50/95',
@@ -988,10 +1123,24 @@ html_content = r'''<!DOCTYPE html>
             content: "Xin chào các tình iu đã lạc bước vào “Những giấc mơ của Huyên Huyên” 💜\n\nMình là Huyên Huyên — một người yêu cái đẹp nhẹ nhàng của sắc trắng và tím pastel, thích dệt nên những câu chuyện cùng các nhân vật mang màu sắc riêng trên Dokichat, Google AI Studio và nhiều thế giới nhập vai khác.\n\nTrang web nhỏ này là nơi mình lưu giữ trọn vẹn từng “giấc mơ” đã tạo nên: từ hồ sơ nhân vật, bối cảnh mở đầu, album hình ảnh cho đến những lời nhắn nhủ thân thương từ các bạn. Chúc bạn có những phút giây thật thư giãn và tìm thấy nhân vật đồng điệu với tâm hồn mình tại đây nhé ✨"
         };
 
-        const defaultGuideData = {
-            title: "Chỉ dẫn bước vào thế giới giấc mơ",
-            content: "1. Mục “Về Huyên Huyên”: Nơi lắng nghe giai điệu nền thư giãn, tìm hiểu đôi nét về Huyên Huyên và kết nối qua các kênh mạng xã hội.\n\n2. Mục “Dreams”: Khám phá toàn bộ các nhân vật & giấc mơ. Bạn có thể gõ tên để tìm nhanh hoặc bấm chọn nhiều Hashtag cùng lúc để lọc đúng thể loại yêu thích. Chạm vào từng thẻ để xem chi tiết, mở các mục thu gọn, tải ảnh Full Size trong album hoặc bấm vào đường dẫn để trò chuyện trực tiếp.\n\n3. Mục “Lời thì thầm”: Nơi bạn có thể chọn người nhận thư (Huyên Huyên hoặc nhân vật yêu thích), đính kèm ảnh từ album điện thoại và trò chuyện qua lại dưới từng tờ note tâm tình.\n\n4. Thanh nhạc nền: Có thể bật/tắt hoặc tua bất cứ lúc nào ở trang Về Huyên Huyên, nhạc sẽ tiếp tục phát êm ái khi bạn dạo quanh các mục khác 💜"
-        };
+        const defaultGuidesList = [
+            {
+                id: 1,
+                version: "TEXT",
+                name: "01. /checkphone - Lục điện thoại nhân vật",
+                desc: "Lệnh kiểm tra điện thoại nhân vật bản text thuần, giữ nguyên mạch truyện và hiển thị chi tiết tin nhắn, lịch sử gọi, ghi chú.",
+                content: "[LỆNH: /checkphone]\nCú pháp: /checkphone [tên nhân vật]\n- Hiển thị giao diện điện thoại giả lập dạng văn bản rõ ràng.\n- Bao gồm: Tin nhắn gần đây, nhật ký cuộc gọi, ghi chú riêng tư và lịch sử tìm kiếm của nhân vật.\n- Giữ đúng tính cách và bối cảnh hiện tại của nhân vật trong giấc mơ.",
+                gallery: []
+            },
+            {
+                id: 2,
+                version: "HTML",
+                name: "02. Giao diện thẻ hồ sơ nhân vật (HTML)",
+                desc: "Mẫu khung HTML hiển thị bảng trạng thái, tâm trạng và mức độ thiện cảm của nhân vật ngay trong khung chat.",
+                content: "<div style=\"border:1px solid #d8b4fe; border-radius:16px; padding:14px; background:#faf5ff; color:#3b0764;\">\n  <strong>🌙 TRẠNG THÁI NHÂN VẬT</strong><br>\n  • Tâm trạng: Trầm tư, chú ý đến bạn<br>\n  • Suy nghĩ hiện tại: “Không biết em ấy đang nghĩ gì...”\n</div>",
+                gallery: []
+            }
+        ];
 
         const defaultCharacters = [
             {
@@ -1115,6 +1264,19 @@ html_content = r'''<!DOCTYPE html>
             return c;
         }
 
+        function normalizeGuideItem(g) {
+            if (!g || typeof g !== 'object') return g;
+            const ver = (g.version || 'TEXT').toUpperCase();
+            return {
+                id: Number(g.id) || Date.now(),
+                version: ver === 'HTML' ? 'HTML' : 'TEXT',
+                name: String(g.name || '').trim(),
+                desc: String(g.desc || '').trim(),
+                content: String(g.content || ''),
+                gallery: Array.isArray(g.gallery) ? g.gallery.filter(u => u && u.trim()) : []
+            };
+        }
+
         function normalizeWhisperObject(w) {
             if (!w || typeof w !== 'object') return w;
             if (!Array.isArray(w.replies)) {
@@ -1139,7 +1301,7 @@ html_content = r'''<!DOCTYPE html>
         let whispersData = (JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers).map(normalizeWhisperObject);
         let likedWhisperIds = JSON.parse(localStorage.getItem('huyen_liked_whispers') || '[]');
         let bioData = JSON.parse(localStorage.getItem('huyen_bio_data')) || defaultBioData;
-        let guideData = JSON.parse(localStorage.getItem('huyen_guide_data')) || defaultGuideData;
+        let guidesListData = (JSON.parse(localStorage.getItem('huyen_guides_list_v2')) || defaultGuidesList).map(normalizeGuideItem);
         let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
 
         let activeTab = 'about';
@@ -1147,15 +1309,22 @@ html_content = r'''<!DOCTYPE html>
         let selectedHashtags = [];
         let searchQuery = '';
 
-        // Trạng thái cho mục Lời thì thầm (Chọn người nhận + Đính kèm ảnh + Mở khung bình luận từng note)
+        // Trạng thái lọc cho mục Chỉ dẫn
+        let guideVersionFilter = 'ALL';
+        let guideSearchQuery = '';
+        let currentOpenedGuideId = null;
+
+        // Trạng thái cho mục Lời thì thầm
         let selectedWhisperRecipientId = 'huyen-huyen';
         let whisperRecipientSearchQuery = '';
         let pendingWhisperImageDataUrl = '';
         let openWhisperThreadIds = new Set();
         let pendingReplyImages = {};
 
+        // Trạng thái Album ảnh & Lightbox (dùng chung cho cả Dreams và Chỉ dẫn)
         let currentModalGallery = [];
         let currentModalGalleryPage = 0;
+        let currentModalGalleryTarget = 'char'; // 'char' hoặc 'guide'
         let currentLightboxIndex = 0;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1289,7 +1458,6 @@ html_content = r'''<!DOCTYPE html>
                 if (!existing) {
                     mergedMap.set(w.id, w);
                 } else {
-                    // Hợp nhất danh sách replies theo id
                     const replyMap = new Map();
                     [...(existing.replies || []), ...(w.replies || [])].forEach(rep => {
                         if (rep && rep.id) replyMap.set(rep.id, rep);
@@ -1302,7 +1470,6 @@ html_content = r'''<!DOCTYPE html>
         }
 
         async function loadDataFromCloud() {
-            // Không tự render lại khi người dùng đang gõ phản hồi trong một note
             const activeEl = document.activeElement;
             if (activeEl && activeEl.classList && activeEl.classList.contains('whisper-reply-input')) {
                 return;
@@ -1341,9 +1508,9 @@ html_content = r'''<!DOCTYPE html>
                     bioData = cloudData.bio;
                     localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
                 }
-                if (cloudData.guide && typeof cloudData.guide === 'object') {
-                    guideData = cloudData.guide;
-                    localStorage.setItem('huyen_guide_data', JSON.stringify(guideData));
+                if (Array.isArray(cloudData.guidesList)) {
+                    guidesListData = cloudData.guidesList.map(normalizeGuideItem);
+                    localStorage.setItem('huyen_guides_list_v2', JSON.stringify(guidesListData));
                 }
                 localUpdatedAt = cloudTime;
                 localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
@@ -1360,7 +1527,7 @@ html_content = r'''<!DOCTYPE html>
             localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
             localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
             localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
-            localStorage.setItem('huyen_guide_data', JSON.stringify(guideData));
+            localStorage.setItem('huyen_guides_list_v2', JSON.stringify(guidesListData));
 
             const deletedWhisperIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
 
@@ -1371,7 +1538,7 @@ html_content = r'''<!DOCTYPE html>
                 socials: socialLinksData,
                 whispers: whispersData,
                 bio: bioData,
-                guide: guideData,
+                guidesList: guidesListData,
                 deletedWhisperIds: deletedWhisperIds,
                 updatedAt: localUpdatedAt
             };
@@ -1380,7 +1547,7 @@ html_content = r'''<!DOCTYPE html>
             if (ok) {
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
                 if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ giới thiệu, {char}, album ảnh, link MXH và các lời thì thầm lên Đám Mây!');
+                    alert('✅ Đã đẩy toàn bộ giới thiệu, {char}, chỉ dẫn, album ảnh, link MXH và các lời thì thầm lên Đám Mây!');
                 }
             } else {
                 setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
@@ -1392,7 +1559,7 @@ html_content = r'''<!DOCTYPE html>
 
         function renderAll() {
             renderBioSection();
-            renderGuideSection();
+            renderGuidesGrid();
             renderSocialLinks();
             renderHashtagFilters();
             renderFullList();
@@ -1445,49 +1612,370 @@ html_content = r'''<!DOCTYPE html>
             await saveDataToCloud(false);
         }
 
-        // ================= HIỂN THỊ & CHỈNH SỬA CHỈ DẪN =================
-        function renderGuideSection() {
-            const titleEl = document.getElementById('guide-display-title');
-            const contentEl = document.getElementById('guide-display-content');
-            const editBtn = document.getElementById('edit-guide-btn');
+        // ================= MỤC 4: CHỈ DẪN (THẺ LỆNH KHÔNG ẢNH, KHÔNG HASHTAG + POPUP XEM HẾT + ALBUM ẢNH) =================
+        function setGuideVersionFilter(ver) {
+            guideVersionFilter = ver;
+            const btnAll = document.getElementById('guide-filter-all');
+            const btnHtml = document.getElementById('guide-filter-html');
+            const btnText = document.getElementById('guide-filter-text');
 
-            if (titleEl) {
-                titleEl.innerHTML = `<span>✨</span> <span>${escapeHtml(guideData.title || defaultGuideData.title)}</span>`;
+            if (btnAll) {
+                btnAll.className = ver === 'ALL'
+                    ? "px-3.5 py-1.5 rounded-full text-xs font-bold bg-purple-600 text-white shadow-xs transition cursor-pointer"
+                    : "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
             }
-            if (contentEl) {
-                contentEl.textContent = guideData.content || defaultGuideData.content;
+            if (btnHtml) {
+                btnHtml.className = ver === 'HTML'
+                    ? "px-3.5 py-1.5 rounded-full text-xs font-bold bg-purple-600 text-white shadow-xs transition cursor-pointer"
+                    : "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition cursor-pointer";
             }
-            if (editBtn) {
-                if (isAdmin) {
-                    editBtn.classList.remove('hidden');
+            if (btnText) {
+                btnText.className = ver === 'TEXT'
+                    ? "px-3.5 py-1.5 rounded-full text-xs font-bold bg-pink-600 text-white shadow-xs transition cursor-pointer"
+                    : "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pink-50 text-pink-700 hover:bg-pink-100 border border-pink-200 transition cursor-pointer";
+            }
+
+            renderGuidesGrid();
+        }
+
+        function handleGuideSearchInput(val) {
+            guideSearchQuery = (val || '').trim();
+            const inputEl = document.getElementById('guide-search-input');
+            const clearBtn = document.getElementById('clear-guide-search');
+            if (inputEl && inputEl.value !== val) inputEl.value = val;
+            if (clearBtn) {
+                if (guideSearchQuery.length > 0) {
+                    clearBtn.classList.remove('hidden');
                 } else {
-                    editBtn.classList.add('hidden');
+                    clearBtn.classList.add('hidden');
                 }
             }
+            renderGuidesGrid();
         }
 
-        function openGuideModal() {
+        function getFilteredGuides() {
+            const q = guideSearchQuery.toLowerCase();
+            return (guidesListData || []).filter(item => {
+                if (guideVersionFilter !== 'ALL' && item.version !== guideVersionFilter) {
+                    return false;
+                }
+                if (!q) return true;
+                return (item.name || '').toLowerCase().includes(q)
+                    || (item.desc || '').toLowerCase().includes(q)
+                    || (item.content || '').toLowerCase().includes(q);
+            });
+        }
+
+        function copyTextToClipboard(text, btnEl) {
+            if (!text) return;
+            const showSuccess = () => {
+                if (!btnEl) return;
+                const oldHtml = btnEl.innerHTML;
+                btnEl.innerHTML = '<span>✓</span> <span>Đã sao chép!</span>';
+                btnEl.classList.add('ring-2', 'ring-purple-400');
+                setTimeout(() => {
+                    btnEl.innerHTML = oldHtml;
+                    btnEl.classList.remove('ring-2', 'ring-purple-400');
+                }, 1600);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(showSuccess).catch(() => {
+                    fallbackCopyText(text);
+                    showSuccess();
+                });
+            } else {
+                fallbackCopyText(text);
+                showSuccess();
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            ta.remove();
+        }
+
+        function copyGuideCardContent(guideId, btnEl) {
+            const item = guidesListData.find(g => g.id === guideId);
+            if (!item) return;
+            copyTextToClipboard(item.content, btnEl);
+        }
+
+        function copyCurrentModalGuideContent() {
+            const item = guidesListData.find(g => g.id === currentOpenedGuideId);
+            const btn = document.getElementById('guide-modal-copy-btn');
+            if (!item) return;
+            copyTextToClipboard(item.content, btn);
+        }
+
+        function renderGuidesGrid() {
+            const grid = document.getElementById('guides-grid');
+            const addBtn = document.getElementById('add-guide-btn');
+            if (addBtn) {
+                if (isAdmin) addBtn.classList.remove('hidden');
+                else addBtn.classList.add('hidden');
+            }
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const filtered = getFilteredGuides();
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-10 bg-white/85 rounded-3xl border border-purple-100 p-6">
+                        <p class="text-purple-800 font-semibold">Chưa có chỉ dẫn nào khớp với tìm kiếm của bạn ✨</p>
+                    </div>`;
+                return;
+            }
+
+            filtered.forEach((item, idx) => {
+                const isHtmlVer = item.version === 'HTML';
+                const versionBadgeClass = isHtmlVer
+                    ? "bg-purple-100 text-purple-800 border-purple-200"
+                    : "bg-pink-100 text-pink-800 border-pink-200";
+                const versionLabel = isHtmlVer ? "BẢN HTML" : "BẢN TEXT";
+                const indexStr = `#${String(idx + 1).padStart(2, '0')}`;
+
+                const adminBtnsHtml = isAdmin
+                    ? `<div class="flex items-center gap-1">
+                        <button type="button" onclick="openEditGuideModal(${item.id})" class="bg-blue-500 hover:bg-blue-600 text-white w-7 h-7 rounded-full text-xs shadow-xs flex items-center justify-center transition cursor-pointer" title="Sửa chỉ dẫn">✏️</button>
+                        <button type="button" onclick="deleteGuideItem(${item.id})" class="bg-pink-500 hover:bg-pink-600 text-white w-7 h-7 rounded-full text-xs shadow-xs flex items-center justify-center transition cursor-pointer" title="Xóa chỉ dẫn">🗑️</button>
+                       </div>`
+                    : '';
+
+                const card = document.createElement('article');
+                card.className = "bg-white/92 backdrop-blur-md p-5 rounded-[1.75rem] shadow-sm border border-purple-200/80 hover:shadow-md hover:-translate-y-0.5 transition duration-300 flex flex-col justify-between gap-3.5";
+
+                card.innerHTML = `
+                    <div class="space-y-2.5">
+                        <!-- 1. Phiên bản HTML hoặc TEXT + Số thứ tự / Nút Admin -->
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold border tracking-wider uppercase ${versionBadgeClass}">
+                                ${versionLabel}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-purple-400">${indexStr}</span>
+                                ${adminBtnsHtml}
+                            </div>
+                        </div>
+
+                        <!-- 2. Tên chỉ dẫn -->
+                        <h3 class="text-base sm:text-lg font-bold text-purple-950 leading-snug">
+                            ${escapeHtml(item.name)}
+                        </h3>
+
+                        <!-- 3. Miêu tả chỉ dẫn -->
+                        <p class="text-xs sm:text-[13px] text-purple-800/85 leading-relaxed line-clamp-2">
+                            ${escapeHtml(item.desc)}
+                        </p>
+
+                        <!-- 4. Nội dung chính của chỉ dẫn (chỉ show vài dòng và có thanh cuộn) -->
+                        <div class="bg-purple-50/75 border border-purple-100 rounded-2xl p-3.5 h-36 overflow-y-auto guide-code-scroll text-xs text-purple-950/90 whitespace-pre-wrap break-words leading-relaxed font-mono select-all">${escapeHtml(item.content)}</div>
+                    </div>
+
+                    <!-- 5. Nút "Sao chép lệnh" và nút "Xem hết chỉ dẫn" -->
+                    <div class="pt-1 grid grid-cols-2 gap-2.5">
+                        <button type="button" onclick="copyGuideCardContent(${item.id}, this)" class="cursor-pointer py-2 px-3 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold text-xs border border-purple-200 shadow-2xs transition flex items-center justify-center gap-1.5">
+                            <span>✦</span> <span>Sao chép lệnh</span>
+                        </button>
+                        <button type="button" onclick="openGuideDetailModal(${item.id})" class="cursor-pointer py-2 px-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold text-xs shadow-xs hover:scale-[1.02] transition flex items-center justify-center gap-1">
+                            <span>Xem hết chỉ dẫn</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openGuideDetailModal(guideId) {
+            const item = guidesListData.find(g => g.id === guideId);
+            if (!item) return;
+
+            currentOpenedGuideId = guideId;
+
+            const isHtmlVer = item.version === 'HTML';
+            const badgeEl = document.getElementById('guide-modal-version-badge');
+            badgeEl.innerText = isHtmlVer ? "BẢN HTML" : "BẢN TEXT";
+            badgeEl.className = isHtmlVer
+                ? "text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-200"
+                : "text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider bg-pink-100 text-pink-800 border border-pink-200";
+
+            const idx = guidesListData.findIndex(g => g.id === guideId);
+            document.getElementById('guide-modal-index-badge').innerText = idx !== -1 ? `#${String(idx + 1).padStart(2, '0')}` : '';
+            document.getElementById('guide-modal-name').innerText = item.name;
+            document.getElementById('guide-modal-desc').innerText = item.desc;
+            document.getElementById('guide-modal-content').textContent = item.content;
+
+            // Nạp album ảnh đính kèm của chỉ dẫn (nếu có)
+            currentModalGallery = Array.isArray(item.gallery)
+                ? item.gallery.map(u => (u || '').trim()).filter(u => u.length > 0)
+                : [];
+            currentModalGalleryPage = 0;
+            currentModalGalleryTarget = 'guide';
+            renderModalGallery('guide');
+
+            const modal = document.getElementById('guide-detail-modal');
+            const box = document.getElementById('guide-detail-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeGuideDetailModal() {
+            const modal = document.getElementById('guide-detail-modal');
+            const box = document.getElementById('guide-detail-box');
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 250);
+        }
+
+        // Form Admin Thêm / Sửa Chỉ dẫn
+        function addGuideGalleryImageField(url = '') {
+            const container = document.getElementById('guide-form-gallery-container');
+            if (!container) return;
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 guide-gallery-image-row bg-purple-50/50 p-1.5 rounded-xl border border-purple-100';
+            const safeUrl = url.replace(/"/g, '&quot;');
+
+            row.innerHTML = `
+                <div class="w-9 h-9 rounded-lg bg-purple-100 overflow-hidden flex-shrink-0 flex items-center justify-center border border-purple-200">
+                    ${url ? `<img src="${safeUrl}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="this.style.display='none'">` : '<span class="text-xs">🖼️</span>'}
+                </div>
+                <input type="text" value="${safeUrl}" oninput="updateRowThumbPreview(this)" placeholder="Dán link ảnh https://... hoặc chọn từ máy" class="guide-gallery-image-url w-full px-3 py-1.5 rounded-lg border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs">
+                <button type="button" onclick="removeGuideGalleryImageField(this)" class="w-7 h-7 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Xóa ảnh này">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeGuideGalleryImageField(btn) {
+            const container = document.getElementById('guide-form-gallery-container');
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                const input = btn.parentElement.querySelector('.guide-gallery-image-url');
+                input.value = '';
+                updateRowThumbPreview(input);
+            }
+        }
+
+        async function handleGuideGalleryFilesUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+
+            const container = document.getElementById('guide-form-gallery-container');
+            if (container.children.length === 1) {
+                const firstInput = container.querySelector('.guide-gallery-image-url');
+                if (firstInput && !firstInput.value.trim()) {
+                    container.innerHTML = '';
+                }
+            }
+
+            for (const file of files) {
+                const dataUrl = await compressImageFileToDataUrl(file, 850, 0.8);
+                addGuideGalleryImageField(dataUrl);
+            }
+            event.target.value = '';
+        }
+
+        function openAddGuideModal() {
             if (!isAdmin) return;
-            document.getElementById('guide-input-title').value = guideData.title || defaultGuideData.title;
-            document.getElementById('guide-input-content').value = guideData.content || defaultGuideData.content;
-            document.getElementById('guide-form-modal').classList.remove('hidden');
+            document.getElementById('guide-form-title').innerText = "✨ Thêm Chỉ Dẫn Mới";
+            document.getElementById('guide-item-form').reset();
+            document.getElementById('guide-form-id').value = '';
+            const radios = document.querySelectorAll('input[name="guide-version-radio"]');
+            radios.forEach(r => { r.checked = (r.value === 'HTML'); });
+
+            const gContainer = document.getElementById('guide-form-gallery-container');
+            gContainer.innerHTML = '';
+            addGuideGalleryImageField('');
+
+            document.getElementById('guide-item-form-modal').classList.remove('hidden');
         }
 
-        function closeGuideModal() {
-            document.getElementById('guide-form-modal').classList.add('hidden');
+        function openEditGuideModal(id) {
+            if (!isAdmin) return;
+            const item = guidesListData.find(g => g.id === id);
+            if (!item) return;
+
+            document.getElementById('guide-form-title').innerText = "✏️ Sửa Chỉ Dẫn";
+            document.getElementById('guide-form-id').value = item.id;
+            document.getElementById('guide-form-name').value = item.name;
+            document.getElementById('guide-form-desc').value = item.desc;
+            document.getElementById('guide-form-content').value = item.content;
+
+            const radios = document.querySelectorAll('input[name="guide-version-radio"]');
+            radios.forEach(r => { r.checked = (r.value === item.version); });
+
+            const gContainer = document.getElementById('guide-form-gallery-container');
+            gContainer.innerHTML = '';
+            const existingGallery = Array.isArray(item.gallery) ? item.gallery.filter(u => u && u.trim()) : [];
+            if (existingGallery.length > 0) {
+                existingGallery.forEach(u => addGuideGalleryImageField(u));
+            } else {
+                addGuideGalleryImageField('');
+            }
+
+            document.getElementById('guide-item-form-modal').classList.remove('hidden');
         }
 
-        async function handleGuideSubmit(e) {
+        function closeGuideItemModal() {
+            document.getElementById('guide-item-form-modal').classList.add('hidden');
+        }
+
+        async function handleGuideItemSubmit(e) {
             e.preventDefault();
             if (!isAdmin) return;
-            const title = document.getElementById('guide-input-title').value.trim();
-            const content = document.getElementById('guide-input-content').value.trim();
-            if (!title || !content) return;
 
-            guideData = { title, content };
-            closeGuideModal();
-            renderGuideSection();
+            const id = document.getElementById('guide-form-id').value;
+            const checkedRadio = document.querySelector('input[name="guide-version-radio"]:checked');
+            const version = checkedRadio ? checkedRadio.value : 'TEXT';
+            const name = document.getElementById('guide-form-name').value.trim();
+            const desc = document.getElementById('guide-form-desc').value.trim();
+            const content = document.getElementById('guide-form-content').value;
+
+            const galleryInputs = document.querySelectorAll('.guide-gallery-image-url');
+            const gallery = Array.from(galleryInputs).map(inp => inp.value.trim()).filter(v => v.length > 0);
+
+            if (!name || !desc || !content.trim()) return;
+
+            const payloadItem = {
+                id: id ? Number(id) : (guidesListData.length > 0 ? Math.max(...guidesListData.map(g => g.id)) + 1 : 1),
+                version,
+                name,
+                desc,
+                content,
+                gallery
+            };
+
+            if (id) {
+                const idx = guidesListData.findIndex(g => g.id == id);
+                if (idx !== -1) guidesListData[idx] = payloadItem;
+            } else {
+                guidesListData.push(payloadItem);
+            }
+
+            closeGuideItemModal();
+            renderGuidesGrid();
             await saveDataToCloud(false);
+        }
+
+        async function deleteGuideItem(id) {
+            if (!isAdmin) return;
+            if (confirm("Huyên Huyên có chắc chắn muốn xóa chỉ dẫn này không?")) {
+                guidesListData = guidesListData.filter(g => g.id !== id);
+                renderGuidesGrid();
+                await saveDataToCloud(false);
+            }
         }
 
         // ================= CHỌN NGƯỜI NHẬN THƯ & ĐÍNH KÈM ẢNH TRONG LỜI THÌ THẦM =================
@@ -1754,10 +2242,8 @@ html_content = r'''<!DOCTYPE html>
                 const recipientName = (item.recipientName && item.recipientName.trim()) ? item.recipientName.trim() : 'Huyên Huyên';
                 const recipientAvatarHtml = getSmallAvatarHtml(item.recipientIcon || HUYEN_AVATAR_URL);
 
-                // Tách phần ngày & giờ gọn gàng trên thẻ note
                 const dateDisplay = escapeHtml(item.date || '');
 
-                // Xem trước phản hồi mới nhất khi đang thu gọn
                 const latestReply = replyCount > 0 ? replies[replyCount - 1] : null;
                 const latestReplyPreviewHtml = (!isThreadOpen && latestReply)
                     ? `<button type="button" onclick="toggleWhisperThread(${item.id})" class="text-[11px] text-purple-600/90 hover:text-purple-900 italic truncate max-w-[140px] sm:max-w-[160px] text-right cursor-pointer" title="Bấm để xem phản hồi">
@@ -1765,19 +2251,16 @@ html_content = r'''<!DOCTYPE html>
                        </button>`
                     : '';
 
-                // Ảnh đính kèm trong lời thì thầm chính
                 const mainImageHtml = (item.image && item.image.trim())
                     ? `<div class="mt-2.5">
                         <img src="${item.image.replace(/"/g, '&quot;')}" alt="Ảnh đính kèm" onclick="openSingleImageLightbox(this.src)" class="w-full max-h-52 object-cover rounded-2xl border border-white/80 shadow-xs cursor-pointer hover:scale-[1.02] transition" title="Chạm để phóng to ảnh">
                        </div>`
                     : '';
 
-                // Nút xóa note dành riêng cho Admin
                 const adminDeleteBtn = isAdmin
                     ? `<button type="button" onclick="deleteWhisper(${item.id})" class="text-pink-500 hover:text-pink-700 bg-white/80 hover:bg-white w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shadow-2xs transition cursor-pointer flex-shrink-0" title="Xóa mảnh thì thầm này">✕</button>`
                     : '';
 
-                // Danh sách các phản hồi bên trong note khi bấm mở
                 const repliesListHtml = replies.length > 0
                     ? replies.map(rep => {
                         const repImgHtml = (rep.image && rep.image.trim())
@@ -1810,7 +2293,6 @@ html_content = r'''<!DOCTYPE html>
                     }).join('')
                     : `<p class="text-xs text-purple-500 italic text-center py-2">Chưa có hồi âm nào, bạn hãy là người đầu tiên nhắn lại nhé ✨</p>`;
 
-                // Ảnh xem trước trong form reply của note này
                 const pendingRepImg = pendingReplyImages[item.id] || '';
                 const replyImgPreviewHtml = `
                     <div id="reply-img-preview-wrap-${item.id}" class="${pendingRepImg ? '' : 'hidden'} flex items-center justify-between gap-2 bg-pink-50/90 px-3 py-2 rounded-xl border border-pink-200">
@@ -1822,7 +2304,6 @@ html_content = r'''<!DOCTYPE html>
                     </div>
                 `;
 
-                // Khu vực mở rộng: Danh sách phản hồi + Form cho bất kỳ ai (và cả Admin) để lại lời phản hồi kèm ảnh
                 const threadDrawerHtml = isThreadOpen
                     ? `
                     <div class="mt-3 pt-3 border-t border-dashed border-purple-200/90 space-y-3">
@@ -1837,7 +2318,6 @@ html_content = r'''<!DOCTYPE html>
                             ${repliesListHtml}
                         </div>
 
-                        <!-- Form phản hồi mở cho tất cả mọi người -->
                         <form onsubmit="handleWhisperReplySubmit(event, ${item.id})" class="bg-white/90 p-3 rounded-2xl border border-purple-200/80 space-y-2 shadow-2xs">
                             <input type="text" id="reply-nick-${item.id}" maxlength="35" value="${isAdmin ? 'Huyên Huyên 💜' : ''}" placeholder="Biệt danh của bạn..." required class="whisper-reply-input w-full px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs text-purple-950">
                             
@@ -1864,13 +2344,11 @@ html_content = r'''<!DOCTYPE html>
                 card.className = `relative ${theme.cardBg} backdrop-blur-md p-5 pt-6 rounded-[1.75rem] border ${theme.border} shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between`;
 
                 card.innerHTML = `
-                    <!-- Nhãn ghim nhỏ phía trên tờ note -->
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white border ${theme.border} shadow-2xs text-[10px] font-bold tracking-widest text-purple-700 uppercase whitespace-nowrap">
                         ♡ Mảnh thì thầm ♡
                     </div>
 
                     <div>
-                        <!-- Hàng đầu: Tag người nhận + Ngày giờ + Nút xóa (nếu là Admin) -->
                         <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-dashed border-purple-200/80">
                             <div class="flex items-center gap-1.5 min-w-0">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${theme.topBadge} max-w-full truncate">
@@ -1885,7 +2363,6 @@ html_content = r'''<!DOCTYPE html>
                             </div>
                         </div>
 
-                        <!-- Nội dung lời tâm tình -->
                         <div class="mt-3 ${theme.quoteBox} border-l-4 ${theme.accentLine} px-3.5 py-3 rounded-r-2xl rounded-l-md shadow-2xs">
                             <p class="text-xs sm:text-sm text-purple-950/95 leading-relaxed whitespace-pre-line">
                                 ${escapeHtml(item.message)}
@@ -1893,7 +2370,6 @@ html_content = r'''<!DOCTYPE html>
                             ${mainImageHtml}
                         </div>
 
-                        <!-- Chữ ký người gửi & Nút thả tim -->
                         <div class="mt-3 pb-2.5 border-b border-dashed border-purple-200/80 flex items-center justify-between gap-2">
                             <span class="font-script text-xl sm:text-2xl text-purple-800 truncate" title="${escapeHtml(item.nickname)}">
                                 ~ ${escapeHtml(item.nickname)} ♡
@@ -1905,7 +2381,6 @@ html_content = r'''<!DOCTYPE html>
                             </button>
                         </div>
 
-                        <!-- Thanh mở/đóng phản hồi + Xem trước phản hồi mới nhất -->
                         <div class="mt-2.5 flex items-center justify-between gap-2">
                             <button type="button" onclick="toggleWhisperThread(${item.id})" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition ${theme.pillBtn}">
                                 <span>💬</span>
@@ -1941,7 +2416,6 @@ html_content = r'''<!DOCTYPE html>
                 submitBtn.innerHTML = '<span>Đang gửi...</span>';
             }
 
-            // Đồng bộ dữ liệu mới nhất từ đám mây trước khi chèn phản hồi
             const latest = await fetchCloudState();
             if (latest && latest.data && Array.isArray(latest.data.whispers)) {
                 const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
@@ -2359,7 +2833,6 @@ html_content = r'''<!DOCTYPE html>
             });
         }
 
-        // Bấm nút ở màn hình chờ -> Vào web đồng thời kích hoạt nhạc nền tự động
         function enterDream() {
             const splash = document.getElementById('splash-screen');
             const mainWeb = document.getElementById('main-website');
@@ -2429,14 +2902,19 @@ html_content = r'''<!DOCTYPE html>
             }).join('');
         }
 
-        // ================= XỬ LÝ ALBUM HÌNH ẢNH GIẤC MƠ =================
-        function renderModalGallery() {
-            const gallerySection = document.getElementById('modal-gallery-section');
-            const galleryTitle = document.getElementById('modal-gallery-title');
-            const pageIndicator = document.getElementById('modal-gallery-page-indicator');
-            const grid = document.getElementById('modal-gallery-grid');
-            const prevBtn = document.getElementById('modal-gallery-prev');
-            const nextBtn = document.getElementById('modal-gallery-next');
+        // ================= XỬ LÝ ALBUM HÌNH ẢNH (DÙNG CHUNG CHO CẢ CHAR MODAL VÀ GUIDE MODAL) =================
+        function renderModalGallery(target = 'char') {
+            const isGuide = (target === 'guide');
+            const prefix = isGuide ? 'guide-modal-gallery' : 'modal-gallery';
+
+            const gallerySection = document.getElementById(`${prefix}-section`);
+            const galleryTitle = document.getElementById(`${prefix}-title`);
+            const pageIndicator = document.getElementById(`${prefix}-page-indicator`);
+            const grid = document.getElementById(`${prefix}-grid`);
+            const prevBtn = document.getElementById(`${prefix}-prev`);
+            const nextBtn = document.getElementById(`${prefix}-next`);
+
+            if (!gallerySection || !grid) return;
 
             const totalImages = currentModalGallery.length;
 
@@ -2447,7 +2925,11 @@ html_content = r'''<!DOCTYPE html>
             }
 
             gallerySection.classList.remove('hidden');
-            galleryTitle.innerText = `🖼️ Hình ảnh giấc mơ (${totalImages} ảnh):`;
+            if (galleryTitle) {
+                galleryTitle.innerText = isGuide
+                    ? `🖼️ Hình ảnh minh họa đính kèm (${totalImages} ảnh):`
+                    : `🖼️ Hình ảnh giấc mơ (${totalImages} ảnh):`;
+            }
 
             const pageSize = 4;
             const totalPages = Math.ceil(totalImages / pageSize);
@@ -2483,7 +2965,7 @@ html_content = r'''<!DOCTYPE html>
                 thumbWrapper.onclick = () => openImageLightbox(actualIndex);
 
                 thumbWrapper.innerHTML = `
-                    <img src="${safeSrc}" data-raw-src="${safeSrc}" referrerpolicy="no-referrer" alt="Ảnh giấc mơ ${actualIndex + 1}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300" onerror="handleCharImageError(this)">
+                    <img src="${safeSrc}" data-raw-src="${safeSrc}" referrerpolicy="no-referrer" alt="Ảnh ${actualIndex + 1}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300" onerror="handleCharImageError(this)">
                     <div class="absolute inset-0 bg-purple-950/0 group-hover:bg-purple-950/20 transition flex items-center justify-center">
                         <span class="opacity-0 group-hover:opacity-100 text-white text-xs font-bold drop-shadow">🔍</span>
                     </div>
@@ -2492,18 +2974,18 @@ html_content = r'''<!DOCTYPE html>
             });
         }
 
-        function nextModalGalleryPage() {
+        function nextModalGalleryPage(target = currentModalGalleryTarget) {
             const totalPages = Math.ceil(currentModalGallery.length / 4);
             if (totalPages <= 1) return;
             currentModalGalleryPage = (currentModalGalleryPage + 1) % totalPages;
-            renderModalGallery();
+            renderModalGallery(target);
         }
 
-        function prevModalGalleryPage() {
+        function prevModalGalleryPage(target = currentModalGalleryTarget) {
             const totalPages = Math.ceil(currentModalGallery.length / 4);
             if (totalPages <= 1) return;
             currentModalGalleryPage = (currentModalGalleryPage - 1 + totalPages) % totalPages;
-            renderModalGallery();
+            renderModalGallery(target);
         }
 
         // ================= XỬ LÝ LIGHTBOX XEM ẢNH FULL SIZE & TẢI ẢNH VỀ MÁY =================
@@ -2650,7 +3132,8 @@ html_content = r'''<!DOCTYPE html>
                 ? char.gallery.map(u => (u || '').trim()).filter(u => u.length > 0)
                 : [];
             currentModalGalleryPage = 0;
-            renderModalGallery();
+            currentModalGalleryTarget = 'char';
+            renderModalGallery('char');
 
             const modal = document.getElementById('char-modal');
             const box = document.getElementById('modal-content-box');
@@ -2691,13 +3174,13 @@ html_content = r'''<!DOCTYPE html>
                 isAdmin = true;
                 closePasswordModal();
                 document.getElementById('add-char-btn').classList.remove('hidden');
+                document.getElementById('add-guide-btn').classList.remove('hidden');
                 document.getElementById('edit-social-btn').classList.remove('hidden');
                 document.getElementById('edit-bio-btn').classList.remove('hidden');
-                document.getElementById('edit-guide-btn').classList.remove('hidden');
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể chỉnh sửa giới thiệu, thêm/sửa {char} và quản lý lời thì thầm nhé.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể chỉnh sửa giới thiệu, thêm/sửa {char}, chỉ dẫn và quản lý lời thì thầm nhé.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
