@@ -216,7 +216,7 @@ html_content = r'''<!DOCTYPE html>
             <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-base">👑</span>
-                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể chỉnh sửa giới thiệu, thêm/sửa {char}, trả lời bình luận và đồng bộ trực tuyến!</span>
+                    <span><strong>Chế độ Quản Trị của Huyên Huyên:</strong> Bạn có thể chỉnh sửa giới thiệu, thêm/sửa {char}, quản lý lời thì thầm và đồng bộ trực tuyến!</span>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <span id="cloud-sync-status" class="bg-white/20 px-3 py-1 rounded-full font-semibold">☁️ Đang kiểm tra đám mây...</span>
@@ -228,11 +228,11 @@ html_content = r'''<!DOCTYPE html>
         </div>
 
         <!-- MAIN CONTENT VIEW -->
-        <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-grow w-full relative z-10">
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-grow w-full relative z-10">
 
             <!-- ================= TAB 1: VỀ HUYÊN HUYÊN (HERO + GIỚI THIỆU BẢN THÂN & WEB) ================= -->
-            <div id="about-view" class="space-y-8 sm:space-y-10">
-                <!-- Hero Section (Đã xóa dòng tagline và canh giữa thanh nhạc với tiêu đề) -->
+            <div id="about-view" class="max-w-5xl mx-auto space-y-8 sm:space-y-10">
+                <!-- Hero Section -->
                 <section id="about" class="flex flex-col md:flex-row items-center gap-6 sm:gap-8 bg-white/85 backdrop-blur-md p-6 sm:p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 relative overflow-hidden">
                     <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
                         <img src="https://files.catbox.moe/3c24gw.jpg"
@@ -297,8 +297,8 @@ html_content = r'''<!DOCTYPE html>
             </div>
 
 
-            <!-- ================= TAB 2: DREAMS (TẤT CẢ CÁC GIẤC MƠ - BỎ QUAY LẠI TRANG CHỦ) ================= -->
-            <div id="dreams-view" class="hidden space-y-6">
+            <!-- ================= TAB 2: DREAMS (TẤT CẢ CÁC GIẤC MƠ) ================= -->
+            <div id="dreams-view" class="hidden max-w-5xl mx-auto space-y-6">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/85 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-200 shadow-xs">
                     <span class="font-script text-3xl sm:text-5xl text-purple-900 text-center sm:text-left">✨ Tất Cả Các Giấc Mơ ✨</span>
                     
@@ -339,15 +339,21 @@ html_content = r'''<!DOCTYPE html>
             </div>
 
 
-            <!-- ================= TAB 3: LỜI THÌ THẦM ================= -->
+            <!-- ================= TAB 3: LỜI THÌ THẦM (DẠNG LƯỚI NOTE PASTEL 1-3 CỘT + PHẢN HỒI ĐA NGƯỜI DÙNG KÈM ẢNH) ================= -->
             <div id="whispers-view" class="hidden space-y-6">
-                <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
-                    <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
-                        <span>📖</span> Lời thì thầm
-                    </h2>
+                <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+                    <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
+                        <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
+                            <span>📖</span> Lời thì thầm
+                        </h2>
+                    </div>
+                    <span class="text-xs font-semibold text-purple-800 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-purple-100 shadow-2xs">
+                        ✨ Góc lưu giữ những mảnh ghép tâm tình dịu dàng
+                    </span>
                 </div>
 
-                <div class="bg-white/90 backdrop-blur-md p-6 sm:p-7 rounded-3xl shadow-sm border border-purple-200/80 space-y-5">
+                <!-- KHUNG GỬI LỜI THÌ THẦM MỚI -->
+                <div class="max-w-5xl mx-auto bg-white/90 backdrop-blur-md p-5 sm:p-7 rounded-[2rem] shadow-sm border border-purple-200/80 space-y-5">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <h3 class="text-base sm:text-lg font-bold text-purple-900 flex items-center gap-2">
                             <span>💌</span> Gửi lời thì thầm, tâm sự hoặc góp ý
@@ -392,7 +398,7 @@ html_content = r'''<!DOCTYPE html>
                             <div class="sm:w-2/3">
                                 <label id="whisper-message-label" class="block text-xs font-bold text-purple-800 mb-1">3. Lời nhắn nhủ gửi đến Huyên Huyên:</label>
                                 <div class="flex items-center gap-2">
-                                    <input type="text" id="whisper-message" maxlength="400" placeholder="Viết đôi dòng nhắn gửi đến Huyên Huyên nhé..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
+                                    <input type="text" id="whisper-message" maxlength="500" placeholder="Viết đôi dòng nhắn gửi đến Huyên Huyên nhé..." required class="w-full px-4 py-2.5 rounded-2xl border border-purple-200 bg-purple-50/50 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
                                     
                                     <!-- Nút chọn ảnh từ album ảnh điện thoại / máy tính -->
                                     <label class="cursor-pointer bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold px-3.5 py-2.5 rounded-2xl border border-purple-200 text-xs sm:text-sm shadow-2xs hover:scale-105 transition flex-shrink-0 flex items-center gap-1" title="Đính kèm ảnh từ album điện thoại">
@@ -424,14 +430,15 @@ html_content = r'''<!DOCTYPE html>
                     </form>
                 </div>
 
-                <div id="whispers-list" class="space-y-4">
+                <!-- LƯỚI CÁC TỜ NOTE LỜI THÌ THẦM (1 CỘT TRÊN MOBILE, 2 CỘT TRÊN IPAD, 3 CỘT TRÊN LAPTOP) -->
+                <div id="whispers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start pt-2">
                     <!-- Render bằng JS -->
                 </div>
             </div>
 
 
             <!-- ================= TAB 4: CHỈ DẪN ================= -->
-            <div id="guide-view" class="hidden space-y-6">
+            <div id="guide-view" class="hidden max-w-5xl mx-auto space-y-6">
                 <section class="bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 space-y-5">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100 pb-4">
                         <h2 id="guide-display-title" class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2.5">
@@ -927,6 +934,55 @@ html_content = r'''<!DOCTYPE html>
         // ================= DỮ LIỆU MẶC ĐỊNH & LOGIC TRANG WEB =================
         const HUYEN_AVATAR_URL = 'https://files.catbox.moe/3c24gw.jpg';
 
+        // Bảng màu pastel nhẹ nhàng đồng bộ với giao diện trắng - tím pastel
+        const WHISPER_PASTEL_THEMES = [
+            {
+                cardBg: 'bg-purple-50/95',
+                border: 'border-purple-200/90',
+                topBadge: 'bg-purple-100 text-purple-700 border-purple-200',
+                accentLine: 'border-l-purple-500',
+                quoteBox: 'bg-white/85',
+                pillBtn: 'bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-200',
+                pillCount: 'bg-purple-600 text-white'
+            },
+            {
+                cardBg: 'bg-pink-50/95',
+                border: 'border-pink-200/90',
+                topBadge: 'bg-pink-100 text-pink-700 border-pink-200',
+                accentLine: 'border-l-pink-500',
+                quoteBox: 'bg-white/85',
+                pillBtn: 'bg-pink-100 hover:bg-pink-200 text-pink-800 border-pink-200',
+                pillCount: 'bg-pink-600 text-white'
+            },
+            {
+                cardBg: 'bg-violet-50/95',
+                border: 'border-violet-200/90',
+                topBadge: 'bg-violet-100 text-violet-700 border-violet-200',
+                accentLine: 'border-l-violet-500',
+                quoteBox: 'bg-white/85',
+                pillBtn: 'bg-violet-100 hover:bg-violet-200 text-violet-800 border-violet-200',
+                pillCount: 'bg-violet-600 text-white'
+            },
+            {
+                cardBg: 'bg-fuchsia-50/95',
+                border: 'border-fuchsia-200/90',
+                topBadge: 'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200',
+                accentLine: 'border-l-fuchsia-500',
+                quoteBox: 'bg-white/85',
+                pillBtn: 'bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-800 border-fuchsia-200',
+                pillCount: 'bg-fuchsia-600 text-white'
+            },
+            {
+                cardBg: 'bg-indigo-50/95',
+                border: 'border-indigo-200/90',
+                topBadge: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+                accentLine: 'border-l-indigo-500',
+                quoteBox: 'bg-white/85',
+                pillBtn: 'bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border-indigo-200',
+                pillCount: 'bg-indigo-600 text-white'
+            }
+        ];
+
         const defaultBioData = {
             title: "Đôi nét về Huyên Huyên & Góc nhỏ mộng mơ",
             content: "Xin chào các tình iu đã lạc bước vào “Những giấc mơ của Huyên Huyên” 💜\n\nMình là Huyên Huyên — một người yêu cái đẹp nhẹ nhàng của sắc trắng và tím pastel, thích dệt nên những câu chuyện cùng các nhân vật mang màu sắc riêng trên Dokichat, Google AI Studio và nhiều thế giới nhập vai khác.\n\nTrang web nhỏ này là nơi mình lưu giữ trọn vẹn từng “giấc mơ” đã tạo nên: từ hồ sơ nhân vật, bối cảnh mở đầu, album hình ảnh cho đến những lời nhắn nhủ thân thương từ các bạn. Chúc bạn có những phút giây thật thư giãn và tìm thấy nhân vật đồng điệu với tâm hồn mình tại đây nhé ✨"
@@ -934,7 +990,7 @@ html_content = r'''<!DOCTYPE html>
 
         const defaultGuideData = {
             title: "Chỉ dẫn bước vào thế giới giấc mơ",
-            content: "1. Mục “Về Huyên Huyên”: Nơi lắng nghe giai điệu nền thư giãn, tìm hiểu đôi nét về Huyên Huyên và kết nối qua các kênh mạng xã hội.\n\n2. Mục “Dreams”: Khám phá toàn bộ các nhân vật & giấc mơ. Bạn có thể gõ tên để tìm nhanh hoặc bấm chọn nhiều Hashtag cùng lúc để lọc đúng thể loại yêu thích. Chạm vào từng thẻ để xem chi tiết, mở các mục thu gọn, tải ảnh Full Size trong album hoặc bấm vào đường dẫn để trò chuyện trực tiếp.\n\n3. Mục “Lời thì thầm”: Nơi bạn có thể chọn người nhận thư (Huyên Huyên hoặc nhân vật yêu thích), đính kèm ảnh từ album điện thoại và gửi lời nhắn nhủ.\n\n4. Thanh nhạc nền: Có thể bật/tắt hoặc tua bất cứ lúc nào ở trang Về Huyên Huyên, nhạc sẽ tiếp tục phát êm ái khi bạn dạo quanh các mục khác 💜"
+            content: "1. Mục “Về Huyên Huyên”: Nơi lắng nghe giai điệu nền thư giãn, tìm hiểu đôi nét về Huyên Huyên và kết nối qua các kênh mạng xã hội.\n\n2. Mục “Dreams”: Khám phá toàn bộ các nhân vật & giấc mơ. Bạn có thể gõ tên để tìm nhanh hoặc bấm chọn nhiều Hashtag cùng lúc để lọc đúng thể loại yêu thích. Chạm vào từng thẻ để xem chi tiết, mở các mục thu gọn, tải ảnh Full Size trong album hoặc bấm vào đường dẫn để trò chuyện trực tiếp.\n\n3. Mục “Lời thì thầm”: Nơi bạn có thể chọn người nhận thư (Huyên Huyên hoặc nhân vật yêu thích), đính kèm ảnh từ album điện thoại và trò chuyện qua lại dưới từng tờ note tâm tình.\n\n4. Thanh nhạc nền: Có thể bật/tắt hoặc tua bất cứ lúc nào ở trang Về Huyên Huyên, nhạc sẽ tiếp tục phát êm ái khi bạn dạo quanh các mục khác 💜"
         };
 
         const defaultCharacters = [
@@ -1038,7 +1094,8 @@ html_content = r'''<!DOCTYPE html>
                 message: "Chào mừng các tình iu đã ghé thăm góc nhỏ của mình! Nếu có tâm sự, góp ý hay lời nhắn nhủ nào thì đừng ngại viết vào đây cho mình đọc với nha ✨",
                 image: "",
                 date: "15.11.2026",
-                reply: ""
+                likes: 1,
+                replies: []
             }
         ];
 
@@ -1058,9 +1115,29 @@ html_content = r'''<!DOCTYPE html>
             return c;
         }
 
+        function normalizeWhisperObject(w) {
+            if (!w || typeof w !== 'object') return w;
+            if (!Array.isArray(w.replies)) {
+                w.replies = [];
+                if (w.reply && w.reply.trim()) {
+                    w.replies.push({
+                        id: (w.id || Date.now()) + 1,
+                        nickname: (w.recipientName && w.recipientName.trim()) ? w.recipientName.trim() : "Huyên Huyên 💜",
+                        message: w.reply.trim(),
+                        image: "",
+                        date: w.date || "",
+                        isAdminReply: true
+                    });
+                }
+            }
+            if (typeof w.likes !== 'number') w.likes = 0;
+            return w;
+        }
+
         let charactersData = (JSON.parse(localStorage.getItem('huyen_chars_data')) || defaultCharacters).map(normalizeCharacterObject);
         let socialLinksData = JSON.parse(localStorage.getItem('huyen_social_links')) || [];
-        let whispersData = JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers;
+        let whispersData = (JSON.parse(localStorage.getItem('huyen_whispers_data')) || defaultWhispers).map(normalizeWhisperObject);
+        let likedWhisperIds = JSON.parse(localStorage.getItem('huyen_liked_whispers') || '[]');
         let bioData = JSON.parse(localStorage.getItem('huyen_bio_data')) || defaultBioData;
         let guideData = JSON.parse(localStorage.getItem('huyen_guide_data')) || defaultGuideData;
         let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
@@ -1070,10 +1147,12 @@ html_content = r'''<!DOCTYPE html>
         let selectedHashtags = [];
         let searchQuery = '';
 
-        // Trạng thái cho mục Lời thì thầm (Chọn người nhận + Đính kèm ảnh)
+        // Trạng thái cho mục Lời thì thầm (Chọn người nhận + Đính kèm ảnh + Mở khung bình luận từng note)
         let selectedWhisperRecipientId = 'huyen-huyen';
         let whisperRecipientSearchQuery = '';
         let pendingWhisperImageDataUrl = '';
+        let openWhisperThreadIds = new Set();
+        let pendingReplyImages = {};
 
         let currentModalGallery = [];
         let currentModalGalleryPage = 0;
@@ -1201,9 +1280,33 @@ html_content = r'''<!DOCTYPE html>
             return successCount > 0;
         }
 
+        function mergeWhisperRecords(localList, cloudList, deletedIds) {
+            const mergedMap = new Map();
+            [...(localList || []), ...(cloudList || [])].forEach(raw => {
+                if (!raw || !raw.id || deletedIds.includes(raw.id)) return;
+                const w = normalizeWhisperObject({ ...raw });
+                const existing = mergedMap.get(w.id);
+                if (!existing) {
+                    mergedMap.set(w.id, w);
+                } else {
+                    // Hợp nhất danh sách replies theo id
+                    const replyMap = new Map();
+                    [...(existing.replies || []), ...(w.replies || [])].forEach(rep => {
+                        if (rep && rep.id) replyMap.set(rep.id, rep);
+                    });
+                    existing.replies = Array.from(replyMap.values()).sort((a, b) => a.id - b.id);
+                    existing.likes = Math.max(Number(existing.likes) || 0, Number(w.likes) || 0);
+                }
+            });
+            return Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+        }
+
         async function loadDataFromCloud() {
-            const activeReplyInput = document.querySelector('.admin-reply-box:not(.hidden)');
-            if (activeReplyInput) return;
+            // Không tự render lại khi người dùng đang gõ phản hồi trong một note
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.classList && activeEl.classList.contains('whisper-reply-input')) {
+                return;
+            }
 
             const result = await fetchCloudState();
             if (!result || !result.data) {
@@ -1218,24 +1321,7 @@ html_content = r'''<!DOCTYPE html>
 
             if (Array.isArray(cloudData.whispers)) {
                 const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
-                const mergedMap = new Map();
-                
-                [...whispersData, ...cloudData.whispers].forEach(w => {
-                    if (w && w.id && !deletedIds.includes(w.id)) {
-                        const existing = mergedMap.get(w.id);
-                        if (!existing) {
-                            mergedMap.set(w.id, w);
-                        } else {
-                            const wReplyTime = Number(w.replyUpdatedAt) || 0;
-                            const exReplyTime = Number(existing.replyUpdatedAt) || 0;
-                            if (wReplyTime > exReplyTime || (w.reply && !existing.reply)) {
-                                mergedMap.set(w.id, w);
-                            }
-                        }
-                    }
-                });
-
-                const mergedWhispers = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+                const mergedWhispers = mergeWhisperRecords(whispersData, cloudData.whispers, deletedIds);
                 if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
                     whispersData = mergedWhispers;
                     localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
@@ -1294,7 +1380,7 @@ html_content = r'''<!DOCTYPE html>
             if (ok) {
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
                 if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ giới thiệu, {char}, album ảnh, link MXH và các câu trả lời bình luận lên Đám Mây!');
+                    alert('✅ Đã đẩy toàn bộ giới thiệu, {char}, album ảnh, link MXH và các lời thì thầm lên Đám Mây!');
                 }
             } else {
                 setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
@@ -1516,41 +1602,45 @@ html_content = r'''<!DOCTYPE html>
             });
         }
 
-        function handleWhisperImageSelect(event) {
+        function compressImageFileToDataUrl(file, maxDim = 680, quality = 0.76) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height && width > maxDim) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else if (height > maxDim) {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleWhisperImageSelect(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxDim = 720;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > height && width > maxDim) {
-                        height = Math.round((height * maxDim) / width);
-                        width = maxDim;
-                    } else if (height > maxDim) {
-                        width = Math.round((width * maxDim) / height);
-                        height = maxDim;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    pendingWhisperImageDataUrl = canvas.toDataURL('image/jpeg', 0.78);
-                    const previewBox = document.getElementById('whisper-image-preview-box');
-                    const previewImg = document.getElementById('whisper-image-preview-img');
-                    if (previewImg) previewImg.src = pendingWhisperImageDataUrl;
-                    if (previewBox) previewBox.classList.remove('hidden');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+            pendingWhisperImageDataUrl = await compressImageFileToDataUrl(file, 680, 0.76);
+            const previewBox = document.getElementById('whisper-image-preview-box');
+            const previewImg = document.getElementById('whisper-image-preview-img');
+            if (previewImg) previewImg.src = pendingWhisperImageDataUrl;
+            if (previewBox) previewBox.classList.remove('hidden');
             event.target.value = '';
         }
 
@@ -1562,6 +1652,28 @@ html_content = r'''<!DOCTYPE html>
             if (previewBox) previewBox.classList.add('hidden');
         }
 
+        async function handleReplyImageSelect(event, whisperId) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const dataUrl = await compressImageFileToDataUrl(file, 620, 0.75);
+            pendingReplyImages[whisperId] = dataUrl;
+
+            const previewWrap = document.getElementById(`reply-img-preview-wrap-${whisperId}`);
+            const previewImg = document.getElementById(`reply-img-preview-${whisperId}`);
+            if (previewImg) previewImg.src = dataUrl;
+            if (previewWrap) previewWrap.classList.remove('hidden');
+            event.target.value = '';
+        }
+
+        function clearReplyImage(whisperId) {
+            delete pendingReplyImages[whisperId];
+            const previewWrap = document.getElementById(`reply-img-preview-wrap-${whisperId}`);
+            const previewImg = document.getElementById(`reply-img-preview-${whisperId}`);
+            if (previewImg) previewImg.src = '';
+            if (previewWrap) previewWrap.classList.add('hidden');
+        }
+
         function openSingleImageLightbox(imgUrl) {
             if (!imgUrl) return;
             currentModalGallery = [imgUrl];
@@ -1570,7 +1682,7 @@ html_content = r'''<!DOCTYPE html>
             document.getElementById('image-lightbox-modal').classList.remove('hidden');
         }
 
-        // ================= XỬ LÝ LỜI THÌ THẦM & TRẢ LỜI BÌNH LUẬN =================
+        // ================= XỬ LÝ DẠNG NOTE LỜI THÌ THẦM & PHẢN HỒI ĐA NGƯỜI DÙNG =================
         function escapeHtml(str) {
             return String(str || '')
                 .replace(/&/g, '&amp;')
@@ -1580,129 +1692,290 @@ html_content = r'''<!DOCTYPE html>
                 .replace(/'/g, '&#039;');
         }
 
+        function getSmallAvatarHtml(iconStr) {
+            const cleanIcon = (iconStr || '✨').trim();
+            if (isImageUrl(cleanIcon)) {
+                const safeSrc = cleanIcon.replace(/"/g, '&quot;');
+                return `<img src="${safeSrc}" referrerpolicy="no-referrer" alt="Avatar" class="w-4 h-4 rounded-full object-cover flex-shrink-0" onerror="this.style.display='none'">`;
+            }
+            return `<span class="text-xs leading-none">${cleanIcon}</span>`;
+        }
+
+        function toggleWhisperThread(whisperId) {
+            if (openWhisperThreadIds.has(whisperId)) {
+                openWhisperThreadIds.delete(whisperId);
+            } else {
+                openWhisperThreadIds.add(whisperId);
+            }
+            renderWhispers();
+        }
+
+        async function toggleWhisperHeart(whisperId) {
+            const target = whispersData.find(w => w.id === whisperId);
+            if (!target) return;
+
+            const idx = likedWhisperIds.indexOf(whisperId);
+            if (idx === -1) {
+                likedWhisperIds.push(whisperId);
+                target.likes = (Number(target.likes) || 0) + 1;
+            } else {
+                likedWhisperIds.splice(idx, 1);
+                target.likes = Math.max(0, (Number(target.likes) || 1) - 1);
+            }
+            localStorage.setItem('huyen_liked_whispers', JSON.stringify(likedWhisperIds));
+            renderWhispers();
+            await saveDataToCloud(false);
+        }
+
         function renderWhispers() {
             const container = document.getElementById('whispers-list');
             if (!container) return;
             container.innerHTML = '';
 
             if (!whispersData || whispersData.length === 0) {
+                container.className = "pt-2";
                 container.innerHTML = `
-                    <div class="bg-white/80 backdrop-blur-md p-6 rounded-3xl text-center text-purple-700 italic border border-purple-100">
-                        Chưa có lời thì thầm nào. Bạn hãy là người đầu tiên để lại lời nhắn cho Huyên Huyên nhé! 💜
+                    <div class="bg-white/85 backdrop-blur-md p-8 rounded-3xl text-center text-purple-700 italic border border-purple-100">
+                        Chưa có lời thì thầm nào. Bạn hãy là người đầu tiên gửi mảnh giấy tâm tình cho Huyên Huyên nhé! 💜
                     </div>`;
                 return;
             }
 
+            container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-start pt-2";
+
             whispersData.forEach((item, index) => {
-                const article = document.createElement('article');
-                article.className = "bg-white/90 backdrop-blur-md p-5 sm:p-6 rounded-3xl shadow-sm border border-purple-100 hover:border-purple-300 transition relative";
+                const theme = WHISPER_PASTEL_THEMES[index % WHISPER_PASTEL_THEMES.length];
+                const isThreadOpen = openWhisperThreadIds.has(item.id);
+                const replies = Array.isArray(item.replies) ? item.replies : [];
+                const replyCount = replies.length;
+                const isLiked = likedWhisperIds.includes(item.id);
+                const likeCount = Number(item.likes) || 0;
 
-                const hasReply = item.reply && item.reply.trim().length > 0;
                 const recipientName = (item.recipientName && item.recipientName.trim()) ? item.recipientName.trim() : 'Huyên Huyên';
-                const recipientBadgeHtml = `<span class="text-[11px] text-purple-800 font-bold bg-purple-100/90 px-2.5 py-1 rounded-full flex items-center gap-1 border border-purple-200/70">
-                    <span>💌</span> <span>Gửi: ${escapeHtml(recipientName)}</span>
-                </span>`;
+                const recipientAvatarHtml = getSmallAvatarHtml(item.recipientIcon || HUYEN_AVATAR_URL);
 
-                const attachedImageHtml = (item.image && item.image.trim())
-                    ? `<div class="mt-3 pl-1">
-                        <img src="${item.image.replace(/"/g, '&quot;')}" alt="Ảnh đính kèm từ ${escapeHtml(item.nickname)}" onclick="openSingleImageLightbox(this.src)" class="max-h-64 w-auto rounded-2xl border border-purple-200 shadow-xs cursor-pointer hover:scale-[1.02] transition" title="Chạm để xem ảnh lớn">
+                // Tách phần ngày & giờ gọn gàng trên thẻ note
+                const dateDisplay = escapeHtml(item.date || '');
+
+                // Xem trước phản hồi mới nhất khi đang thu gọn
+                const latestReply = replyCount > 0 ? replies[replyCount - 1] : null;
+                const latestReplyPreviewHtml = (!isThreadOpen && latestReply)
+                    ? `<button type="button" onclick="toggleWhisperThread(${item.id})" class="text-[11px] text-purple-600/90 hover:text-purple-900 italic truncate max-w-[140px] sm:max-w-[160px] text-right cursor-pointer" title="Bấm để xem phản hồi">
+                        ${escapeHtml(latestReply.nickname)}: “${escapeHtml(latestReply.message)}”
+                       </button>`
+                    : '';
+
+                // Ảnh đính kèm trong lời thì thầm chính
+                const mainImageHtml = (item.image && item.image.trim())
+                    ? `<div class="mt-2.5">
+                        <img src="${item.image.replace(/"/g, '&quot;')}" alt="Ảnh đính kèm" onclick="openSingleImageLightbox(this.src)" class="w-full max-h-52 object-cover rounded-2xl border border-white/80 shadow-xs cursor-pointer hover:scale-[1.02] transition" title="Chạm để phóng to ảnh">
                        </div>`
                     : '';
 
-                const adminActionsHtml = isAdmin
-                    ? `<div class="flex items-center gap-1.5 ml-2">
-                        <button onclick="toggleReplyForm(${item.id})" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Trả lời bình luận này">
-                            💬 ${hasReply ? 'Sửa trả lời' : 'Trả lời'}
-                        </button>
-                        <button onclick="deleteWhisper(${item.id})" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-xs transition cursor-pointer" title="Xóa bình luận này">
-                            🗑️ Xóa
-                        </button>
-                       </div>`
+                // Nút xóa note dành riêng cho Admin
+                const adminDeleteBtn = isAdmin
+                    ? `<button type="button" onclick="deleteWhisper(${item.id})" class="text-pink-500 hover:text-pink-700 bg-white/80 hover:bg-white w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shadow-2xs transition cursor-pointer flex-shrink-0" title="Xóa mảnh thì thầm này">✕</button>`
                     : '';
 
-                const replyDisplayHtml = hasReply
-                    ? `<div class="mt-3.5 ml-3 sm:ml-6 p-3.5 rounded-2xl bg-gradient-to-r from-purple-100/90 via-pink-50/90 to-purple-50/90 border border-purple-200/80 shadow-xs flex items-start justify-between gap-2">
-                        <p class="text-xs sm:text-sm text-purple-900 font-semibold italic leading-relaxed">
-                            <span class="not-italic">🌙</span> ${escapeHtml(recipientName)} đã thì thầm vào giấc mơ bạn là “<span class="text-pink-700 font-bold">${escapeHtml(item.reply.trim())}</span>” <span class="not-italic">💜</span>
-                        </p>
-                        ${isAdmin ? `<button onclick="removeWhisperReply(${item.id})" class="text-[11px] text-pink-500 hover:text-pink-700 font-bold flex-shrink-0 cursor-pointer" title="Xóa câu trả lời này">✕</button>` : ''}
-                       </div>`
-                    : '';
+                // Danh sách các phản hồi bên trong note khi bấm mở
+                const repliesListHtml = replies.length > 0
+                    ? replies.map(rep => {
+                        const repImgHtml = (rep.image && rep.image.trim())
+                            ? `<img src="${rep.image.replace(/"/g, '&quot;')}" alt="Ảnh phản hồi" onclick="openSingleImageLightbox(this.src)" class="mt-2 max-h-40 w-auto rounded-xl border border-purple-200/80 shadow-2xs cursor-pointer hover:scale-[1.02] transition" title="Chạm để xem ảnh lớn">`
+                            : '';
+                        const delRepBtn = isAdmin
+                            ? `<button type="button" onclick="deleteWhisperReplyItem(${item.id}, ${rep.id})" class="text-[11px] text-pink-500 hover:text-pink-700 font-bold cursor-pointer ml-1.5" title="Xóa phản hồi này">✕</button>`
+                            : '';
+                        const ownerTag = rep.isAdminReply
+                            ? `<span class="text-[10px] bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-bold">Chủ giấc mơ 🌙</span>`
+                            : '';
 
-                const replyFormHtml = isAdmin
-                    ? `<div id="reply-box-${item.id}" class="admin-reply-box hidden mt-3 ml-3 sm:ml-6 pt-3 border-t border-purple-100">
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <input type="text" id="reply-input-${item.id}" value="${escapeHtml(item.reply || '')}" placeholder="Nhập lời thì thầm gửi lại ${escapeHtml(item.nickname)}..." class="w-full px-4 py-2 rounded-full border border-purple-300 bg-purple-50/60 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm text-purple-950">
-                            <div class="flex items-center gap-1.5 flex-shrink-0">
-                                <button type="button" onclick="saveWhisperReply(${item.id})" class="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold px-4 py-2 rounded-full text-xs shadow-sm transition cursor-pointer">
-                                    Gửi trả lời 💜
-                                </button>
-                                <button type="button" onclick="toggleReplyForm(${item.id})" class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold px-3 py-2 rounded-full text-xs transition cursor-pointer">
-                                    Hủy
+                        return `
+                            <div class="bg-white/95 p-3 rounded-2xl border border-purple-100 shadow-2xs space-y-1">
+                                <div class="flex items-center justify-between gap-1.5">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="text-purple-700 text-xs">✦</span>
+                                        <span class="text-xs font-bold text-purple-900">${escapeHtml(rep.nickname)}</span>
+                                        ${ownerTag}
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-[10px] text-purple-400 font-semibold">${escapeHtml(rep.date || '')}</span>
+                                        ${delRepBtn}
+                                    </div>
+                                </div>
+                                <p class="text-xs sm:text-[13px] text-purple-950/90 leading-relaxed pl-4 whitespace-pre-line">${escapeHtml(rep.message)}</p>
+                                <div class="pl-4">${repImgHtml}</div>
+                            </div>
+                        `;
+                    }).join('')
+                    : `<p class="text-xs text-purple-500 italic text-center py-2">Chưa có hồi âm nào, bạn hãy là người đầu tiên nhắn lại nhé ✨</p>`;
+
+                // Ảnh xem trước trong form reply của note này
+                const pendingRepImg = pendingReplyImages[item.id] || '';
+                const replyImgPreviewHtml = `
+                    <div id="reply-img-preview-wrap-${item.id}" class="${pendingRepImg ? '' : 'hidden'} flex items-center justify-between gap-2 bg-pink-50/90 px-3 py-2 rounded-xl border border-pink-200">
+                        <div class="flex items-center gap-2">
+                            <img id="reply-img-preview-${item.id}" src="${pendingRepImg}" alt="Preview" class="w-10 h-10 rounded-lg object-cover border border-purple-200">
+                            <span class="text-[11px] font-semibold text-purple-800">Đã chọn ảnh đính kèm</span>
+                        </div>
+                        <button type="button" onclick="clearReplyImage(${item.id})" class="text-xs font-bold text-pink-600 hover:text-pink-800 cursor-pointer">✕</button>
+                    </div>
+                `;
+
+                // Khu vực mở rộng: Danh sách phản hồi + Form cho bất kỳ ai (và cả Admin) để lại lời phản hồi kèm ảnh
+                const threadDrawerHtml = isThreadOpen
+                    ? `
+                    <div class="mt-3 pt-3 border-t border-dashed border-purple-200/90 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-extrabold text-purple-800 uppercase tracking-wider flex items-center gap-1">
+                                <span>✦</span> <span>Hồi âm & Sẻ chia (${replyCount})</span>
+                            </span>
+                            <span class="text-[10px] text-purple-500 italic">Góc nhỏ đồng điệu</span>
+                        </div>
+
+                        <div class="space-y-2 max-h-64 overflow-y-auto pr-0.5">
+                            ${repliesListHtml}
+                        </div>
+
+                        <!-- Form phản hồi mở cho tất cả mọi người -->
+                        <form onsubmit="handleWhisperReplySubmit(event, ${item.id})" class="bg-white/90 p-3 rounded-2xl border border-purple-200/80 space-y-2 shadow-2xs">
+                            <input type="text" id="reply-nick-${item.id}" maxlength="35" value="${isAdmin ? 'Huyên Huyên 💜' : ''}" placeholder="Biệt danh của bạn..." required class="whisper-reply-input w-full px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs text-purple-950">
+                            
+                            <textarea id="reply-msg-${item.id}" rows="2" maxlength="400" placeholder="Bạn muốn phản hồi gì ở lời thì thầm này?" required class="whisper-reply-input w-full px-3 py-1.5 rounded-xl border border-purple-200 bg-purple-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs text-purple-950 resize-none leading-relaxed"></textarea>
+
+                            ${replyImgPreviewHtml}
+
+                            <div class="flex items-center justify-between gap-2 pt-0.5">
+                                <label class="cursor-pointer inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-800 text-[11px] font-bold transition" title="Đính kèm ảnh vào phản hồi">
+                                    <span>🖼️</span> <span>Thêm ảnh</span>
+                                    <input type="file" accept="image/*" class="hidden" onchange="handleReplyImageSelect(event, ${item.id})">
+                                </label>
+
+                                <button type="submit" id="reply-submit-btn-${item.id}" class="cursor-pointer inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white text-[11px] font-bold shadow-xs hover:scale-105 transition">
+                                    <span>Gửi hồi âm</span> <span>💜</span>
                                 </button>
                             </div>
-                        </div>
-                       </div>`
+                        </form>
+                    </div>
+                    `
                     : '';
 
-                article.innerHTML = `
-                    <div class="flex flex-wrap items-center justify-between mb-2 gap-2">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs text-pink-700 font-bold bg-pink-100/90 px-3 py-1 rounded-full flex items-center gap-1">
-                                <span>✨</span> <span>${escapeHtml(item.nickname)}</span>
-                            </span>
-                            ${recipientBadgeHtml}
-                            <span class="text-[11px] text-purple-400 font-semibold">#${whispersData.length - index}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-xs text-purple-400 font-semibold">${escapeHtml(item.date)}</span>
-                            ${adminActionsHtml}
-                        </div>
+                const card = document.createElement('article');
+                card.className = `relative ${theme.cardBg} backdrop-blur-md p-5 pt-6 rounded-[1.75rem] border ${theme.border} shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between`;
+
+                card.innerHTML = `
+                    <!-- Nhãn ghim nhỏ phía trên tờ note -->
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white border ${theme.border} shadow-2xs text-[10px] font-bold tracking-widest text-purple-700 uppercase whitespace-nowrap">
+                        ♡ Mảnh thì thầm ♡
                     </div>
-                    <p class="text-sm text-purple-900/90 leading-relaxed italic pl-1">
-                        “${escapeHtml(item.message)}”
-                    </p>
-                    ${attachedImageHtml}
-                    ${replyDisplayHtml}
-                    ${replyFormHtml}
+
+                    <div>
+                        <!-- Hàng đầu: Tag người nhận + Ngày giờ + Nút xóa (nếu là Admin) -->
+                        <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-dashed border-purple-200/80">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${theme.topBadge} max-w-full truncate">
+                                    <span>💌</span>
+                                    ${recipientAvatarHtml}
+                                    <span class="truncate">Gửi ${escapeHtml(recipientName)}</span>
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1.5 flex-shrink-0">
+                                <span class="text-[10px] text-purple-500/90 font-semibold">${dateDisplay}</span>
+                                ${adminDeleteBtn}
+                            </div>
+                        </div>
+
+                        <!-- Nội dung lời tâm tình -->
+                        <div class="mt-3 ${theme.quoteBox} border-l-4 ${theme.accentLine} px-3.5 py-3 rounded-r-2xl rounded-l-md shadow-2xs">
+                            <p class="text-xs sm:text-sm text-purple-950/95 leading-relaxed whitespace-pre-line">
+                                ${escapeHtml(item.message)}
+                            </p>
+                            ${mainImageHtml}
+                        </div>
+
+                        <!-- Chữ ký người gửi & Nút thả tim -->
+                        <div class="mt-3 pb-2.5 border-b border-dashed border-purple-200/80 flex items-center justify-between gap-2">
+                            <span class="font-script text-xl sm:text-2xl text-purple-800 truncate" title="${escapeHtml(item.nickname)}">
+                                ~ ${escapeHtml(item.nickname)} ♡
+                            </span>
+
+                            <button type="button" onclick="toggleWhisperHeart(${item.id})" class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-full border ${isLiked ? 'bg-pink-500 text-white border-pink-500 shadow-xs' : 'bg-white/90 hover:bg-pink-50 text-purple-700 border-purple-200'} text-xs font-bold transition hover:scale-105 flex-shrink-0" title="Thả tim lời thì thầm này">
+                                <span>💜</span>
+                                <span>${likeCount}</span>
+                            </button>
+                        </div>
+
+                        <!-- Thanh mở/đóng phản hồi + Xem trước phản hồi mới nhất -->
+                        <div class="mt-2.5 flex items-center justify-between gap-2">
+                            <button type="button" onclick="toggleWhisperThread(${item.id})" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition ${theme.pillBtn}">
+                                <span>💬</span>
+                                <span>Hồi âm</span>
+                                <span class="px-1.5 py-0.2 rounded-full text-[10px] ${theme.pillCount}">${replyCount}</span>
+                                <span class="text-[10px]">${isThreadOpen ? '▲' : '▼'}</span>
+                            </button>
+
+                            ${latestReplyPreviewHtml}
+                        </div>
+
+                        ${threadDrawerHtml}
+                    </div>
                 `;
-                container.appendChild(article);
+
+                container.appendChild(card);
             });
         }
 
-        function toggleReplyForm(whisperId) {
-            const box = document.getElementById(`reply-box-${whisperId}`);
-            if (!box) return;
-            box.classList.toggle('hidden');
-            if (!box.classList.contains('hidden')) {
-                const input = document.getElementById(`reply-input-${whisperId}`);
-                if (input) input.focus();
+        async function handleWhisperReplySubmit(e, whisperId) {
+            e.preventDefault();
+            const nickInput = document.getElementById(`reply-nick-${whisperId}`);
+            const msgInput = document.getElementById(`reply-msg-${whisperId}`);
+            const submitBtn = document.getElementById(`reply-submit-btn-${whisperId}`);
+            if (!nickInput || !msgInput) return;
+
+            const nickname = nickInput.value.trim();
+            const message = msgInput.value.trim();
+            if (!nickname || !message) return;
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Đang gửi...</span>';
             }
-        }
 
-        async function saveWhisperReply(whisperId) {
-            if (!isAdmin) return;
-            const input = document.getElementById(`reply-input-${whisperId}`);
-            if (!input) return;
+            // Đồng bộ dữ liệu mới nhất từ đám mây trước khi chèn phản hồi
+            const latest = await fetchCloudState();
+            if (latest && latest.data && Array.isArray(latest.data.whispers)) {
+                const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
+                whispersData = mergeWhisperRecords(whispersData, latest.data.whispers, deletedIds);
+            }
 
-            const replyText = input.value.trim();
             const target = whispersData.find(w => w.id === whisperId);
-            if (!target) return;
+            if (target) {
+                if (!Array.isArray(target.replies)) target.replies = [];
+                const now = new Date();
+                const dateStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} • ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
-            target.reply = replyText;
-            target.replyUpdatedAt = Date.now();
+                target.replies.push({
+                    id: Date.now(),
+                    nickname: nickname,
+                    message: message,
+                    image: pendingReplyImages[whisperId] || "",
+                    date: dateStr,
+                    isAdminReply: isAdmin
+                });
+            }
 
+            delete pendingReplyImages[whisperId];
+            openWhisperThreadIds.add(whisperId);
             renderWhispers();
             await saveDataToCloud(false);
         }
 
-        async function removeWhisperReply(whisperId) {
+        async function deleteWhisperReplyItem(whisperId, replyId) {
             if (!isAdmin) return;
-            if (confirm("Huyên Huyên muốn xóa câu trả lời này phải không?")) {
+            if (confirm("Huyên Huyên muốn xóa hồi âm này phải không?")) {
                 const target = whispersData.find(w => w.id === whisperId);
-                if (target) {
-                    target.reply = "";
-                    target.replyUpdatedAt = Date.now();
+                if (target && Array.isArray(target.replies)) {
+                    target.replies = target.replies.filter(r => r.id !== replyId);
                     renderWhispers();
                     await saveDataToCloud(false);
                 }
@@ -1728,20 +2001,11 @@ html_content = r'''<!DOCTYPE html>
             const latest = await fetchCloudState();
             if (latest && latest.data && Array.isArray(latest.data.whispers)) {
                 const deletedIds = Array.isArray(latest.data.deletedWhisperIds) ? latest.data.deletedWhisperIds : [];
-                const mergedMap = new Map();
-                [...whispersData, ...latest.data.whispers].forEach(w => {
-                    if (w && w.id && !deletedIds.includes(w.id)) {
-                        const ex = mergedMap.get(w.id);
-                        if (!ex || (Number(w.replyUpdatedAt) || 0) >= (Number(ex.replyUpdatedAt) || 0)) {
-                            mergedMap.set(w.id, w);
-                        }
-                    }
-                });
-                whispersData = Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+                whispersData = mergeWhisperRecords(whispersData, latest.data.whispers, deletedIds);
             }
 
             const now = new Date();
-            const dateStr = `${String(now.getDate()).padStart(2, '0')}.${String(now.getMonth() + 1).padStart(2, '0')}.${now.getFullYear()} • ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const dateStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} • ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
 
             const newWhisper = {
                 id: Date.now(),
@@ -1752,8 +2016,8 @@ html_content = r'''<!DOCTYPE html>
                 message: message,
                 image: pendingWhisperImageDataUrl || "",
                 date: dateStr,
-                reply: "",
-                replyUpdatedAt: 0
+                likes: 0,
+                replies: []
             };
 
             whispersData.unshift(newWhisper);
@@ -1769,8 +2033,9 @@ html_content = r'''<!DOCTYPE html>
 
         async function deleteWhisper(id) {
             if (!isAdmin) return;
-            if (confirm("Huyên Huyên có chắc chắn muốn xóa lời nhắn này không?")) {
+            if (confirm("Huyên Huyên có chắc chắn muốn xóa mảnh thì thầm này không?")) {
                 whispersData = whispersData.filter(w => w.id !== id);
+                openWhisperThreadIds.delete(id);
                 const deletedIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
                 if (!deletedIds.includes(id)) deletedIds.push(id);
                 localStorage.setItem('huyen_deleted_whispers', JSON.stringify(deletedIds));
@@ -2432,7 +2697,7 @@ html_content = r'''<!DOCTYPE html>
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể chỉnh sửa giới thiệu, thêm/sửa {char} và trả lời bình luận nhé.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể chỉnh sửa giới thiệu, thêm/sửa {char} và quản lý lời thì thầm nhé.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
