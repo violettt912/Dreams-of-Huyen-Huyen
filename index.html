@@ -2640,7 +2640,14 @@
             }
         }
 
-        // ================= XỬ LÝ LINK MẠNG XÃ HỘI =================
+        // ================= XỬ LÝ LINK MẠNG XÃ HỘI & NÚT COPY ID DOKICHAT =================
+        const FB_LOGO_SVG = `<svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>`;
+        const DOKI_ID_VALUE = '489237082';
+
+        function copyDokichatId(btnEl) {
+            copyTextToClipboard(DOKI_ID_VALUE, btnEl);
+        }
+
         function renderSocialLinks() {
             const listContainer = document.getElementById('social-links-list');
             const editBtn = document.getElementById('edit-social-btn');
@@ -2648,25 +2655,48 @@
 
             listContainer.innerHTML = '';
 
+            // 1. Nút chuyển tiếp tới Facebook kèm logo Facebook (không có gạch dọc phía trước)
+            const fbLink = document.createElement('a');
+            fbLink.href = 'https://www.facebook.com/profile.php?id=61596179794710';
+            fbLink.target = '_blank';
+            fbLink.rel = 'noopener noreferrer';
+            fbLink.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100/90 hover:bg-purple-200 text-purple-950 text-xs sm:text-sm font-bold border border-purple-200 shadow-xs hover:scale-105 transition';
+            fbLink.innerHTML = `${FB_LOGO_SVG} <span>Facebook</span>`;
+            listContainer.appendChild(fbLink);
+
+            // 2. Nút ID DOKICHAT: khi bấm vào sẽ tự động copy 489237082
+            const dokiBtn = document.createElement('button');
+            dokiBtn.type = 'button';
+            dokiBtn.title = 'Chạm để tự động copy ID Dokichat: 489237082';
+            dokiBtn.onclick = function() { copyDokichatId(this); };
+            dokiBtn.className = 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-pink-100/90 hover:bg-pink-200 text-purple-950 text-xs sm:text-sm font-bold border border-pink-200 shadow-xs hover:scale-105 transition cursor-pointer';
+            dokiBtn.innerHTML = `<span>ID DOKICHAT</span>`;
+            listContainer.appendChild(dokiBtn);
+
+            // Các liên kết bổ sung (nếu có cấu hình thêm)
             socialLinksData.forEach(item => {
                 if (!item.url || !item.url.trim()) return;
                 const cleanUrl = item.url.trim();
                 const href = (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) ? cleanUrl : 'https://' + cleanUrl;
                 const label = (item.label && item.label.trim()) ? item.label.trim() : 'Liên kết';
+                const lowerLabel = label.toLowerCase();
+                const isFb = lowerLabel.includes('facebook') || lowerLabel === 'fb';
 
                 const a = document.createElement('a');
                 a.href = href;
                 a.target = '_blank';
                 a.rel = 'noopener noreferrer';
-                a.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100/90 hover:bg-purple-200 text-purple-900 text-xs font-bold border border-purple-200 shadow-xs hover:scale-105 transition';
-                a.innerHTML = `<span>💜</span> <span>${escapeHtml(label)}</span> <span>✨</span>`;
+                a.className = 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-purple-100/90 hover:bg-purple-200 text-purple-950 text-xs sm:text-sm font-bold border border-purple-200 shadow-xs hover:scale-105 transition';
+                a.innerHTML = isFb ? `${FB_LOGO_SVG} <span>${escapeHtml(label)}</span>` : `<span>💜</span> <span>${escapeHtml(label)}</span>`;
                 listContainer.appendChild(a);
             });
 
-            if (isAdmin) {
-                editBtn.classList.remove('hidden');
-            } else {
-                editBtn.classList.add('hidden');
+            if (editBtn) {
+                if (isAdmin) {
+                    editBtn.classList.remove('hidden');
+                } else {
+                    editBtn.classList.add('hidden');
+                }
             }
         }
 
