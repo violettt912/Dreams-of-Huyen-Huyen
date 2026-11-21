@@ -58,15 +58,61 @@
             width: 100%;
         }
 
-        /* Style cho mục thu gọn giống hình 3 */
+        /* Style cho mục thu gọn */
         .dream-accordion-line {
             flex-grow: 1;
             height: 1px;
             background: linear-gradient(to right, rgba(147, 51, 234, 0.35), rgba(147, 51, 234, 0.03));
         }
+
+        /* Tùy chỉnh thanh trượt tiến độ nhạc tối giản màu tím pastel */
+        input[type="range"].dream-music-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"].dream-music-slider::-webkit-slider-runnable-track {
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(168, 85, 247, 0.22);
+        }
+        input[type="range"].dream-music-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #9333ea;
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 4px rgba(88, 28, 135, 0.35);
+            margin-top: -4.5px;
+            transition: transform 0.15s ease;
+        }
+        input[type="range"].dream-music-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        input[type="range"].dream-music-slider::-moz-range-track {
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(168, 85, 247, 0.22);
+        }
+        input[type="range"].dream-music-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #9333ea;
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 4px rgba(88, 28, 135, 0.35);
+        }
     </style>
 </head>
 <body class="dreamy-bg text-purple-950 min-h-screen flex flex-col justify-between selection:bg-purple-300 selection:text-purple-900 relative">
+
+    <!-- Trình phát nhạc YouTube ẩn hoàn toàn (Không hiện tên bài hát, không hiện link) -->
+    <div class="fixed -left-[9999px] -top-[9999px] w-1 h-1 opacity-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div id="hidden-yt-player"></div>
+    </div>
 
     <!-- ================= HÌNH NỀN CỐ ĐỊNH CHO TRANG CHỦ & TRANG DANH SÁCH ================= -->
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -103,8 +149,9 @@
                 <span class="text-base sm:text-xl group-hover:rotate-12 transition duration-300">✨</span>
             </button>
             
+            <!-- Đã đổi câu dưới nút bấm theo yêu cầu -->
             <p class="mt-3 text-xs sm:text-sm text-white/95 font-semibold drop-shadow tracking-wide">
-                Chạm nhẹ để mở cánh cửa lâu đài mộng mơ ✨
+                Nơi những giấc mơ hóa thành nhân vật và câu chuyện 💜
             </p>
         </div>
     </div>
@@ -152,10 +199,8 @@
 
             <!-- VIEW 1: TRANG CHỦ -->
             <div id="home-view" class="space-y-16">
-                <!-- Hero Section -->
+                <!-- Hero Section (Đã xóa icon ✨ mờ ở góc phải) -->
                 <section id="about" class="flex flex-col md:flex-row items-center gap-8 bg-white/85 backdrop-blur-md p-8 rounded-[2.5rem] shadow-md border border-purple-200/70 relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none">✨</div>
-                    
                     <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-purple-200 via-pink-200 to-purple-300 overflow-hidden flex-shrink-0 border-4 border-white shadow-md flex items-center justify-center">
                         <img src="https://files.catbox.moe/3c24gw.jpg"
                              referrerpolicy="no-referrer"
@@ -163,15 +208,34 @@
                              alt="Avatar Huyên Huyên"
                              class="w-full h-full object-cover">
                     </div>
-                    <div class="text-center md:text-left space-y-3 relative z-10 flex-grow">
+                    <div class="text-center md:text-left space-y-3 relative z-10 flex-grow w-full">
                         <span class="inline-block bg-pink-100 text-pink-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">✨ Chào mừng các tình iu đến với</span>
                         <h1 class="font-script text-5xl sm:text-6xl text-purple-900">Những giấc mơ của Huyên Huyên</h1>
                         <p class="text-purple-800/90 leading-relaxed text-sm md:text-base italic">
                             “Nơi những giấc mơ hóa thành nhân vật và câu chuyện 💜”
                         </p>
 
+                        <!-- 👇 THANH NHẠC BÍ MẬT TỐI GIẢN (KHÔNG HIỆN TÊN BÀI HÁT, KHÔNG HIỆN LINK, TỰ LẶP LẠI) -->
+                        <div class="pt-1 flex items-center justify-center md:justify-start">
+                            <div class="w-full max-w-md flex items-center gap-3 bg-purple-100/75 hover:bg-purple-100/95 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-200/80 shadow-xs transition">
+                                <!-- Nút Play / Pause -->
+                                <button type="button" id="music-toggle-btn" onclick="toggleDreamMusic()" class="w-8 h-8 rounded-full bg-white text-purple-700 hover:text-purple-900 hover:scale-105 shadow-xs border border-purple-200 flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Phát / Tạm dừng nhạc nền">
+                                    <svg id="music-icon-play" class="w-3.5 h-3.5 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    <svg id="music-icon-pause" class="w-3.5 h-3.5 fill-current hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                </button>
+
+                                <!-- Thanh trượt tiến độ nhạc -->
+                                <input type="range" id="music-progress-bar" min="0" max="100" value="0" step="0.1" oninput="seekDreamMusic(this.value)" class="dream-music-slider w-full" aria-label="Tiến độ nhạc nền">
+
+                                <!-- Biểu tượng lặp lại vô tận (Repeat) -->
+                                <span class="text-purple-600/80 flex-shrink-0" title="Tự động lặp lại khi hết bài">
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+                                </span>
+                            </div>
+                        </div>
+
                         <!-- KHU VỰC HIỂN THỊ LINK MẠNG XÃ HỘI & NÚT + KHI Ở CHẾ ĐỘ SỬA -->
-                        <div id="social-links-wrapper" class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2">
+                        <div id="social-links-wrapper" class="pt-1 flex flex-wrap items-center justify-center md:justify-start gap-2">
                             <div id="social-links-list" class="flex flex-wrap items-center justify-center md:justify-start gap-2">
                                 <!-- Render bằng JS -->
                             </div>
@@ -183,7 +247,7 @@
                     </div>
                 </section>
 
-                <!-- Gallery Section (Hiển thị 4 {char} mỗi trang + Số trang 1/6 + Chuyển 4 {char} mỗi lần bấm) -->
+                <!-- Gallery Section -->
                 <section id="gallery" class="space-y-5">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/75 backdrop-blur-md px-6 py-4 rounded-3xl border border-purple-100 shadow-xs">
                         <h2 class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2 sm:gap-3">
@@ -203,9 +267,8 @@
                         </div>
                     </div>
 
-                    <!-- 👇 KHUNG TÌM KIẾM THEO TÊN & LỌC HASHTAG TRÊN TRANG CHỦ -->
+                    <!-- KHUNG TÌM KIẾM THEO TÊN & LỌC HASHTAG TRÊN TRANG CHỦ -->
                     <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs space-y-4">
-                        <!-- Tìm theo tên {char} -->
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 border-b border-purple-100">
                             <label for="home-search-input" class="text-xs sm:text-sm font-bold text-purple-900 flex items-center gap-1.5 flex-shrink-0">
                                 <span>🔍</span> Bạn muốn tìm giấc mơ nào?
@@ -216,7 +279,6 @@
                             </div>
                         </div>
 
-                        <!-- Lọc theo Hashtag -->
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-bold text-purple-800 flex items-center gap-1.5">
@@ -233,24 +295,21 @@
                     </div>
                     
                     <div class="relative flex items-center">
-                        <!-- Nút mũi tên lùi 4 {char} trước -->
                         <button id="char-prev-btn" onclick="prevSlide()" class="absolute -left-4 sm:-left-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer" title="Xem 4 giấc mơ trước">
                             ❮
                         </button>
 
-                        <!-- Lưới hiển thị 4 {char} mỗi trang -->
                         <div id="carousel-track" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 w-full px-2">
                             <!-- Render bằng JS -->
                         </div>
 
-                        <!-- Nút mũi tên tiến 4 {char} sau -->
                         <button id="char-next-btn" onclick="nextSlide()" class="absolute -right-4 sm:-right-6 z-20 bg-white/95 hover:bg-white text-purple-900 p-3 rounded-full shadow-md border border-purple-200 hover:scale-110 transition cursor-pointer" title="Xem 4 giấc mơ tiếp theo">
                             ❯
                         </button>
                     </div>
                 </section>
 
-                <!-- ================= PHẦN LỜI THÌ THẦM (SỔ LƯU BÚT TRỰC TUYẾN CHO KHÁCH GHÉ THĂM + ADMIN REPLY) ================= -->
+                <!-- ================= PHẦN LỜI THÌ THẦM ================= -->
                 <section id="diary" class="space-y-6">
                     <div class="inline-block bg-white/85 backdrop-blur-md px-6 py-2.5 rounded-full border border-purple-100 shadow-xs">
                         <h2 class="font-script text-4xl sm:text-5xl text-purple-900 flex items-center gap-2">
@@ -258,7 +317,6 @@
                         </h2>
                     </div>
 
-                    <!-- Khung để Người lạ / Khách ghé thăm gửi lời nhắn (Không cần đăng nhập) -->
                     <div class="bg-white/90 backdrop-blur-md p-6 sm:p-7 rounded-3xl shadow-sm border border-purple-200/80 space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-base sm:text-lg font-bold text-purple-900 flex items-center gap-2">
@@ -286,7 +344,6 @@
                         </form>
                     </div>
 
-                    <!-- Danh sách tất cả các lời nhắn (Tất cả mọi người đều xem được + Hiển thị câu trả lời của Huyên Huyên) -->
                     <div id="whispers-list" class="space-y-4">
                         <!-- Render bằng JS -->
                     </div>
@@ -310,7 +367,6 @@
                     </div>
                 </div>
 
-                <!-- KHUNG TÌM KIẾM THEO TÊN & LỌC HASHTAG TRÊN TRANG DANH SÁCH -->
                 <div class="bg-white/85 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-purple-100 shadow-xs space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3.5 border-b border-purple-100">
                         <label for="list-search-input" class="text-xs sm:text-sm font-bold text-purple-900 flex items-center gap-1.5 flex-shrink-0">
@@ -371,7 +427,7 @@
     </div>
 
 
-    <!-- ================= 4. MODAL POPUP CHI TIẾT NHÂN VẬT (ĐÃ CẬP NHẬT BỐ CỤC MỚI & 4 MỤC THU GỌN) ================= -->
+    <!-- ================= 4. MODAL POPUP CHI TIẾT NHÂN VẬT ================= -->
     <div id="char-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-purple-200 relative transform transition-all scale-95 opacity-0 duration-300 max-h-[90vh] overflow-y-auto" id="modal-content-box">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
@@ -385,68 +441,51 @@
             </div>
 
             <div class="space-y-3.5 text-sm text-purple-800/90 leading-relaxed border-t border-purple-100 pt-4">
-                <!-- 1. Mô tả giấc mơ (Giữ nguyên ở trên cùng) -->
                 <p><strong>🌸 Mô tả giấc mơ:</strong> <span id="modal-desc"></span></p>
 
-                <!-- 2. Câu thoại đặc trưng (Quote - Đưa lên ngay dưới Mô tả giấc mơ) -->
                 <div id="modal-quote-box" class="bg-purple-50/90 p-4 rounded-2xl border border-purple-100 text-purple-900 italic text-xs sm:text-sm">
                     “<span id="modal-quote"></span>”
                 </div>
 
-                <!-- 3. Các nhãn Hashtag -->
                 <div id="modal-hashtags-box" class="flex flex-wrap gap-1.5 pt-0.5"></div>
 
-                <!-- 4. BỐN MỤC THU GỌN (ACCORDION GIỐNG HÌNH 3: ẤN VÀO MŨI TÊN XOAY XUỐNG & HIỆN THÔNG TIN) -->
+                <!-- 4 MỤC THU GỌN -->
                 <div class="space-y-2.5 pt-2">
-                    
-                    <!-- Mục 1: Thông tin chi tiết về giấc mơ -->
                     <div class="dream-accordion-item">
                         <button type="button" onclick="toggleDreamAccordion('acc-dream-info')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
                             <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Thông tin chi tiết về giấc mơ</span>
                             <span id="arrow-acc-dream-info" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
                             <span class="dream-accordion-line"></span>
                         </button>
-                        <div id="content-acc-dream-info" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm">
-                            <!-- Render các dòng [In đậm] + [In nghiêng] bằng JS -->
-                        </div>
+                        <div id="content-acc-dream-info" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm"></div>
                     </div>
 
-                    <!-- Mục 2: Thông tin người mơ -->
                     <div class="dream-accordion-item">
                         <button type="button" onclick="toggleDreamAccordion('acc-dreamer-info')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
                             <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Thông tin người mơ</span>
                             <span id="arrow-acc-dreamer-info" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
                             <span class="dream-accordion-line"></span>
                         </button>
-                        <div id="content-acc-dreamer-info" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm">
-                            <!-- Render bằng JS -->
-                        </div>
+                        <div id="content-acc-dreamer-info" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm"></div>
                     </div>
 
-                    <!-- Mục 3: Những người sẽ xuất hiện trong giấc mơ -->
                     <div class="dream-accordion-item">
                         <button type="button" onclick="toggleDreamAccordion('acc-appearing-chars')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
                             <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Những người sẽ xuất hiện trong giấc mơ</span>
                             <span id="arrow-acc-appearing-chars" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
                             <span class="dream-accordion-line"></span>
                         </button>
-                        <div id="content-acc-appearing-chars" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm">
-                            <!-- Render bằng JS -->
-                        </div>
+                        <div id="content-acc-appearing-chars" class="hidden pl-3 pr-2 py-2.5 mt-1 space-y-1.5 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm"></div>
                     </div>
 
-                    <!-- Mục 4: Bối cảnh mở đầu giấc mơ -->
                     <div class="dream-accordion-item">
                         <button type="button" onclick="toggleDreamAccordion('acc-opening-scene')" class="w-full flex items-center gap-2.5 py-1.5 text-left group cursor-pointer focus:outline-none">
                             <span class="font-fraunces italic font-semibold text-purple-900 group-hover:text-purple-600 transition text-sm sm:text-base">Bối cảnh mở đầu giấc mơ</span>
                             <span id="arrow-acc-opening-scene" class="text-purple-700 text-xs transition-transform duration-200">▸</span>
                             <span class="dream-accordion-line"></span>
                         </button>
-                        <div id="content-acc-opening-scene" class="hidden pl-3.5 pr-3 py-3 mt-1 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm text-purple-900/90 italic whitespace-pre-line leading-relaxed">
-                            <!-- Render bằng JS -->
-                        </div>
+                        <div id="content-acc-opening-scene" class="hidden pl-3.5 pr-3 py-3 mt-1 bg-purple-50/50 rounded-2xl border border-purple-100/80 text-xs sm:text-sm text-purple-900/90 italic whitespace-pre-line leading-relaxed"></div>
                     </div>
-
                 </div>
 
                 <!-- Khu vực hiển thị các Đường vào giấc mơ -->
@@ -455,7 +494,7 @@
                     <div id="modal-links-box" class="flex flex-wrap gap-2"></div>
                 </div>
 
-                <!-- KHU VỰC ALBUM HÌNH ẢNH GIẤC MƠ (HIỆN 4 ẢNH VUÔNG MỖI TRANG + NÚT QUA TRÁI/PHẢI 4 ẢNH) -->
+                <!-- KHU VỰC ALBUM HÌNH ẢNH GIẤC MƠ -->
                 <div id="modal-gallery-section" class="hidden pt-3 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-2.5">
                         <p id="modal-gallery-title" class="font-bold text-purple-900">🖼️ Hình ảnh giấc mơ (0 ảnh):</p>
@@ -467,9 +506,7 @@
                             ❮
                         </button>
 
-                        <div id="modal-gallery-grid" class="grid grid-cols-4 gap-2 sm:gap-2.5 w-full">
-                            <!-- Render bằng JS -->
-                        </div>
+                        <div id="modal-gallery-grid" class="grid grid-cols-4 gap-2 sm:gap-2.5 w-full"></div>
 
                         <button type="button" id="modal-gallery-next" onclick="nextModalGalleryPage()" class="hidden absolute -right-3 sm:-right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-purple-100 text-purple-900 font-bold shadow-md border border-purple-200 items-center justify-center transition hover:scale-110 cursor-pointer" title="Xem 4 ảnh tiếp theo">
                             ❯
@@ -518,7 +555,7 @@
     </div>
 
 
-    <!-- ================= 5. MODAL THÊM / SỬA NHÂN VẬT (ADMIN FORM VỚI 4 MỤC MỚI) ================= -->
+    <!-- ================= 5. MODAL THÊM / SỬA NHÂN VẬT (ADMIN FORM) ================= -->
     <div id="admin-form-modal" class="fixed inset-0 z-50 hidden bg-purple-950/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-[2rem] p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-purple-200 relative max-h-[92vh] overflow-y-auto">
             <button onclick="closeAdminForm()" class="absolute top-4 right-4 text-purple-400 hover:text-purple-700 text-2xl font-bold w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center transition cursor-pointer">✕</button>
@@ -573,9 +610,7 @@
                     <input type="text" id="form-hashtags" placeholder="#CEO, #Romance, #Mature" required class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400">
                 </div>
 
-                <!-- ================= 4 MỤC THÔNG TIN MỚI THAY THẾ CHO TÍNH CÁCH & BỐI CẢNH ================= -->
-                
-                <!-- Mục 1: Thông tin chi tiết về giấc mơ (2 ô: Ô 1 in đậm, Ô 2 in nghiêng + dấu +) -->
+                <!-- 4 MỤC THÔNG TIN MỚI -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-1.5">
                         <div>
@@ -586,12 +621,9 @@
                             +
                         </button>
                     </div>
-                    <div id="form-dream-info-container" class="space-y-2">
-                        <!-- Render bằng JS -->
-                    </div>
+                    <div id="form-dream-info-container" class="space-y-2"></div>
                 </div>
 
-                <!-- Mục 2: Thông tin người mơ (2 ô: Ô 1 in đậm, Ô 2 in nghiêng + dấu +) -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-1.5">
                         <div>
@@ -602,12 +634,9 @@
                             +
                         </button>
                     </div>
-                    <div id="form-dreamer-info-container" class="space-y-2">
-                        <!-- Render bằng JS -->
-                    </div>
+                    <div id="form-dreamer-info-container" class="space-y-2"></div>
                 </div>
 
-                <!-- Mục 3: Những người sẽ xuất hiện trong giấc mơ (2 ô: Ô 1 in đậm, Ô 2 in nghiêng + dấu +) -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-1.5">
                         <div>
@@ -618,18 +647,14 @@
                             +
                         </button>
                     </div>
-                    <div id="form-appearing-chars-container" class="space-y-2">
-                        <!-- Render bằng JS -->
-                    </div>
+                    <div id="form-appearing-chars-container" class="space-y-2"></div>
                 </div>
 
-                <!-- Mục 4: Bối cảnh mở đầu giấc mơ (Ô văn bản tự do) -->
                 <div class="pt-2 border-t border-purple-100">
                     <label class="block font-bold text-purple-900 mb-1">4. Bối cảnh mở đầu giấc mơ:</label>
                     <textarea id="form-opening-scene" rows="3" placeholder="Nhập bối cảnh mở đầu giấc mơ..." class="w-full px-4 py-2 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 italic"></textarea>
                 </div>
 
-                <!-- Đường vào giấc mơ -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex items-center justify-between mb-1.5">
                         <label class="block font-semibold">🔗 Đường vào giấc mơ (Tên nút & Link):</label>
@@ -637,12 +662,9 @@
                             +
                         </button>
                     </div>
-                    <div id="form-links-container" class="space-y-2">
-                        <!-- Render bằng JS -->
-                    </div>
+                    <div id="form-links-container" class="space-y-2"></div>
                 </div>
 
-                <!-- MỤC ALBUM HÌNH ẢNH GIẤC MƠ -->
                 <div class="pt-2 border-t border-purple-100">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <label class="block font-semibold">🖼️ Album Hình ảnh giấc mơ (Không giới hạn số ảnh):</label>
@@ -656,9 +678,7 @@
                             </button>
                         </div>
                     </div>
-                    <div id="form-gallery-container" class="space-y-2 max-h-52 overflow-y-auto pr-1">
-                        <!-- Render bằng JS -->
-                    </div>
+                    <div id="form-gallery-container" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
                 </div>
 
                 <div class="pt-4 flex justify-end gap-3">
@@ -686,9 +706,7 @@
                             +
                         </button>
                     </div>
-                    <div id="social-inputs-container" class="space-y-2.5">
-                        <!-- Render bằng JS -->
-                    </div>
+                    <div id="social-inputs-container" class="space-y-2.5"></div>
                 </div>
 
                 <div class="pt-4 flex justify-end gap-3">
@@ -700,8 +718,114 @@
     </div>
 
 
-    <!-- ================= JAVASCRIPT LOGIC & MULTI-CLOUD REALTIME SYNC ================= -->
+    <!-- ================= JAVASCRIPT LOGIC, NHẠC NỀN YOUTUBE ẨN & MULTI-CLOUD SYNC ================= -->
     <script>
+        // ================= TRÌNH PHÁT NHẠC NỀN BÍ MẬT (TỰ ĐỘNG LẶP LẠI, KHÔNG HIỆN TÊN/LINK) =================
+        const DREAM_MUSIC_VIDEO_ID = 'zbKEln8GOuk';
+        let ytMusicPlayer = null;
+        let isMusicPlaying = false;
+        let isSeekingMusic = false;
+        let pendingAutoPlay = false;
+
+        // Nạp thư viện YouTube IFrame API
+        (function loadYouTubeIframeAPI() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        })();
+
+        window.onYouTubeIframeAPIReady = function() {
+            ytMusicPlayer = new YT.Player('hidden-yt-player', {
+                height: '1',
+                width: '1',
+                videoId: DREAM_MUSIC_VIDEO_ID,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    disablekb: 1,
+                    fs: 0,
+                    loop: 1,
+                    playlist: DREAM_MUSIC_VIDEO_ID,
+                    modestbranding: 1,
+                    playsinline: 1,
+                    rel: 0
+                },
+                events: {
+                    onReady: function(event) {
+                        event.target.setVolume(65);
+                        if (pendingAutoPlay) {
+                            event.target.playVideo();
+                            pendingAutoPlay = false;
+                        }
+                    },
+                    onStateChange: function(event) {
+                        if (event.data === YT.PlayerState.PLAYING) {
+                            isMusicPlaying = true;
+                            updateMusicButtonUI(true);
+                        } else if (event.data === YT.PlayerState.PAUSED) {
+                            isMusicPlaying = false;
+                            updateMusicButtonUI(false);
+                        } else if (event.data === YT.PlayerState.ENDED) {
+                            // Tự động lặp lại ngay khi hết bài
+                            event.target.seekTo(0);
+                            event.target.playVideo();
+                        }
+                    }
+                }
+            });
+        };
+
+        function updateMusicButtonUI(playing) {
+            const playIcon = document.getElementById('music-icon-play');
+            const pauseIcon = document.getElementById('music-icon-pause');
+            if (!playIcon || !pauseIcon) return;
+
+            if (playing) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
+
+        function toggleDreamMusic() {
+            if (!ytMusicPlayer || typeof ytMusicPlayer.getPlayerState !== 'function') {
+                pendingAutoPlay = true;
+                return;
+            }
+            const state = ytMusicPlayer.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                ytMusicPlayer.pauseVideo();
+            } else {
+                ytMusicPlayer.playVideo();
+            }
+        }
+
+        function seekDreamMusic(percentVal) {
+            if (!ytMusicPlayer || typeof ytMusicPlayer.getDuration !== 'function') return;
+            const duration = ytMusicPlayer.getDuration();
+            if (duration > 0) {
+                const targetSec = (Number(percentVal) / 100) * duration;
+                ytMusicPlayer.seekTo(targetSec, true);
+            }
+        }
+
+        // Cập nhật thanh trượt tiến độ mỗi 500ms
+        setInterval(() => {
+            if (!ytMusicPlayer || typeof ytMusicPlayer.getCurrentTime !== 'function') return;
+            if (isMusicPlaying && !isSeekingMusic) {
+                const current = ytMusicPlayer.getCurrentTime();
+                const duration = ytMusicPlayer.getDuration();
+                const slider = document.getElementById('music-progress-bar');
+                if (slider && duration > 0) {
+                    slider.value = (current / duration) * 100;
+                }
+            }
+        }, 500);
+
+        // ================= DỮ LIỆU & LOGIC TRANG WEB =================
         const defaultCharacters = [
             {
                 id: 1,
@@ -804,7 +928,6 @@
             }
         ];
 
-        // Chuẩn hóa dữ liệu {char} để tương thích ngược với dữ liệu cũ của Huyên Huyên
         function normalizeCharacterObject(c) {
             if (!c || typeof c !== 'object') return c;
             if (c.icon === 'https://files.catbox.moe/69gmu5.png') {
@@ -831,7 +954,7 @@
 
         let isAdmin = false;
         let selectedHashtags = [];
-        let searchQuery = ''; // Từ khóa tìm kiếm tên {char}
+        let searchQuery = '';
 
         let currentModalGallery = [];
         let currentModalGalleryPage = 0;
@@ -842,6 +965,14 @@
             initSnow('main-snow-container', 55);
             renderAll();
             loadDataFromCloud();
+
+            const slider = document.getElementById('music-progress-bar');
+            if (slider) {
+                slider.addEventListener('mousedown', () => { isSeekingMusic = true; });
+                slider.addEventListener('mouseup', () => { isSeekingMusic = false; });
+                slider.addEventListener('touchstart', () => { isSeekingMusic = true; });
+                slider.addEventListener('touchend', () => { isSeekingMusic = false; });
+            }
 
             setInterval(loadDataFromCloud, 8000);
         });
@@ -1011,7 +1142,7 @@
             renderWhispers();
         }
 
-        // ================= XỬ LÝ LỜI THÌ THẦM & TRẢ LỜI BÌNH LUẬN CỦA HUYÊN HUYÊN =================
+        // ================= XỬ LÝ LỜI THÌ THẦM & TRẢ LỜI BÌNH LUẬN =================
         function escapeHtml(str) {
             return String(str || '')
                 .replace(/&/g, '&amp;')
@@ -1357,7 +1488,6 @@
             return Array.from(tagMap.values());
         }
 
-        // Xử lý khi người dùng nhập tên giấc mơ vào ô "Bạn muốn tìm giấc mơ nào?"
         function handleSearchInput(val) {
             searchQuery = (val || '').trim();
             
@@ -1382,7 +1512,6 @@
             renderFullList();
         }
 
-        // Lọc kết hợp cả Tên giấc mơ + Tất cả các Hashtag đang chọn
         function getFilteredCharacters() {
             const q = searchQuery.toLowerCase();
             return charactersData.filter(char => {
@@ -1492,7 +1621,6 @@
             card.innerHTML = `
                 ${adminButtonsHtml}
                 <div>
-                    <!-- Khung ảnh cố định hình vuông 1:1 bo góc trên cả Điện thoại, iPad và Laptop -->
                     <div class="square-box aspect-square w-full rounded-2xl bg-purple-100/70 mb-3.5 overflow-hidden flex items-center justify-center text-6xl group-hover:scale-[1.03] transition duration-300 shadow-inner">
                         ${iconHtml}
                     </div>
@@ -1579,10 +1707,17 @@
             });
         }
 
+        // Bấm nút ở màn hình chờ -> Vào web đồng thời kích hoạt nhạc nền tự động
         function enterDream() {
             const splash = document.getElementById('splash-screen');
             const mainWeb = document.getElementById('main-website');
             
+            if (ytMusicPlayer && typeof ytMusicPlayer.playVideo === 'function') {
+                ytMusicPlayer.playVideo();
+            } else {
+                pendingAutoPlay = true;
+            }
+
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
@@ -1615,7 +1750,7 @@
             }).filter(item => item.url.length > 0);
         }
 
-        // ================= XỬ LÝ 4 MỤC THU GỌN (ACCORDION) TRONG MODAL CHI TIẾT {CHAR} =================
+        // ================= XỬ LÝ 4 MỤC THU GỌN =================
         function toggleDreamAccordion(sectionKey) {
             const contentEl = document.getElementById(`content-${sectionKey}`);
             const arrowEl = document.getElementById(`arrow-${sectionKey}`);
@@ -1624,10 +1759,10 @@
             const isHidden = contentEl.classList.contains('hidden');
             if (isHidden) {
                 contentEl.classList.remove('hidden');
-                arrowEl.innerText = '▾'; // Mũi tên hướng xuống khi mở ra
+                arrowEl.innerText = '▾';
             } else {
                 contentEl.classList.add('hidden');
-                arrowEl.innerText = '▸'; // Mũi tên hướng sang phải khi thu gọn
+                arrowEl.innerText = '▸';
             }
         }
 
@@ -1654,7 +1789,7 @@
             }).join('');
         }
 
-        // ================= XỬ LÝ ALBUM HÌNH ẢNH GIẤC MƠ TRONG MODAL CHI TIẾT (4 ẢNH / TRANG) =================
+        // ================= XỬ LÝ ALBUM HÌNH ẢNH GIẤC MƠ =================
         function renderModalGallery() {
             const gallerySection = document.getElementById('modal-gallery-section');
             const galleryTitle = document.getElementById('modal-gallery-title');
@@ -1834,7 +1969,6 @@
             const tagsBox = document.getElementById('modal-hashtags-box');
             tagsBox.innerHTML = (char.hashtags || []).map(tag => `<span class="text-xs bg-purple-100 text-purple-800 px-2.5 py-1 rounded-full font-semibold">${tag}</span>`).join('');
 
-            // Đổ dữ liệu vào 4 mục thu gọn và đặt trạng thái mặc định là thu gọn (mũi tên ▸)
             renderKeyValueAccordionList('content-acc-dream-info', char.dreamInfo);
             renderKeyValueAccordionList('content-acc-dreamer-info', char.dreamerInfo);
             renderKeyValueAccordionList('content-acc-appearing-chars', char.appearingChars);
@@ -1853,7 +1987,6 @@
                 if (aEl) aEl.innerText = '▸';
             });
 
-            // Hiển thị các nút Đường vào giấc mơ
             const linksSection = document.getElementById('modal-links-section');
             const linksBox = document.getElementById('modal-links-box');
             const validLinks = normalizeLinks(char.links);
@@ -1922,7 +2055,7 @@
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await saveDataToCloud(false);
-                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể thêm/sửa {char} với 4 mục thu gọn mới và trả lời bình luận nhé.");
+                alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể thêm/sửa {char} và trả lời bình luận nhé.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
                 errorMsg.classList.remove('hidden');
@@ -2162,7 +2295,6 @@
             document.getElementById('form-quote').value = char.quote;
             document.getElementById('form-hashtags').value = (char.hashtags || []).join(', ');
 
-            // Mục 1: Thông tin chi tiết về giấc mơ
             const dreamInfoContainer = document.getElementById('form-dream-info-container');
             dreamInfoContainer.innerHTML = '';
             if (Array.isArray(char.dreamInfo) && char.dreamInfo.length > 0) {
@@ -2171,7 +2303,6 @@
                 addKeyValueRow('form-dream-info-container', 'Tuổi:', '');
             }
 
-            // Mục 2: Thông tin người mơ
             const dreamerInfoContainer = document.getElementById('form-dreamer-info-container');
             dreamerInfoContainer.innerHTML = '';
             if (Array.isArray(char.dreamerInfo) && char.dreamerInfo.length > 0) {
@@ -2180,7 +2311,6 @@
                 addKeyValueRow('form-dreamer-info-container', 'Vai trò:', '');
             }
 
-            // Mục 3: Những người sẽ xuất hiện trong giấc mơ
             const appearingContainer = document.getElementById('form-appearing-chars-container');
             appearingContainer.innerHTML = '';
             if (Array.isArray(char.appearingChars) && char.appearingChars.length > 0) {
@@ -2189,7 +2319,6 @@
                 addKeyValueRow('form-appearing-chars-container', '', '');
             }
 
-            // Mục 4: Bối cảnh mở đầu giấc mơ
             document.getElementById('form-opening-scene').value = char.openingScene || '';
 
             const linksContainer = document.getElementById('form-links-container');
