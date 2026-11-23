@@ -205,24 +205,24 @@
         <!-- Hiệu ứng tuyết động cho Trang chủ & Các mục -->
         <div id="main-snow-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
 
-        <!-- Header / Navigation (Tràn đều 2 bên lề, nằm gọn trên 1 hàng duy nhất, đóng băng khi cuộn) -->
+        <!-- Header / Navigation (Laptop 1 hàng; iPad/Điện thoại tách 2 hàng: Hàng 1 tên web, Hàng 2 4 danh mục) -->
         <header class="w-full bg-white/85 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 shadow-sm">
-            <div class="w-full px-4 sm:px-8 lg:px-12 py-3 sm:py-3.5 flex flex-nowrap justify-between items-center gap-3 sm:gap-6 relative z-10 overflow-x-auto no-scrollbar">
-                <a href="#" onclick="openPasswordModal(event)" class="font-script text-2xl sm:text-3xl lg:text-4xl text-purple-800 flex items-center gap-2 group whitespace-nowrap flex-shrink-0" title="Chạm vào đây để đăng nhập quản trị">
+            <div class="w-full px-3 sm:px-6 lg:px-12 py-2.5 lg:py-3.5 flex flex-col lg:flex-row lg:justify-between items-center gap-2 lg:gap-6 relative z-10">
+                <a href="#" onclick="openPasswordModal(event)" class="font-script text-2xl sm:text-3xl lg:text-4xl text-purple-800 flex items-center justify-center lg:justify-start gap-2 group whitespace-nowrap" title="Chạm vào đây để đăng nhập quản trị">
                     <span class="group-hover:scale-110 transition duration-300">🌙</span> 
                     <span class="font-script">Những giấc mơ của Huyên Huyên</span>
                 </a>
-                <nav class="flex flex-nowrap items-center gap-1.5 sm:gap-2.5 lg:gap-4 font-semibold text-xs sm:text-sm lg:text-base text-purple-700 whitespace-nowrap flex-shrink-0">
-                    <button type="button" id="nav-tab-about" onclick="switchTab('about')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs whitespace-nowrap">
+                <nav class="w-full lg:w-auto flex flex-wrap lg:flex-nowrap items-center justify-center lg:justify-end gap-1 sm:gap-2 lg:gap-4 font-semibold text-[11px] sm:text-sm lg:text-base text-purple-700">
+                    <button type="button" id="nav-tab-about" onclick="switchTab('about')" class="nav-tab-btn px-2.5 sm:px-3.5 lg:px-4 py-1.5 rounded-full transition cursor-pointer bg-purple-100 text-purple-950 font-bold shadow-2xs whitespace-nowrap">
                         Về Huyên Huyên
                     </button>
-                    <button type="button" id="nav-tab-dreams" onclick="switchTab('dreams')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
+                    <button type="button" id="nav-tab-dreams" onclick="switchTab('dreams')" class="nav-tab-btn px-2.5 sm:px-3.5 lg:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
                         Dreams
                     </button>
-                    <button type="button" id="nav-tab-whispers" onclick="switchTab('whispers')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
+                    <button type="button" id="nav-tab-whispers" onclick="switchTab('whispers')" class="nav-tab-btn px-2.5 sm:px-3.5 lg:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
                         Lời thì thầm
                     </button>
-                    <button type="button" id="nav-tab-guide" onclick="switchTab('guide')" class="nav-tab-btn px-3 sm:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
+                    <button type="button" id="nav-tab-guide" onclick="switchTab('guide')" class="nav-tab-btn px-2.5 sm:px-3.5 lg:px-4 py-1.5 rounded-full transition cursor-pointer hover:bg-purple-50 hover:text-purple-900 whitespace-nowrap">
                         Chỉ dẫn
                     </button>
                 </nav>
@@ -1447,7 +1447,10 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ================= ĐỒNG BỘ ĐÁM MÂY =================
+        // ================= ĐỒNG BỘ ĐÁM MÂY (ĐA GATEWAY + CHỐNG LỆCH ĐỒNG HỒ THIẾT BỊ) =================
+        const CLOUD_KV_URL = 'https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3';
+        const CLOUD_TEXTDB_URL = 'https://textdb.dev/api/data/huyenhuyen_dreams_store_2026';
+
         function setCloudBadge(text, isError = false) {
             const badge = document.getElementById('cloud-sync-status');
             if (!badge) return;
@@ -1457,44 +1460,58 @@
                 : "bg-white/20 text-white px-3 py-1 rounded-full font-semibold";
         }
 
-        async function fetchCloudState() {
-            const gateways = [
-                {
-                    name: 'KVDB-Auto',
-                    read: async () => {
-                        const r = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', { cache: 'no-store' });
-                        if (!r.ok) throw new Error('Status ' + r.status);
-                        return await r.json();
-                    }
-                },
-                {
-                    name: 'TextDB-Global',
-                    read: async () => {
-                        const r = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', { cache: 'no-store' });
-                        if (!r.ok) throw new Error('Status ' + r.status);
-                        const text = await r.text();
-                        if (!text || !text.trim()) return null;
-                        return JSON.parse(text);
-                    }
-                }
-            ];
-
-            for (const gw of gateways) {
-                try {
-                    const data = await gw.read();
-                    if (data && typeof data === 'object' && (Array.isArray(data.characters) || Array.isArray(data.whispers))) {
-                        return { data, gateway: gw.name };
-                    }
-                } catch (e) {}
+        function parseCloudResponseObject(raw) {
+            if (!raw) return null;
+            if (typeof raw === 'string') {
+                const trimmed = raw.trim();
+                if (!trimmed) return null;
+                raw = JSON.parse(trimmed);
+            }
+            if (!raw || typeof raw !== 'object') return null;
+            if (Array.isArray(raw.characters) || Array.isArray(raw.whispers) || Array.isArray(raw.guidesList) || raw.bio) {
+                return raw;
             }
             return null;
+        }
+
+        async function fetchCloudState() {
+            const stamp = '_t=' + Date.now();
+            const candidates = [];
+
+            try {
+                const r1 = await fetch(`${CLOUD_TEXTDB_URL}?${stamp}`, { cache: 'no-store' });
+                if (r1.ok) {
+                    const p1 = parseCloudResponseObject(await r1.text());
+                    if (p1) candidates.push(p1);
+                }
+            } catch (e) {}
+
+            try {
+                const r2 = await fetch(`${CLOUD_KV_URL}?${stamp}`, { cache: 'no-store' });
+                if (r2.ok) {
+                    const p2 = parseCloudResponseObject(await r2.json());
+                    if (p2) candidates.push(p2);
+                }
+            } catch (e) {}
+
+            if (candidates.length === 0) return null;
+
+            candidates.sort((a, b) => {
+                const timeDiff = (Number(b.updatedAt) || 0) - (Number(a.updatedAt) || 0);
+                if (timeDiff !== 0) return timeDiff;
+                const aLen = (a.characters ? a.characters.length : 0) + (a.guidesList ? a.guidesList.length : 0);
+                const bLen = (b.characters ? b.characters.length : 0) + (b.guidesList ? b.guidesList.length : 0);
+                return bLen - aLen;
+            });
+
+            return { data: candidates[0] };
         }
 
         async function writeCloudState(payload) {
             let successCount = 0;
 
             try {
-                const r1 = await fetch('https://textdb.dev/api/data/huyenhuyen_dreams_store_2026', {
+                const r1 = await fetch(CLOUD_TEXTDB_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(payload)
@@ -1503,7 +1520,7 @@
             } catch (e) {}
 
             try {
-                const r2 = await fetch('https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3', {
+                const r2 = await fetch(CLOUD_KV_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -1550,6 +1567,7 @@
 
             const cloudData = result.data;
             const cloudTime = Number(cloudData.updatedAt) || 0;
+            let hasAnyChange = false;
 
             if (Array.isArray(cloudData.whispers)) {
                 const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
@@ -1557,13 +1575,28 @@
                 if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
                     whispersData = mergedWhispers;
                     localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
+                    hasAnyChange = true;
                 }
             }
 
-            if (cloudTime >= localUpdatedAt) {
-                if (Array.isArray(cloudData.characters) && cloudData.characters.length > 0) {
-                    charactersData = cloudData.characters.map(normalizeCharacterObject);
-                    localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
+            const cloudCharsJson = Array.isArray(cloudData.characters) && cloudData.characters.length > 0
+                ? JSON.stringify(cloudData.characters.map(normalizeCharacterObject))
+                : null;
+            const localCharsJson = JSON.stringify(charactersData);
+
+            const cloudGuidesJson = Array.isArray(cloudData.guidesList)
+                ? JSON.stringify(cloudData.guidesList.map(normalizeGuideItem))
+                : null;
+            const localGuidesJson = JSON.stringify(guidesListData);
+
+            const shouldPullFromCloud = (cloudTime > localUpdatedAt)
+                || (cloudCharsJson && cloudCharsJson !== localCharsJson && !isAdmin)
+                || (cloudGuidesJson && cloudGuidesJson !== localGuidesJson && !isAdmin);
+
+            if (shouldPullFromCloud) {
+                if (cloudCharsJson) {
+                    charactersData = JSON.parse(cloudCharsJson);
+                    localStorage.setItem('huyen_chars_data', cloudCharsJson);
                 }
                 if (Array.isArray(cloudData.socials)) {
                     socialLinksData = cloudData.socials;
@@ -1577,16 +1610,19 @@
                     bioData = cloudData.bio;
                     localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
                 }
-                if (Array.isArray(cloudData.guidesList)) {
-                    guidesListData = cloudData.guidesList.map(normalizeGuideItem);
-                    localStorage.setItem('huyen_guides_list_v2', JSON.stringify(guidesListData));
+                if (cloudGuidesJson) {
+                    guidesListData = JSON.parse(cloudGuidesJson);
+                    localStorage.setItem('huyen_guides_list_v2', cloudGuidesJson);
                 }
-                localUpdatedAt = cloudTime;
+                localUpdatedAt = cloudTime || Date.now();
                 localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
+                hasAnyChange = true;
             }
 
             setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
-            renderAll();
+            if (hasAnyChange) {
+                renderAll();
+            }
         }
 
         async function saveDataToCloud(showAlert = false) {
