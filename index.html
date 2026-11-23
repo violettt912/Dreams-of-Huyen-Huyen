@@ -306,13 +306,31 @@
                         <h2 id="bio-display-title" class="font-script text-3xl sm:text-5xl text-purple-900 flex items-center gap-2.5">
                             <span>🌙</span> <span>Đôi nét về Huyên Huyên & Góc nhỏ mộng mơ</span>
                         </h2>
-                        <button id="edit-bio-btn" onclick="openBioModal()" class="hidden self-start sm:self-auto bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs shadow-md transition cursor-pointer flex items-center gap-1.5 flex-shrink-0">
-                            <span>✏️</span> <span>Chỉnh sửa giới thiệu</span>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto flex-shrink-0">
+                            <button id="edit-bio-gallery-btn" onclick="openBioModal(true)" class="hidden bg-pink-500 hover:bg-pink-600 text-white font-bold px-4 py-2 rounded-full text-xs shadow-md transition cursor-pointer flex items-center gap-1.5">
+                                <span>🖼️</span> <span>Đăng / Sửa ảnh</span>
+                            </button>
+                            <button id="edit-bio-btn" onclick="openBioModal(false)" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-full text-xs shadow-md transition cursor-pointer flex items-center gap-1.5">
+                                <span>✏️</span> <span>Chỉnh sửa giới thiệu</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div id="bio-display-content" class="space-y-3.5 text-sm sm:text-base text-purple-900/90 leading-relaxed whitespace-pre-line">
                         <!-- Render nội dung giới thiệu bằng JS -->
+                    </div>
+
+                    <!-- Album ảnh về bản thân Huyên Huyên ngay dưới lời giới thiệu -->
+                    <div id="bio-gallery-display-section" class="hidden pt-5 border-t border-purple-100 space-y-3.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <h3 id="bio-gallery-heading" class="text-sm sm:text-base font-bold text-purple-900 flex items-center gap-2">
+                                <span>🖼️</span> <span>Góc ảnh của Huyên Huyên</span>
+                            </h3>
+                            <span class="text-[11px] text-purple-500 italic hidden sm:inline">Chạm vào từng ảnh để xem rõ nét ✨</span>
+                        </div>
+                        <div id="bio-gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                            <!-- Render bằng JS -->
+                        </div>
                     </div>
                 </section>
             </div>
@@ -539,6 +557,25 @@
                     <label class="block font-bold mb-1">Nội dung giới thiệu về Huyên Huyên & trang web:</label>
                     <textarea id="bio-input-content" rows="8" required placeholder="Viết lời giới thiệu về bản thân bạn và ý nghĩa của trang web này..." class="w-full px-4 py-3 rounded-xl border border-purple-200 bg-purple-50/40 focus:outline-none focus:ring-2 focus:ring-purple-400 leading-relaxed"></textarea>
                 </div>
+
+                <!-- Quản lý nhiều ảnh bản thân hiển thị dưới lời giới thiệu -->
+                <div id="bio-form-gallery-section" class="pt-3 border-t border-purple-100 space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label class="block font-bold text-purple-900">🖼️ Album ảnh về bản thân (Không giới hạn số ảnh):</label>
+                        <div class="flex items-center gap-1.5">
+                            <label class="cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold px-3 py-1.5 rounded-full text-xs transition flex items-center gap-1 shadow-xs">
+                                <span>📁 Chọn nhiều ảnh từ máy</span>
+                                <input type="file" accept="image/*" multiple class="hidden" onchange="handleBioGalleryFilesUpload(event)">
+                            </label>
+                            <button type="button" onclick="addBioGalleryImageField('')" class="px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition cursor-pointer">
+                                <span>+ Dán link ảnh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-purple-600 italic">Mẹo: Nếu đăng nhiều ảnh (trên 5 ảnh), bạn nên ưu tiên dán link ảnh Catbox/ImgBB để đồng bộ lên Đám Mây nhanh và sắc nét nhất nhé ✨</p>
+                    <div id="bio-form-gallery-container" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
+                </div>
+
                 <div class="pt-2 flex justify-end gap-3">
                     <button type="button" onclick="closeBioModal()" class="px-5 py-2 rounded-full border border-purple-200 hover:bg-purple-50 font-semibold transition cursor-pointer">Hủy</button>
                     <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full transition shadow-md cursor-pointer">Lưu Giới Thiệu 💜</button>
@@ -1366,6 +1403,7 @@
         let likedWhisperIds = JSON.parse(localStorage.getItem('huyen_liked_whispers') || '[]');
         let webBgUrl = localStorage.getItem('huyen_web_bg_url') || DEFAULT_WEB_BG_URL;
         let bioData = JSON.parse(localStorage.getItem('huyen_bio_data')) || defaultBioData;
+        let bioGalleryData = JSON.parse(localStorage.getItem('huyen_bio_gallery_data')) || [];
         let guidesListData = (JSON.parse(localStorage.getItem('huyen_guides_list_v2')) || defaultGuidesList).map(normalizeGuideItem);
         let localUpdatedAt = Number(localStorage.getItem('huyen_updated_at')) || 0;
 
@@ -1455,7 +1493,8 @@
             config: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_config',
             chars: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_chars',
             whispers: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_whispers',
-            guides: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_guides'
+            guides: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_guides',
+            bioGallery: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_biogallery'
         };
 
         let isSavingToCloud = false;
@@ -1535,21 +1574,23 @@
         }
 
         async function fetchCloudState() {
-            // Đọc song song 4 kho v4 trước
-            const [v4Config, v4Chars, v4Whispers, v4Guides] = await Promise.all([
+            // Đọc song song 5 kho v4 trước
+            const [v4Config, v4Chars, v4Whispers, v4Guides, v4BioGallery] = await Promise.all([
                 readSingleUrl(CLOUD_V4_URLS.config),
                 readSingleUrl(CLOUD_V4_URLS.chars),
                 readSingleUrl(CLOUD_V4_URLS.whispers),
-                readSingleUrl(CLOUD_V4_URLS.guides)
+                readSingleUrl(CLOUD_V4_URLS.guides),
+                readSingleUrl(CLOUD_V4_URLS.bioGallery)
             ]);
 
-            const hasV4 = Boolean(v4Config || v4Chars || v4Whispers || v4Guides);
+            const hasV4 = Boolean(v4Config || v4Chars || v4Whispers || v4Guides || v4BioGallery);
             if (hasV4) {
                 const maxTime = Math.max(
                     Number(v4Config?.updatedAt) || 0,
                     Number(v4Chars?.updatedAt) || 0,
                     Number(v4Whispers?.updatedAt) || 0,
-                    Number(v4Guides?.updatedAt) || 0
+                    Number(v4Guides?.updatedAt) || 0,
+                    Number(v4BioGallery?.updatedAt) || 0
                 );
                 return {
                     isV4: true,
@@ -1558,6 +1599,7 @@
                         webBgUrl: v4Config?.webBgUrl,
                         bio: v4Config?.bio,
                         socials: v4Config?.socials,
+                        bioGallery: Array.isArray(v4BioGallery?.bioGallery) ? v4BioGallery.bioGallery : undefined,
                         characters: Array.isArray(v4Chars?.characters) ? v4Chars.characters : undefined,
                         deletedCharIds: Array.isArray(v4Chars?.deletedCharIds) ? v4Chars.deletedCharIds : [],
                         whispers: Array.isArray(v4Whispers?.whispers) ? v4Whispers.whispers : undefined,
@@ -1704,6 +1746,15 @@
                             hasAnyChange = true;
                         }
                     }
+                    if (Array.isArray(cloudData.bioGallery)) {
+                        const cleanBioGallery = cloudData.bioGallery.map(u => String(u || '').trim()).filter(Boolean);
+                        const nextBioGalleryJson = JSON.stringify(cleanBioGallery);
+                        if (nextBioGalleryJson !== JSON.stringify(bioGalleryData)) {
+                            bioGalleryData = cleanBioGallery;
+                            safeStorageSet('huyen_bio_gallery_data', nextBioGalleryJson);
+                            hasAnyChange = true;
+                        }
+                    }
                     if (Array.isArray(cloudData.guidesList)) {
                         const normalizedGuides = cloudData.guidesList.map(normalizeGuideItem);
                         const nextGuidesJson = JSON.stringify(normalizedGuides);
@@ -1745,13 +1796,14 @@
                 safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
                 safeStorageSet('huyen_web_bg_url', webBgUrl);
                 safeStorageSet('huyen_bio_data', JSON.stringify(bioData));
+                safeStorageSet('huyen_bio_gallery_data', JSON.stringify(bioGalleryData));
                 safeStorageSet('huyen_guides_list_v2', JSON.stringify(guidesListData));
                 safeStorageSet('huyen_pending_sync', '1');
 
                 setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
 
-                // 2. Đẩy tách thành 4 kho nhỏ độc lập để tránh bị quá tải dung lượng (413)
-                const [resConfig, resChars, resWhispers, resGuides] = await Promise.all([
+                // 2. Đẩy tách thành 5 kho nhỏ độc lập để tránh bị quá tải dung lượng (413)
+                const [resConfig, resChars, resWhispers, resGuides, resBioGallery] = await Promise.all([
                     writeSingleUrl(CLOUD_V4_URLS.config, {
                         webBgUrl,
                         bio: bioData,
@@ -1771,6 +1823,10 @@
                     writeSingleUrl(CLOUD_V4_URLS.guides, {
                         guidesList: guidesListData,
                         updatedAt: localUpdatedAt
+                    }),
+                    writeSingleUrl(CLOUD_V4_URLS.bioGallery, {
+                        bioGallery: bioGalleryData,
+                        updatedAt: localUpdatedAt
                     })
                 ]);
 
@@ -1778,7 +1834,8 @@
                     { label: 'Cấu hình/Nền', ...resConfig },
                     { label: 'Nhân vật (Dreams)', ...resChars },
                     { label: 'Lời thì thầm', ...resWhispers },
-                    { label: 'Chỉ dẫn', ...resGuides }
+                    { label: 'Chỉ dẫn', ...resGuides },
+                    { label: 'Ảnh bản thân', ...resBioGallery }
                 ];
 
                 const failedList = allResults.filter(r => !r.ok);
@@ -1792,7 +1849,7 @@
                     }
                 } else {
                     const failDetails = failedList.map(f => `- ${f.label}: ${f.sizeKB} KB (Lỗi ${f.status})`).join('\n');
-                    setCloudBadge(`⚠️ Lỗi đồng bộ ${failedList.length}/4 mục`, true);
+                    setCloudBadge(`⚠️ Lỗi đồng bộ ${failedList.length}/5 mục`, true);
                     if (showAlert || isAdmin) {
                         alert(`⚠️ Đã lưu an toàn trên máy này, nhưng chưa đẩy hết lên Đám Mây được:\n${failDetails}\n\n💡 Mẹo khắc phục: Nếu mục nào quá nặng (> 80 KB) do bạn chọn ảnh trực tiếp từ máy, hãy đổi ảnh đó sang dán link Catbox hoặc ImgBB rồi bấm "🔄 Đẩy dữ liệu máy này lên Mây" nhé!`);
                     }
@@ -1881,11 +1938,26 @@
             renderWhispers();
         }
 
-        // ================= HIỂN THỊ & CHỈNH SỬA GIỚI THIỆU (VỀ HUYÊN HUYÊN) =================
+        // ================= HIỂN THỊ & CHỈNH SỬA GIỚI THIỆU + ALBUM ẢNH BẢN THÂN (VỀ HUYÊN HUYÊN) =================
+        function openBioGalleryLightbox(index) {
+            const validImages = Array.isArray(bioGalleryData)
+                ? bioGalleryData.map(u => String(u || '').trim()).filter(Boolean)
+                : [];
+            if (validImages.length === 0) return;
+            currentModalGallery = validImages;
+            currentLightboxIndex = index;
+            updateLightboxView();
+            document.getElementById('image-lightbox-modal').classList.remove('hidden');
+        }
+
         function renderBioSection() {
             const titleEl = document.getElementById('bio-display-title');
             const contentEl = document.getElementById('bio-display-content');
             const editBtn = document.getElementById('edit-bio-btn');
+            const editGalleryBtn = document.getElementById('edit-bio-gallery-btn');
+            const gallerySection = document.getElementById('bio-gallery-display-section');
+            const galleryHeading = document.getElementById('bio-gallery-heading');
+            const galleryGrid = document.getElementById('bio-gallery-grid');
 
             if (titleEl) {
                 titleEl.innerHTML = `<span>🌙</span> <span>${escapeHtml(bioData.title || defaultBioData.title)}</span>`;
@@ -1894,19 +1966,120 @@
                 contentEl.textContent = bioData.content || defaultBioData.content;
             }
             if (editBtn) {
-                if (isAdmin) {
-                    editBtn.classList.remove('hidden');
+                if (isAdmin) editBtn.classList.remove('hidden');
+                else editBtn.classList.add('hidden');
+            }
+            if (editGalleryBtn) {
+                if (isAdmin) editGalleryBtn.classList.remove('hidden');
+                else editGalleryBtn.classList.add('hidden');
+            }
+
+            if (gallerySection && galleryGrid) {
+                const validImages = Array.isArray(bioGalleryData)
+                    ? bioGalleryData.map(u => String(u || '').trim()).filter(Boolean)
+                    : [];
+
+                if (validImages.length === 0) {
+                    gallerySection.classList.add('hidden');
+                    galleryGrid.innerHTML = '';
                 } else {
-                    editBtn.classList.add('hidden');
+                    gallerySection.classList.remove('hidden');
+                    if (galleryHeading) {
+                        galleryHeading.innerHTML = `<span>🖼️</span> <span>Góc ảnh của Huyên Huyên (${validImages.length} ảnh)</span>`;
+                    }
+                    galleryGrid.innerHTML = '';
+                    validImages.forEach((imgUrl, idx) => {
+                        const safeSrc = imgUrl.replace(/"/g, '&quot;');
+                        const card = document.createElement('div');
+                        card.className = "square-box aspect-square rounded-2xl overflow-hidden bg-purple-100/80 border-2 border-purple-200/80 shadow-xs hover:shadow-md cursor-pointer group relative transition duration-300";
+                        card.onclick = () => openBioGalleryLightbox(idx);
+                        card.innerHTML = `
+                            <img src="${safeSrc}" data-raw-src="${safeSrc}" referrerpolicy="no-referrer" alt="Ảnh của Huyên Huyên ${idx + 1}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="handleCharImageError(this)">
+                            <div class="absolute inset-0 bg-purple-950/0 group-hover:bg-purple-950/15 transition flex items-center justify-center">
+                                <span class="opacity-0 group-hover:opacity-100 bg-white/90 text-purple-900 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm transition">🔍 Xem lớn</span>
+                            </div>
+                        `;
+                        galleryGrid.appendChild(card);
+                    });
                 }
             }
         }
 
-        function openBioModal() {
+        function addBioGalleryImageField(url = '') {
+            const container = document.getElementById('bio-form-gallery-container');
+            if (!container) return;
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 bio-gallery-image-row bg-purple-50/50 p-1.5 rounded-xl border border-purple-100';
+            const safeUrl = url.replace(/"/g, '&quot;');
+
+            row.innerHTML = `
+                <div class="w-10 h-10 rounded-lg bg-purple-100 overflow-hidden flex-shrink-0 flex items-center justify-center border border-purple-200">
+                    ${url ? `<img src="${safeUrl}" referrerpolicy="no-referrer" class="w-full h-full object-cover" onerror="this.style.display='none'">` : '<span class="text-xs">🖼️</span>'}
+                </div>
+                <input type="text" value="${safeUrl}" oninput="updateRowThumbPreview(this)" placeholder="Dán link ảnh https://... hoặc chọn từ máy" class="bio-gallery-image-url w-full px-3 py-1.5 rounded-lg border border-purple-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs">
+                <button type="button" onclick="removeBioGalleryImageField(this)" class="w-7 h-7 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Xóa ảnh này">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeBioGalleryImageField(btn) {
+            const container = document.getElementById('bio-form-gallery-container');
+            if (!container) return;
+            if (container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                const input = btn.parentElement.querySelector('.bio-gallery-image-url');
+                input.value = '';
+                updateRowThumbPreview(input);
+            }
+        }
+
+        async function handleBioGalleryFilesUpload(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+
+            const container = document.getElementById('bio-form-gallery-container');
+            if (container && container.children.length === 1) {
+                const firstInput = container.querySelector('.bio-gallery-image-url');
+                if (firstInput && !firstInput.value.trim()) {
+                    container.innerHTML = '';
+                }
+            }
+
+            for (const file of files) {
+                const dataUrl = await compressImageFileToDataUrl(file, 640, 0.72);
+                addBioGalleryImageField(dataUrl);
+            }
+            event.target.value = '';
+        }
+
+        function openBioModal(focusGallery = false) {
             if (!isAdmin) return;
             document.getElementById('bio-input-title').value = bioData.title || defaultBioData.title;
             document.getElementById('bio-input-content').value = bioData.content || defaultBioData.content;
-            document.getElementById('bio-form-modal').classList.remove('hidden');
+
+            const galleryContainer = document.getElementById('bio-form-gallery-container');
+            if (galleryContainer) {
+                galleryContainer.innerHTML = '';
+                const existing = Array.isArray(bioGalleryData)
+                    ? bioGalleryData.map(u => String(u || '').trim()).filter(Boolean)
+                    : [];
+                if (existing.length > 0) {
+                    existing.forEach(u => addBioGalleryImageField(u));
+                } else {
+                    addBioGalleryImageField('');
+                }
+            }
+
+            const modal = document.getElementById('bio-form-modal');
+            modal.classList.remove('hidden');
+
+            if (focusGallery) {
+                const gSec = document.getElementById('bio-form-gallery-section');
+                if (gSec) {
+                    setTimeout(() => gSec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+                }
+            }
         }
 
         function closeBioModal() {
@@ -1920,7 +2093,11 @@
             const content = document.getElementById('bio-input-content').value.trim();
             if (!title || !content) return;
 
+            const galleryInputs = document.querySelectorAll('.bio-gallery-image-url');
+            const gallery = Array.from(galleryInputs).map(inp => inp.value.trim()).filter(Boolean);
+
             bioData = { title, content };
+            bioGalleryData = gallery;
             closeBioModal();
             renderBioSection();
             await saveDataToCloud(false);
@@ -3531,6 +3708,7 @@
                 document.getElementById('add-guide-btn').classList.remove('hidden');
                 document.getElementById('edit-social-btn').classList.remove('hidden');
                 document.getElementById('edit-bio-btn').classList.remove('hidden');
+                document.getElementById('edit-bio-gallery-btn').classList.remove('hidden');
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
                 await loadDataFromCloud(false);
