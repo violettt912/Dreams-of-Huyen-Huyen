@@ -1445,6 +1445,12 @@
             }
 
             setInterval(loadDataFromCloud, 15000);
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    loadDataFromCloud();
+                }
+            });
         });
 
         // ================= CHUYỂN TAB ĐIỀU HƯỚNG (4 MỤC) =================
@@ -1485,7 +1491,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ================= ĐỒNG BỘ ĐÁM MÂY V4.1 (GỬI TUẦN TỰ + TỰ THỬ LẠI + RÚT NGẮN KEY CHỐNG LỖI NETWORK) =================
+        // ================= ĐỒNG BỘ ĐÁM MÂY V4.2 (CHỐNG CACHE DI ĐỘNG + LUÔN CẬP NHẬT BẢN MỚI NHẤT KHÔNG LỆCH GIỜ) =================
         const LEGACY_KV_URL = 'https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3';
         const LEGACY_TEXTDB_URL = 'https://textdb.dev/api/data/huyenhuyen_dreams_store_2026';
 
@@ -1497,6 +1503,7 @@
             bioGallery: 'https://textdb.dev/api/data/huyenhuyen_v4_pics'
         };
 
+        const PENDING_BUCKETS_STORAGE_KEY = 'huyen_pending_buckets_v42';
         let isSavingToCloud = false;
         let isLoadingFromCloud = false;
 
@@ -1512,6 +1519,20 @@
                 console.warn('localStorage quota warning for', key, e);
                 return false;
             }
+        }
+
+        function getPendingSyncBuckets() {
+            try {
+                const arr = JSON.parse(localStorage.getItem(PENDING_BUCKETS_STORAGE_KEY) || '[]');
+                return Array.isArray(arr) ? arr.filter(k => typeof k === 'string' && CLOUD_V4_URLS[k]) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function setPendingSyncBuckets(buckets) {
+            const unique = Array.from(new Set((buckets || []).filter(k => typeof k === 'string' && CLOUD_V4_URLS[k])));
+            safeStorageSet(PENDING_BUCKETS_STORAGE_KEY, JSON.stringify(unique));
         }
 
         function getLocalDeletedWhisperIds() {
@@ -1553,7 +1574,10 @@
 
         async function readSingleUrl(url) {
             try {
-                const r = await fetch(url, { method: 'GET', cache: 'no-store' });
+                // Thêm tham số thời gian chống cache trình duyệt di động (Safari/4G)
+                const sep = url.includes('?') ? '&' : '?';
+                const freshUrl = `${url}${sep}_t=${Date.now()}`;
+                const r = await fetch(freshUrl, { method: 'GET', cache: 'no-store' });
                 if (!r.ok) return null;
                 const text = await r.text();
                 return parseCloudJsonSafe(text);
@@ -1578,7 +1602,6 @@
                         return { ok: true, status: r.status, sizeKB };
                     }
                     lastStatus = r.status;
-                    // Nếu là lỗi giới hạn dung lượng (413) thì dừng luôn khỏi thử lại
                     if (r.status === 413) {
                         return { ok: false, status: r.status, sizeKB };
                     }
@@ -1688,19 +1711,19 @@
                 return;
             }
 
-            // Nếu máy này đang có thay đổi cục bộ chưa kịp đẩy lên Mây, KHÔNG kéo bản cũ về ghi đè!
-            const hasPendingLocalSync = localStorage.getItem('huyen_pending_sync') === '1';
-            if (hasPendingLocalSync && !forcePull) {
+            // Nếu máy này có mục vừa sửa cục bộ nhưng chưa đẩy lên Mây thành công, tự thử đẩy lại đúng các mục đó trước
+            let pendingBuckets = forcePull ? [] : getPendingSyncBuckets();
+            if (pendingBuckets.length > 0) {
                 setCloudBadge('⏳ Đang thử đẩy lại dữ liệu lên Mây...');
-                await saveDataToCloud(false);
-                return;
+                await saveDataToCloud(false, pendingBuckets);
+                pendingBuckets = getPendingSyncBuckets();
             }
 
             isLoadingFromCloud = true;
             try {
                 const result = await fetchCloudState();
                 if (!result || !result.data) {
-                    if (localUpdatedAt > 0 || charactersData.length > 0) {
+                    if (isAdmin && (localUpdatedAt > 0 || charactersData.length > 0)) {
                         isLoadingFromCloud = false;
                         await saveDataToCloud(false);
                     }
@@ -1709,54 +1732,12 @@
 
                 const cloudData = result.data;
                 const cloudTime = Number(cloudData.updatedAt) || 0;
+                const pendingSet = new Set(pendingBuckets);
                 let hasAnyChange = false;
 
-                // Hợp nhất danh sách ID lời thì thầm đã xóa
-                const localDelWhispers = getLocalDeletedWhisperIds();
-                const cloudDelWhispers = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds.map(Number) : [];
-                const combinedDelWhispers = Array.from(new Set([...localDelWhispers, ...cloudDelWhispers]));
-                safeStorageSet('huyen_deleted_whispers', JSON.stringify(combinedDelWhispers));
-
-                const localDelChars = getLocalDeletedCharIds();
-                const cloudDelChars = Array.isArray(cloudData.deletedCharIds) ? cloudData.deletedCharIds.map(Number) : [];
-                const combinedDelChars = Array.from(new Set([...localDelChars, ...cloudDelChars]));
-                safeStorageSet('huyen_deleted_chars', JSON.stringify(combinedDelChars));
-
-                const shouldPull = forcePull || localUpdatedAt === 0 || (cloudTime > localUpdatedAt);
-
-                if (Array.isArray(cloudData.whispers)) {
-                    if (shouldPull && cloudTime > localUpdatedAt) {
-                        const cleanCloudWhispers = cloudData.whispers
-                            .filter(w => w && w.id && !combinedDelWhispers.includes(Number(w.id)))
-                            .map(normalizeWhisperObject)
-                            .sort((a, b) => Number(b.id) - Number(a.id));
-                        if (JSON.stringify(cleanCloudWhispers) !== JSON.stringify(whispersData)) {
-                            whispersData = cleanCloudWhispers;
-                            safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
-                            hasAnyChange = true;
-                        }
-                    } else {
-                        const mergedWhispers = mergeWhisperRecords(whispersData, cloudData.whispers, combinedDelWhispers);
-                        if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
-                            whispersData = mergedWhispers;
-                            safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
-                            hasAnyChange = true;
-                        }
-                    }
-                }
-
-                if (shouldPull) {
-                    if (Array.isArray(cloudData.characters)) {
-                        const normalizedChars = cloudData.characters
-                            .map(normalizeCharacterObject)
-                            .filter(c => c && c.id && !combinedDelChars.includes(Number(c.id)));
-                        const nextCharsJson = JSON.stringify(normalizedChars);
-                        if (nextCharsJson !== JSON.stringify(charactersData)) {
-                            charactersData = normalizedChars;
-                            safeStorageSet('huyen_chars_data', nextCharsJson);
-                            hasAnyChange = true;
-                        }
-                    }
+                // 1. Luôn cập nhật các mục đọc từ Đám Mây (Cấu hình/Nền/Giới thiệu, Ảnh bản thân, Dreams, Chỉ dẫn)
+                // trừ khi chính mục đó đang chờ đẩy lên Mây (pendingSet) — không phụ thuộc đồng hồ máy!
+                if (!pendingSet.has('config')) {
                     if (Array.isArray(cloudData.socials)) {
                         const nextSocialsJson = JSON.stringify(cloudData.socials);
                         if (nextSocialsJson !== JSON.stringify(socialLinksData)) {
@@ -1781,29 +1762,71 @@
                             hasAnyChange = true;
                         }
                     }
-                    if (Array.isArray(cloudData.bioGallery)) {
-                        const cleanBioGallery = cloudData.bioGallery.map(u => String(u || '').trim()).filter(Boolean);
-                        const nextBioGalleryJson = JSON.stringify(cleanBioGallery);
-                        if (nextBioGalleryJson !== JSON.stringify(bioGalleryData)) {
-                            bioGalleryData = cleanBioGallery;
-                            safeStorageSet('huyen_bio_gallery_data', nextBioGalleryJson);
-                            hasAnyChange = true;
-                        }
-                    }
-                    if (Array.isArray(cloudData.guidesList)) {
-                        const normalizedGuides = cloudData.guidesList.map(normalizeGuideItem);
-                        const nextGuidesJson = JSON.stringify(normalizedGuides);
-                        if (nextGuidesJson !== JSON.stringify(guidesListData)) {
-                            guidesListData = normalizedGuides;
-                            safeStorageSet('huyen_guides_list_v2', nextGuidesJson);
-                            hasAnyChange = true;
-                        }
-                    }
+                }
 
-                    if (cloudTime > localUpdatedAt) {
-                        localUpdatedAt = cloudTime;
-                        safeStorageSet('huyen_updated_at', String(localUpdatedAt));
+                if (!pendingSet.has('bioGallery') && Array.isArray(cloudData.bioGallery)) {
+                    const cleanBioGallery = cloudData.bioGallery.map(u => String(u || '').trim()).filter(Boolean);
+                    const nextBioGalleryJson = JSON.stringify(cleanBioGallery);
+                    if (nextBioGalleryJson !== JSON.stringify(bioGalleryData)) {
+                        bioGalleryData = cleanBioGallery;
+                        safeStorageSet('huyen_bio_gallery_data', nextBioGalleryJson);
+                        hasAnyChange = true;
                     }
+                }
+
+                if (!pendingSet.has('chars') && Array.isArray(cloudData.characters)) {
+                    const cloudDelChars = Array.isArray(cloudData.deletedCharIds) ? cloudData.deletedCharIds.map(Number) : [];
+                    safeStorageSet('huyen_deleted_chars', JSON.stringify(cloudDelChars));
+                    const normalizedChars = cloudData.characters
+                        .map(normalizeCharacterObject)
+                        .filter(c => c && c.id && !cloudDelChars.includes(Number(c.id)));
+                    const nextCharsJson = JSON.stringify(normalizedChars);
+                    if (nextCharsJson !== JSON.stringify(charactersData)) {
+                        charactersData = normalizedChars;
+                        safeStorageSet('huyen_chars_data', nextCharsJson);
+                        hasAnyChange = true;
+                    }
+                }
+
+                if (!pendingSet.has('guides') && Array.isArray(cloudData.guidesList)) {
+                    const normalizedGuides = cloudData.guidesList.map(normalizeGuideItem);
+                    const nextGuidesJson = JSON.stringify(normalizedGuides);
+                    if (nextGuidesJson !== JSON.stringify(guidesListData)) {
+                        guidesListData = normalizedGuides;
+                        safeStorageSet('huyen_guides_list_v2', nextGuidesJson);
+                        hasAnyChange = true;
+                    }
+                }
+
+                // 2. Đồng bộ mục Lời thì thầm: lấy chuẩn bản đám mây khi không có tin chờ gửi trên máy này
+                if (Array.isArray(cloudData.whispers)) {
+                    const cloudDelWhispers = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds.map(Number) : [];
+                    if (!pendingSet.has('whispers')) {
+                        safeStorageSet('huyen_deleted_whispers', JSON.stringify(cloudDelWhispers));
+                        const cleanCloudWhispers = cloudData.whispers
+                            .filter(w => w && w.id && !cloudDelWhispers.includes(Number(w.id)))
+                            .map(normalizeWhisperObject)
+                            .sort((a, b) => Number(b.id) - Number(a.id));
+                        if (JSON.stringify(cleanCloudWhispers) !== JSON.stringify(whispersData)) {
+                            whispersData = cleanCloudWhispers;
+                            safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
+                            hasAnyChange = true;
+                        }
+                    } else {
+                        const combinedDelWhispers = Array.from(new Set([...getLocalDeletedWhisperIds(), ...cloudDelWhispers]));
+                        safeStorageSet('huyen_deleted_whispers', JSON.stringify(combinedDelWhispers));
+                        const mergedWhispers = mergeWhisperRecords(whispersData, cloudData.whispers, combinedDelWhispers);
+                        if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
+                            whispersData = mergedWhispers;
+                            safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
+                            hasAnyChange = true;
+                        }
+                    }
+                }
+
+                if (cloudTime > localUpdatedAt) {
+                    localUpdatedAt = cloudTime;
+                    safeStorageSet('huyen_updated_at', String(localUpdatedAt));
                 }
 
                 setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
@@ -1833,9 +1856,6 @@
                 safeStorageSet('huyen_bio_data', JSON.stringify(bioData));
                 safeStorageSet('huyen_bio_gallery_data', JSON.stringify(bioGalleryData));
                 safeStorageSet('huyen_guides_list_v2', JSON.stringify(guidesListData));
-                safeStorageSet('huyen_pending_sync', '1');
-
-                setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
 
                 // Dự phòng bioGallery ngay trong config nếu dung lượng nhỏ (< 28 KB — đủ cho hàng trăm link Catbox/ImgBB)
                 const bioGalleryJsonStr = JSON.stringify(bioGalleryData);
@@ -1893,7 +1913,14 @@
                     ? targetBuckets.filter(k => bucketDefs[k])
                     : ['config', 'chars', 'whispers', 'guides', 'bioGallery'];
 
-                // 2. Gửi TUẦN TỰ từng mục (cách nhau 220ms) thay vì bắn 5 yêu cầu cùng lúc để không bị lỗi NETWORK / Rate Limit
+                // Đánh dấu chỉ đúng các mục đang sửa là chờ đẩy lên Mây
+                const currentPending = new Set(getPendingSyncBuckets());
+                bucketsToSync.forEach(k => currentPending.add(k));
+                setPendingSyncBuckets(Array.from(currentPending));
+
+                setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
+
+                // 2. Gửi TUẦN TỰ từng mục (cách nhau 220ms) để tránh lỗi NETWORK / Rate Limit
                 const resultsMap = {};
                 const allResults = [];
 
@@ -1909,19 +1936,21 @@
                     }
                 }
 
-                // Nếu mục bioGallery nhỏ và đã được lưu dự phòng thành công trong config, coi như đã đồng bộ an toàn
-                const failedList = allResults.filter(r => {
-                    if (r.ok) return false;
-                    if (r.key === 'bioGallery' && mirrorBioGalleryInConfig && resultsMap.config && resultsMap.config.ok) {
-                        return false;
+                // Xóa khỏi danh sách chờ những mục đã đẩy thành công
+                const failedList = [];
+                allResults.forEach(r => {
+                    const isBioMirroredOk = (r.key === 'bioGallery' && mirrorBioGalleryInConfig && resultsMap.config && resultsMap.config.ok);
+                    if (r.ok || isBioMirroredOk) {
+                        currentPending.delete(r.key);
+                    } else {
+                        failedList.push(r);
                     }
-                    return true;
                 });
+                setPendingSyncBuckets(Array.from(currentPending));
 
                 const totalKB = Math.round(allResults.reduce((s, r) => s + r.sizeKB, 0) * 10) / 10;
 
                 if (failedList.length === 0) {
-                    safeStorageSet('huyen_pending_sync', '0');
                     setCloudBadge(`☁️ Đã đồng bộ Mây (${totalKB} KB) ✨`);
                     if (showAlert) {
                         alert(`✅ Đã đồng bộ thành công toàn bộ dữ liệu (${totalKB} KB) lên Đám Mây!\nBạn có thể mở lại trên iPad hoặc điện thoại để kiểm tra ngay nhé.`);
