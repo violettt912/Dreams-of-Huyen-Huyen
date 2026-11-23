@@ -1444,7 +1444,7 @@
                 slider.addEventListener('touchend', () => { isSeekingMusic = false; });
             }
 
-            setInterval(loadDataFromCloud, 8000);
+            setInterval(loadDataFromCloud, 15000);
         });
 
         // ================= CHUYỂN TAB ĐIỀU HƯỚNG (4 MỤC) =================
@@ -1485,7 +1485,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ================= ĐỒNG BỘ ĐÁM MÂY V4 (TÁCH 4 KHO ĐỘC LẬP, CHỐNG GHI ĐÈ NGƯỢC & BẢO VỆ XÓA) =================
+        // ================= ĐỒNG BỘ ĐÁM MÂY V4.1 (GỬI TUẦN TỰ + TỰ THỬ LẠI + RÚT NGẮN KEY CHỐNG LỖI NETWORK) =================
         const LEGACY_KV_URL = 'https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3';
         const LEGACY_TEXTDB_URL = 'https://textdb.dev/api/data/huyenhuyen_dreams_store_2026';
 
@@ -1494,11 +1494,15 @@
             chars: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_chars',
             whispers: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_whispers',
             guides: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_guides',
-            bioGallery: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_biogallery'
+            bioGallery: 'https://textdb.dev/api/data/huyenhuyen_v4_pics'
         };
 
         let isSavingToCloud = false;
         let isLoadingFromCloud = false;
+
+        function sleepMs(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         function safeStorageSet(key, value) {
             try {
@@ -1558,27 +1562,47 @@
             }
         }
 
-        async function writeSingleUrl(url, obj) {
+        async function writeSingleUrl(url, obj, maxRetries = 2) {
             const bodyStr = JSON.stringify(obj);
             const sizeKB = Math.round((bodyStr.length / 1024) * 10) / 10;
-            try {
-                const r = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: bodyStr
-                });
-                return { ok: r.ok, status: r.status, sizeKB };
-            } catch (e) {
-                return { ok: false, status: 'NETWORK', sizeKB };
+            let lastStatus = 'NETWORK';
+
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    const r = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: bodyStr
+                    });
+                    if (r.ok) {
+                        return { ok: true, status: r.status, sizeKB };
+                    }
+                    lastStatus = r.status;
+                    // Nếu là lỗi giới hạn dung lượng (413) thì dừng luôn khỏi thử lại
+                    if (r.status === 413) {
+                        return { ok: false, status: r.status, sizeKB };
+                    }
+                } catch (e) {
+                    lastStatus = 'NETWORK';
+                }
+
+                if (attempt < maxRetries) {
+                    await sleepMs(450 * (attempt + 1));
+                }
             }
+
+            return { ok: false, status: lastStatus, sizeKB };
         }
 
         async function fetchCloudState() {
-            // Đọc song song 5 kho v4 trước
-            const [v4Config, v4Chars, v4Whispers, v4Guides, v4BioGallery] = await Promise.all([
+            // Đọc nhẹ nhàng theo 2 đợt nhỏ để tránh bị máy chủ chặn vì gửi quá nhiều yêu cầu cùng lúc
+            const [v4Config, v4Chars, v4Whispers] = await Promise.all([
                 readSingleUrl(CLOUD_V4_URLS.config),
                 readSingleUrl(CLOUD_V4_URLS.chars),
-                readSingleUrl(CLOUD_V4_URLS.whispers),
+                readSingleUrl(CLOUD_V4_URLS.whispers)
+            ]);
+            await sleepMs(120);
+            const [v4Guides, v4BioGallery] = await Promise.all([
                 readSingleUrl(CLOUD_V4_URLS.guides),
                 readSingleUrl(CLOUD_V4_URLS.bioGallery)
             ]);
@@ -1592,6 +1616,19 @@
                     Number(v4Guides?.updatedAt) || 0,
                     Number(v4BioGallery?.updatedAt) || 0
                 );
+
+                // Ưu tiên kho ảnh bản thân mới nhất (kho riêng hoặc bản sao lưu trong config)
+                let resolvedBioGallery = undefined;
+                const picsTime = Number(v4BioGallery?.updatedAt) || 0;
+                const cfgTime = Number(v4Config?.updatedAt) || 0;
+                if (Array.isArray(v4BioGallery?.bioGallery) && picsTime >= cfgTime) {
+                    resolvedBioGallery = v4BioGallery.bioGallery;
+                } else if (Array.isArray(v4Config?.bioGallery)) {
+                    resolvedBioGallery = v4Config.bioGallery;
+                } else if (Array.isArray(v4BioGallery?.bioGallery)) {
+                    resolvedBioGallery = v4BioGallery.bioGallery;
+                }
+
                 return {
                     isV4: true,
                     data: {
@@ -1599,7 +1636,7 @@
                         webBgUrl: v4Config?.webBgUrl,
                         bio: v4Config?.bio,
                         socials: v4Config?.socials,
-                        bioGallery: Array.isArray(v4BioGallery?.bioGallery) ? v4BioGallery.bioGallery : undefined,
+                        bioGallery: resolvedBioGallery,
                         characters: Array.isArray(v4Chars?.characters) ? v4Chars.characters : undefined,
                         deletedCharIds: Array.isArray(v4Chars?.deletedCharIds) ? v4Chars.deletedCharIds : [],
                         whispers: Array.isArray(v4Whispers?.whispers) ? v4Whispers.whispers : undefined,
@@ -1674,7 +1711,7 @@
                 const cloudTime = Number(cloudData.updatedAt) || 0;
                 let hasAnyChange = false;
 
-                // Hợp nhất danh sách ID lời thì thầm đã xóa (Cả máy này lẫn đám mây) để không bao giờ hồi sinh lời nhắn đã xóa
+                // Hợp nhất danh sách ID lời thì thầm đã xóa
                 const localDelWhispers = getLocalDeletedWhisperIds();
                 const cloudDelWhispers = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds.map(Number) : [];
                 const combinedDelWhispers = Array.from(new Set([...localDelWhispers, ...cloudDelWhispers]));
@@ -1685,12 +1722,10 @@
                 const combinedDelChars = Array.from(new Set([...localDelChars, ...cloudDelChars]));
                 safeStorageSet('huyen_deleted_chars', JSON.stringify(combinedDelChars));
 
-                // Chỉ ghi đè dữ liệu từ đám mây khi đám mây THỰC SỰ MỚI HƠN máy này (hoặc máy này mới mở lần đầu chưa có localUpdatedAt)
                 const shouldPull = forcePull || localUpdatedAt === 0 || (cloudTime > localUpdatedAt);
 
                 if (Array.isArray(cloudData.whispers)) {
                     if (shouldPull && cloudTime > localUpdatedAt) {
-                        // Khi đám mây mới hơn, lọc sạch mọi lời thì thầm đã xóa
                         const cleanCloudWhispers = cloudData.whispers
                             .filter(w => w && w.id && !combinedDelWhispers.includes(Number(w.id)))
                             .map(normalizeWhisperObject)
@@ -1780,7 +1815,7 @@
             }
         }
 
-        async function saveDataToCloud(showAlert = false) {
+        async function saveDataToCloud(showAlert = false, targetBuckets = null) {
             isSavingToCloud = true;
             try {
                 const nowTs = Math.max(Date.now(), localUpdatedAt + 1);
@@ -1789,7 +1824,7 @@
                 const deletedWhisperIds = getLocalDeletedWhisperIds();
                 const deletedCharIds = getLocalDeletedCharIds();
 
-                // 1. Lưu ngay vào bộ nhớ máy (có bảo vệ try/catch)
+                // 1. Lưu ngay vào bộ nhớ máy
                 safeStorageSet('huyen_updated_at', String(localUpdatedAt));
                 safeStorageSet('huyen_chars_data', JSON.stringify(charactersData));
                 safeStorageSet('huyen_social_links', JSON.stringify(socialLinksData));
@@ -1802,43 +1837,87 @@
 
                 setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
 
-                // 2. Đẩy tách thành 5 kho nhỏ độc lập để tránh bị quá tải dung lượng (413)
-                const [resConfig, resChars, resWhispers, resGuides, resBioGallery] = await Promise.all([
-                    writeSingleUrl(CLOUD_V4_URLS.config, {
-                        webBgUrl,
-                        bio: bioData,
-                        socials: socialLinksData,
-                        updatedAt: localUpdatedAt
-                    }),
-                    writeSingleUrl(CLOUD_V4_URLS.chars, {
-                        characters: charactersData,
-                        deletedCharIds,
-                        updatedAt: localUpdatedAt
-                    }),
-                    writeSingleUrl(CLOUD_V4_URLS.whispers, {
-                        whispers: whispersData,
-                        deletedWhisperIds,
-                        updatedAt: localUpdatedAt
-                    }),
-                    writeSingleUrl(CLOUD_V4_URLS.guides, {
-                        guidesList: guidesListData,
-                        updatedAt: localUpdatedAt
-                    }),
-                    writeSingleUrl(CLOUD_V4_URLS.bioGallery, {
-                        bioGallery: bioGalleryData,
-                        updatedAt: localUpdatedAt
-                    })
-                ]);
+                // Dự phòng bioGallery ngay trong config nếu dung lượng nhỏ (< 28 KB — đủ cho hàng trăm link Catbox/ImgBB)
+                const bioGalleryJsonStr = JSON.stringify(bioGalleryData);
+                const mirrorBioGalleryInConfig = bioGalleryJsonStr.length < 28000;
 
-                const allResults = [
-                    { label: 'Cấu hình/Nền', ...resConfig },
-                    { label: 'Nhân vật (Dreams)', ...resChars },
-                    { label: 'Lời thì thầm', ...resWhispers },
-                    { label: 'Chỉ dẫn', ...resGuides },
-                    { label: 'Ảnh bản thân', ...resBioGallery }
-                ];
+                const bucketDefs = {
+                    config: {
+                        label: 'Cấu hình/Nền',
+                        url: CLOUD_V4_URLS.config,
+                        payload: {
+                            webBgUrl,
+                            bio: bioData,
+                            socials: socialLinksData,
+                            ...(mirrorBioGalleryInConfig ? { bioGallery: bioGalleryData } : {}),
+                            updatedAt: localUpdatedAt
+                        }
+                    },
+                    chars: {
+                        label: 'Nhân vật (Dreams)',
+                        url: CLOUD_V4_URLS.chars,
+                        payload: {
+                            characters: charactersData,
+                            deletedCharIds,
+                            updatedAt: localUpdatedAt
+                        }
+                    },
+                    whispers: {
+                        label: 'Lời thì thầm',
+                        url: CLOUD_V4_URLS.whispers,
+                        payload: {
+                            whispers: whispersData,
+                            deletedWhisperIds,
+                            updatedAt: localUpdatedAt
+                        }
+                    },
+                    guides: {
+                        label: 'Chỉ dẫn',
+                        url: CLOUD_V4_URLS.guides,
+                        payload: {
+                            guidesList: guidesListData,
+                            updatedAt: localUpdatedAt
+                        }
+                    },
+                    bioGallery: {
+                        label: 'Ảnh bản thân',
+                        url: CLOUD_V4_URLS.bioGallery,
+                        payload: {
+                            bioGallery: bioGalleryData,
+                            updatedAt: localUpdatedAt
+                        }
+                    }
+                };
 
-                const failedList = allResults.filter(r => !r.ok);
+                const bucketsToSync = Array.isArray(targetBuckets) && targetBuckets.length > 0
+                    ? targetBuckets.filter(k => bucketDefs[k])
+                    : ['config', 'chars', 'whispers', 'guides', 'bioGallery'];
+
+                // 2. Gửi TUẦN TỰ từng mục (cách nhau 220ms) thay vì bắn 5 yêu cầu cùng lúc để không bị lỗi NETWORK / Rate Limit
+                const resultsMap = {};
+                const allResults = [];
+
+                for (let i = 0; i < bucketsToSync.length; i++) {
+                    const key = bucketsToSync[i];
+                    const def = bucketDefs[key];
+                    const res = await writeSingleUrl(def.url, def.payload, 2);
+                    const entry = { key, label: def.label, ...res };
+                    resultsMap[key] = entry;
+                    allResults.push(entry);
+                    if (i < bucketsToSync.length - 1) {
+                        await sleepMs(220);
+                    }
+                }
+
+                // Nếu mục bioGallery nhỏ và đã được lưu dự phòng thành công trong config, coi như đã đồng bộ an toàn
+                const failedList = allResults.filter(r => {
+                    if (r.ok) return false;
+                    if (r.key === 'bioGallery' && mirrorBioGalleryInConfig && resultsMap.config && resultsMap.config.ok) {
+                        return false;
+                    }
+                    return true;
+                });
+
                 const totalKB = Math.round(allResults.reduce((s, r) => s + r.sizeKB, 0) * 10) / 10;
 
                 if (failedList.length === 0) {
@@ -1849,9 +1928,9 @@
                     }
                 } else {
                     const failDetails = failedList.map(f => `- ${f.label}: ${f.sizeKB} KB (Lỗi ${f.status})`).join('\n');
-                    setCloudBadge(`⚠️ Lỗi đồng bộ ${failedList.length}/5 mục`, true);
+                    setCloudBadge(`⚠️ Lỗi đồng bộ ${failedList.length}/${allResults.length} mục`, true);
                     if (showAlert || isAdmin) {
-                        alert(`⚠️ Đã lưu an toàn trên máy này, nhưng chưa đẩy hết lên Đám Mây được:\n${failDetails}\n\n💡 Mẹo khắc phục: Nếu mục nào quá nặng (> 80 KB) do bạn chọn ảnh trực tiếp từ máy, hãy đổi ảnh đó sang dán link Catbox hoặc ImgBB rồi bấm "🔄 Đẩy dữ liệu máy này lên Mây" nhé!`);
+                        alert(`⚠️ Đã lưu an toàn trên máy này, nhưng chưa đẩy hết lên Đám Mây được:\n${failDetails}\n\n💡 Mẹo khắc phục: Nếu mục nào quá nặng (> 80 KB) do chọn ảnh từ máy, hãy đổi sang dán link Catbox/ImgBB; nếu dung lượng nhẹ mà báo Lỗi NETWORK thì bạn chờ vài giây rồi bấm "🔄 Đẩy dữ liệu máy này lên Mây" nhé!`);
                     }
                 }
             } finally {
@@ -1924,7 +2003,7 @@
             webBgUrl = val || DEFAULT_WEB_BG_URL;
             closeBgModal();
             applyWebBackground();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['config']);
         }
 
         function renderAll() {
@@ -2100,7 +2179,7 @@
             bioGalleryData = gallery;
             closeBioModal();
             renderBioSection();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['config', 'bioGallery']);
         }
 
         // ================= MỤC 4: CHỈ DẪN (THẺ LỆNH KHÔNG ẢNH, KHÔNG HASHTAG + POPUP XEM HẾT + ALBUM ẢNH) =================
@@ -2457,7 +2536,7 @@
 
             closeGuideItemModal();
             renderGuidesGrid();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['guides']);
         }
 
         async function deleteGuideItem(id) {
@@ -2465,7 +2544,7 @@
             if (confirm("Huyên Huyên có chắc chắn muốn xóa chỉ dẫn này không?")) {
                 guidesListData = guidesListData.filter(g => g.id !== id);
                 renderGuidesGrid();
-                await saveDataToCloud(false);
+                await saveDataToCloud(false, ['guides']);
             }
         }
 
@@ -2703,7 +2782,7 @@
             }
             localStorage.setItem('huyen_liked_whispers', JSON.stringify(likedWhisperIds));
             renderWhispers();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['whispers']);
         }
 
         function renderWhispers() {
@@ -2932,7 +3011,7 @@
             delete pendingReplyImages[whisperId];
             openWhisperThreadIds.add(whisperId);
             renderWhispers();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['whispers']);
         }
 
         async function deleteWhisperReplyItem(whisperId, replyId) {
@@ -2942,7 +3021,7 @@
                 if (target && Array.isArray(target.replies)) {
                     target.replies = target.replies.filter(r => r.id !== replyId);
                     renderWhispers();
-                    await saveDataToCloud(false);
+                    await saveDataToCloud(false, ['whispers']);
                 }
             }
         }
@@ -2988,7 +3067,7 @@
             whispersData.unshift(newWhisper);
             renderWhispers();
 
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['whispers']);
 
             msgInput.value = '';
             clearWhisperImage();
@@ -3007,7 +3086,7 @@
                 safeStorageSet('huyen_deleted_whispers', JSON.stringify(deletedIds));
 
                 renderWhispers();
-                await saveDataToCloud(false);
+                await saveDataToCloud(false, ['whispers']);
             }
         }
 
@@ -3118,7 +3197,7 @@
 
             closeSocialModal();
             renderSocialLinks();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['config']);
         }
 
         // ================= TÌM KIẾM THEO TÊN & LỌC HASHTAG =================
@@ -4072,7 +4151,7 @@
 
             closeAdminForm();
             renderAll();
-            await saveDataToCloud(false);
+            await saveDataToCloud(false, ['chars']);
         }
 
         async function deleteCharacter(id) {
@@ -4084,7 +4163,7 @@
                 if (!deletedCharIds.includes(numId)) deletedCharIds.push(numId);
                 safeStorageSet('huyen_deleted_chars', JSON.stringify(deletedCharIds));
                 renderAll();
-                await saveDataToCloud(false);
+                await saveDataToCloud(false, ['chars']);
             }
         }
     </script>
