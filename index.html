@@ -1447,9 +1447,47 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ================= ĐỒNG BỘ ĐÁM MÂY (ĐA GATEWAY + CHỐNG LỆCH ĐỒNG HỒ THIẾT BỊ) =================
-        const CLOUD_KV_URL = 'https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3';
-        const CLOUD_TEXTDB_URL = 'https://textdb.dev/api/data/huyenhuyen_dreams_store_2026';
+        // ================= ĐỒNG BỘ ĐÁM MÂY V4 (TÁCH 4 KHO ĐỘC LẬP, CHỐNG GHI ĐÈ NGƯỢC & BẢO VỆ XÓA) =================
+        const LEGACY_KV_URL = 'https://kvdb.io/S9xK4mP2vL8nQ1wR5tY7uJ/huyenhuyen_live_db_v3';
+        const LEGACY_TEXTDB_URL = 'https://textdb.dev/api/data/huyenhuyen_dreams_store_2026';
+
+        const CLOUD_V4_URLS = {
+            config: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_config',
+            chars: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_chars',
+            whispers: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_whispers',
+            guides: 'https://textdb.dev/api/data/huyenhuyen_dreams_v4_guides'
+        };
+
+        let isSavingToCloud = false;
+        let isLoadingFromCloud = false;
+
+        function safeStorageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                console.warn('localStorage quota warning for', key, e);
+                return false;
+            }
+        }
+
+        function getLocalDeletedWhisperIds() {
+            try {
+                const arr = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
+                return Array.isArray(arr) ? arr.map(Number).filter(n => !isNaN(n)) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function getLocalDeletedCharIds() {
+            try {
+                const arr = JSON.parse(localStorage.getItem('huyen_deleted_chars') || '[]');
+                return Array.isArray(arr) ? arr.map(Number).filter(n => !isNaN(n)) : [];
+            } catch (e) {
+                return [];
+            }
+        }
 
         function setCloudBadge(text, isError = false) {
             const badge = document.getElementById('cloud-sync-status');
@@ -1460,207 +1498,307 @@
                 : "bg-white/20 text-white px-3 py-1 rounded-full font-semibold";
         }
 
-        function parseCloudResponseObject(raw) {
+        function parseCloudJsonSafe(raw) {
             if (!raw) return null;
-            if (typeof raw === 'string') {
-                const trimmed = raw.trim();
-                if (!trimmed) return null;
-                raw = JSON.parse(trimmed);
+            try {
+                const obj = (typeof raw === 'string') ? (raw.trim() ? JSON.parse(raw.trim()) : null) : raw;
+                return (obj && typeof obj === 'object') ? obj : null;
+            } catch (e) {
+                return null;
             }
-            if (!raw || typeof raw !== 'object') return null;
-            if (Array.isArray(raw.characters) || Array.isArray(raw.whispers) || Array.isArray(raw.guidesList) || raw.bio) {
-                return raw;
+        }
+
+        async function readSingleUrl(url) {
+            try {
+                const r = await fetch(url, { method: 'GET', cache: 'no-store' });
+                if (!r.ok) return null;
+                const text = await r.text();
+                return parseCloudJsonSafe(text);
+            } catch (e) {
+                return null;
             }
-            return null;
+        }
+
+        async function writeSingleUrl(url, obj) {
+            const bodyStr = JSON.stringify(obj);
+            const sizeKB = Math.round((bodyStr.length / 1024) * 10) / 10;
+            try {
+                const r = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: bodyStr
+                });
+                return { ok: r.ok, status: r.status, sizeKB };
+            } catch (e) {
+                return { ok: false, status: 'NETWORK', sizeKB };
+            }
         }
 
         async function fetchCloudState() {
-            const stamp = '_t=' + Date.now();
-            const candidates = [];
+            // Đọc song song 4 kho v4 trước
+            const [v4Config, v4Chars, v4Whispers, v4Guides] = await Promise.all([
+                readSingleUrl(CLOUD_V4_URLS.config),
+                readSingleUrl(CLOUD_V4_URLS.chars),
+                readSingleUrl(CLOUD_V4_URLS.whispers),
+                readSingleUrl(CLOUD_V4_URLS.guides)
+            ]);
 
-            try {
-                const r1 = await fetch(`${CLOUD_TEXTDB_URL}?${stamp}`, { cache: 'no-store' });
-                if (r1.ok) {
-                    const p1 = parseCloudResponseObject(await r1.text());
-                    if (p1) candidates.push(p1);
-                }
-            } catch (e) {}
+            const hasV4 = Boolean(v4Config || v4Chars || v4Whispers || v4Guides);
+            if (hasV4) {
+                const maxTime = Math.max(
+                    Number(v4Config?.updatedAt) || 0,
+                    Number(v4Chars?.updatedAt) || 0,
+                    Number(v4Whispers?.updatedAt) || 0,
+                    Number(v4Guides?.updatedAt) || 0
+                );
+                return {
+                    isV4: true,
+                    data: {
+                        updatedAt: maxTime,
+                        webBgUrl: v4Config?.webBgUrl,
+                        bio: v4Config?.bio,
+                        socials: v4Config?.socials,
+                        characters: Array.isArray(v4Chars?.characters) ? v4Chars.characters : undefined,
+                        deletedCharIds: Array.isArray(v4Chars?.deletedCharIds) ? v4Chars.deletedCharIds : [],
+                        whispers: Array.isArray(v4Whispers?.whispers) ? v4Whispers.whispers : undefined,
+                        deletedWhisperIds: Array.isArray(v4Whispers?.deletedWhisperIds) ? v4Whispers.deletedWhisperIds : [],
+                        guidesList: Array.isArray(v4Guides?.guidesList) ? v4Guides.guidesList : undefined
+                    }
+                };
+            }
 
-            try {
-                const r2 = await fetch(`${CLOUD_KV_URL}?${stamp}`, { cache: 'no-store' });
-                if (r2.ok) {
-                    const p2 = parseCloudResponseObject(await r2.json());
-                    if (p2) candidates.push(p2);
-                }
-            } catch (e) {}
-
+            // Fallback tương thích dữ liệu cũ (v3) nếu v4 chưa được khởi tạo
+            const [legacyText, legacyKv] = await Promise.all([
+                readSingleUrl(LEGACY_TEXTDB_URL),
+                readSingleUrl(LEGACY_KV_URL)
+            ]);
+            const candidates = [legacyText, legacyKv].filter(d => d && (Array.isArray(d.characters) || Array.isArray(d.whispers)));
             if (candidates.length === 0) return null;
 
-            candidates.sort((a, b) => {
-                const timeDiff = (Number(b.updatedAt) || 0) - (Number(a.updatedAt) || 0);
-                if (timeDiff !== 0) return timeDiff;
-                const aLen = (a.characters ? a.characters.length : 0) + (a.guidesList ? a.guidesList.length : 0);
-                const bLen = (b.characters ? b.characters.length : 0) + (b.guidesList ? b.guidesList.length : 0);
-                return bLen - aLen;
-            });
-
-            return { data: candidates[0] };
-        }
-
-        async function writeCloudState(payload) {
-            let successCount = 0;
-
-            try {
-                const r1 = await fetch(CLOUD_TEXTDB_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
-                });
-                if (r1.ok) successCount++;
-            } catch (e) {}
-
-            try {
-                const r2 = await fetch(CLOUD_KV_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (r2.ok) successCount++;
-            } catch (e) {}
-
-            return successCount > 0;
+            candidates.sort((a, b) => (Number(b.updatedAt) || 0) - (Number(a.updatedAt) || 0));
+            return { isV4: false, data: candidates[0] };
         }
 
         function mergeWhisperRecords(localList, cloudList, deletedIds) {
+            const deletedSet = new Set((deletedIds || []).map(Number));
             const mergedMap = new Map();
             [...(localList || []), ...(cloudList || [])].forEach(raw => {
-                if (!raw || !raw.id || deletedIds.includes(raw.id)) return;
+                if (!raw || !raw.id || deletedSet.has(Number(raw.id))) return;
                 const w = normalizeWhisperObject({ ...raw });
-                const existing = mergedMap.get(w.id);
+                const key = Number(w.id);
+                const existing = mergedMap.get(key);
                 if (!existing) {
-                    mergedMap.set(w.id, w);
+                    mergedMap.set(key, w);
                 } else {
                     const replyMap = new Map();
                     [...(existing.replies || []), ...(w.replies || [])].forEach(rep => {
-                        if (rep && rep.id) replyMap.set(rep.id, rep);
+                        if (rep && rep.id) replyMap.set(Number(rep.id), rep);
                     });
-                    existing.replies = Array.from(replyMap.values()).sort((a, b) => a.id - b.id);
+                    existing.replies = Array.from(replyMap.values()).sort((a, b) => Number(a.id) - Number(b.id));
                     existing.likes = Math.max(Number(existing.likes) || 0, Number(w.likes) || 0);
                 }
             });
-            return Array.from(mergedMap.values()).sort((a, b) => b.id - a.id);
+            return Array.from(mergedMap.values()).sort((a, b) => Number(b.id) - Number(a.id));
         }
 
-        async function loadDataFromCloud() {
+        async function loadDataFromCloud(forcePull = false) {
+            if (isSavingToCloud || isLoadingFromCloud) return;
+
             const activeEl = document.activeElement;
-            if (activeEl && activeEl.classList && activeEl.classList.contains('whisper-reply-input')) {
+            if (!forcePull && activeEl && activeEl.classList && activeEl.classList.contains('whisper-reply-input')) {
                 return;
             }
 
-            const result = await fetchCloudState();
-            if (!result || !result.data) {
-                if (localUpdatedAt > 0 || charactersData.length > 0) {
-                    await saveDataToCloud(false);
-                }
+            // Nếu máy này đang có thay đổi cục bộ chưa kịp đẩy lên Mây, KHÔNG kéo bản cũ về ghi đè!
+            const hasPendingLocalSync = localStorage.getItem('huyen_pending_sync') === '1';
+            if (hasPendingLocalSync && !forcePull) {
+                setCloudBadge('⏳ Đang thử đẩy lại dữ liệu lên Mây...');
+                await saveDataToCloud(false);
                 return;
             }
 
-            const cloudData = result.data;
-            const cloudTime = Number(cloudData.updatedAt) || 0;
-            let hasAnyChange = false;
-
-            if (Array.isArray(cloudData.whispers)) {
-                const deletedIds = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds : [];
-                const mergedWhispers = mergeWhisperRecords(whispersData, cloudData.whispers, deletedIds);
-                if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
-                    whispersData = mergedWhispers;
-                    localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
-                    hasAnyChange = true;
+            isLoadingFromCloud = true;
+            try {
+                const result = await fetchCloudState();
+                if (!result || !result.data) {
+                    if (localUpdatedAt > 0 || charactersData.length > 0) {
+                        isLoadingFromCloud = false;
+                        await saveDataToCloud(false);
+                    }
+                    return;
                 }
-            }
 
-            const cloudCharsJson = Array.isArray(cloudData.characters) && cloudData.characters.length > 0
-                ? JSON.stringify(cloudData.characters.map(normalizeCharacterObject))
-                : null;
-            const localCharsJson = JSON.stringify(charactersData);
+                const cloudData = result.data;
+                const cloudTime = Number(cloudData.updatedAt) || 0;
+                let hasAnyChange = false;
 
-            const cloudGuidesJson = Array.isArray(cloudData.guidesList)
-                ? JSON.stringify(cloudData.guidesList.map(normalizeGuideItem))
-                : null;
-            const localGuidesJson = JSON.stringify(guidesListData);
+                // Hợp nhất danh sách ID lời thì thầm đã xóa (Cả máy này lẫn đám mây) để không bao giờ hồi sinh lời nhắn đã xóa
+                const localDelWhispers = getLocalDeletedWhisperIds();
+                const cloudDelWhispers = Array.isArray(cloudData.deletedWhisperIds) ? cloudData.deletedWhisperIds.map(Number) : [];
+                const combinedDelWhispers = Array.from(new Set([...localDelWhispers, ...cloudDelWhispers]));
+                safeStorageSet('huyen_deleted_whispers', JSON.stringify(combinedDelWhispers));
 
-            const shouldPullFromCloud = (cloudTime > localUpdatedAt)
-                || (cloudCharsJson && cloudCharsJson !== localCharsJson && !isAdmin)
-                || (cloudGuidesJson && cloudGuidesJson !== localGuidesJson && !isAdmin);
+                const localDelChars = getLocalDeletedCharIds();
+                const cloudDelChars = Array.isArray(cloudData.deletedCharIds) ? cloudData.deletedCharIds.map(Number) : [];
+                const combinedDelChars = Array.from(new Set([...localDelChars, ...cloudDelChars]));
+                safeStorageSet('huyen_deleted_chars', JSON.stringify(combinedDelChars));
 
-            if (shouldPullFromCloud) {
-                if (cloudCharsJson) {
-                    charactersData = JSON.parse(cloudCharsJson);
-                    localStorage.setItem('huyen_chars_data', cloudCharsJson);
-                }
-                if (Array.isArray(cloudData.socials)) {
-                    socialLinksData = cloudData.socials;
-                    localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
-                }
-                if (typeof cloudData.webBgUrl === 'string' && cloudData.webBgUrl.trim()) {
-                    webBgUrl = cloudData.webBgUrl.trim();
-                    localStorage.setItem('huyen_web_bg_url', webBgUrl);
-                }
-                if (cloudData.bio && typeof cloudData.bio === 'object') {
-                    bioData = cloudData.bio;
-                    localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
-                }
-                if (cloudGuidesJson) {
-                    guidesListData = JSON.parse(cloudGuidesJson);
-                    localStorage.setItem('huyen_guides_list_v2', cloudGuidesJson);
-                }
-                localUpdatedAt = cloudTime || Date.now();
-                localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
-                hasAnyChange = true;
-            }
+                // Chỉ ghi đè dữ liệu từ đám mây khi đám mây THỰC SỰ MỚI HƠN máy này (hoặc máy này mới mở lần đầu chưa có localUpdatedAt)
+                const shouldPull = forcePull || localUpdatedAt === 0 || (cloudTime > localUpdatedAt);
 
-            setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
-            if (hasAnyChange) {
-                renderAll();
+                if (Array.isArray(cloudData.whispers)) {
+                    if (shouldPull && cloudTime > localUpdatedAt) {
+                        // Khi đám mây mới hơn, lọc sạch mọi lời thì thầm đã xóa
+                        const cleanCloudWhispers = cloudData.whispers
+                            .filter(w => w && w.id && !combinedDelWhispers.includes(Number(w.id)))
+                            .map(normalizeWhisperObject)
+                            .sort((a, b) => Number(b.id) - Number(a.id));
+                        if (JSON.stringify(cleanCloudWhispers) !== JSON.stringify(whispersData)) {
+                            whispersData = cleanCloudWhispers;
+                            safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
+                            hasAnyChange = true;
+                        }
+                    } else {
+                        const mergedWhispers = mergeWhisperRecords(whispersData, cloudData.whispers, combinedDelWhispers);
+                        if (JSON.stringify(mergedWhispers) !== JSON.stringify(whispersData)) {
+                            whispersData = mergedWhispers;
+                            safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
+                            hasAnyChange = true;
+                        }
+                    }
+                }
+
+                if (shouldPull) {
+                    if (Array.isArray(cloudData.characters)) {
+                        const normalizedChars = cloudData.characters
+                            .map(normalizeCharacterObject)
+                            .filter(c => c && c.id && !combinedDelChars.includes(Number(c.id)));
+                        const nextCharsJson = JSON.stringify(normalizedChars);
+                        if (nextCharsJson !== JSON.stringify(charactersData)) {
+                            charactersData = normalizedChars;
+                            safeStorageSet('huyen_chars_data', nextCharsJson);
+                            hasAnyChange = true;
+                        }
+                    }
+                    if (Array.isArray(cloudData.socials)) {
+                        const nextSocialsJson = JSON.stringify(cloudData.socials);
+                        if (nextSocialsJson !== JSON.stringify(socialLinksData)) {
+                            socialLinksData = cloudData.socials;
+                            safeStorageSet('huyen_social_links', nextSocialsJson);
+                            hasAnyChange = true;
+                        }
+                    }
+                    if (typeof cloudData.webBgUrl === 'string' && cloudData.webBgUrl.trim()) {
+                        const nextBg = cloudData.webBgUrl.trim();
+                        if (nextBg !== webBgUrl) {
+                            webBgUrl = nextBg;
+                            safeStorageSet('huyen_web_bg_url', webBgUrl);
+                            hasAnyChange = true;
+                        }
+                    }
+                    if (cloudData.bio && typeof cloudData.bio === 'object') {
+                        const nextBioJson = JSON.stringify(cloudData.bio);
+                        if (nextBioJson !== JSON.stringify(bioData)) {
+                            bioData = cloudData.bio;
+                            safeStorageSet('huyen_bio_data', nextBioJson);
+                            hasAnyChange = true;
+                        }
+                    }
+                    if (Array.isArray(cloudData.guidesList)) {
+                        const normalizedGuides = cloudData.guidesList.map(normalizeGuideItem);
+                        const nextGuidesJson = JSON.stringify(normalizedGuides);
+                        if (nextGuidesJson !== JSON.stringify(guidesListData)) {
+                            guidesListData = normalizedGuides;
+                            safeStorageSet('huyen_guides_list_v2', nextGuidesJson);
+                            hasAnyChange = true;
+                        }
+                    }
+
+                    if (cloudTime > localUpdatedAt) {
+                        localUpdatedAt = cloudTime;
+                        safeStorageSet('huyen_updated_at', String(localUpdatedAt));
+                    }
+                }
+
+                setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
+                if (hasAnyChange) {
+                    renderAll();
+                }
+            } finally {
+                isLoadingFromCloud = false;
             }
         }
 
         async function saveDataToCloud(showAlert = false) {
-            localUpdatedAt = Date.now();
-            localStorage.setItem('huyen_updated_at', String(localUpdatedAt));
-            localStorage.setItem('huyen_chars_data', JSON.stringify(charactersData));
-            localStorage.setItem('huyen_social_links', JSON.stringify(socialLinksData));
-            localStorage.setItem('huyen_whispers_data', JSON.stringify(whispersData));
-            localStorage.setItem('huyen_web_bg_url', webBgUrl);
-            localStorage.setItem('huyen_bio_data', JSON.stringify(bioData));
-            localStorage.setItem('huyen_guides_list_v2', JSON.stringify(guidesListData));
+            isSavingToCloud = true;
+            try {
+                const nowTs = Math.max(Date.now(), localUpdatedAt + 1);
+                localUpdatedAt = nowTs;
 
-            const deletedWhisperIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
+                const deletedWhisperIds = getLocalDeletedWhisperIds();
+                const deletedCharIds = getLocalDeletedCharIds();
 
-            setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
+                // 1. Lưu ngay vào bộ nhớ máy (có bảo vệ try/catch)
+                safeStorageSet('huyen_updated_at', String(localUpdatedAt));
+                safeStorageSet('huyen_chars_data', JSON.stringify(charactersData));
+                safeStorageSet('huyen_social_links', JSON.stringify(socialLinksData));
+                safeStorageSet('huyen_whispers_data', JSON.stringify(whispersData));
+                safeStorageSet('huyen_web_bg_url', webBgUrl);
+                safeStorageSet('huyen_bio_data', JSON.stringify(bioData));
+                safeStorageSet('huyen_guides_list_v2', JSON.stringify(guidesListData));
+                safeStorageSet('huyen_pending_sync', '1');
 
-            const payload = {
-                webBgUrl: webBgUrl,
-                characters: charactersData,
-                socials: socialLinksData,
-                whispers: whispersData,
-                bio: bioData,
-                guidesList: guidesListData,
-                deletedWhisperIds: deletedWhisperIds,
-                updatedAt: localUpdatedAt
-            };
+                setCloudBadge('⏳ Đang đồng bộ lên đám mây...');
 
-            const ok = await writeCloudState(payload);
-            if (ok) {
-                setCloudBadge('☁️ Đã đồng bộ đám mây ✨');
-                if (showAlert) {
-                    alert('✅ Đã đẩy toàn bộ giới thiệu, {char}, chỉ dẫn, album ảnh, link MXH và các lời thì thầm lên Đám Mây!');
+                // 2. Đẩy tách thành 4 kho nhỏ độc lập để tránh bị quá tải dung lượng (413)
+                const [resConfig, resChars, resWhispers, resGuides] = await Promise.all([
+                    writeSingleUrl(CLOUD_V4_URLS.config, {
+                        webBgUrl,
+                        bio: bioData,
+                        socials: socialLinksData,
+                        updatedAt: localUpdatedAt
+                    }),
+                    writeSingleUrl(CLOUD_V4_URLS.chars, {
+                        characters: charactersData,
+                        deletedCharIds,
+                        updatedAt: localUpdatedAt
+                    }),
+                    writeSingleUrl(CLOUD_V4_URLS.whispers, {
+                        whispers: whispersData,
+                        deletedWhisperIds,
+                        updatedAt: localUpdatedAt
+                    }),
+                    writeSingleUrl(CLOUD_V4_URLS.guides, {
+                        guidesList: guidesListData,
+                        updatedAt: localUpdatedAt
+                    })
+                ]);
+
+                const allResults = [
+                    { label: 'Cấu hình/Nền', ...resConfig },
+                    { label: 'Nhân vật (Dreams)', ...resChars },
+                    { label: 'Lời thì thầm', ...resWhispers },
+                    { label: 'Chỉ dẫn', ...resGuides }
+                ];
+
+                const failedList = allResults.filter(r => !r.ok);
+                const totalKB = Math.round(allResults.reduce((s, r) => s + r.sizeKB, 0) * 10) / 10;
+
+                if (failedList.length === 0) {
+                    safeStorageSet('huyen_pending_sync', '0');
+                    setCloudBadge(`☁️ Đã đồng bộ Mây (${totalKB} KB) ✨`);
+                    if (showAlert) {
+                        alert(`✅ Đã đồng bộ thành công toàn bộ dữ liệu (${totalKB} KB) lên Đám Mây!\nBạn có thể mở lại trên iPad hoặc điện thoại để kiểm tra ngay nhé.`);
+                    }
+                } else {
+                    const failDetails = failedList.map(f => `- ${f.label}: ${f.sizeKB} KB (Lỗi ${f.status})`).join('\n');
+                    setCloudBadge(`⚠️ Lỗi đồng bộ ${failedList.length}/4 mục`, true);
+                    if (showAlert || isAdmin) {
+                        alert(`⚠️ Đã lưu an toàn trên máy này, nhưng chưa đẩy hết lên Đám Mây được:\n${failDetails}\n\n💡 Mẹo khắc phục: Nếu mục nào quá nặng (> 80 KB) do bạn chọn ảnh trực tiếp từ máy, hãy đổi ảnh đó sang dán link Catbox hoặc ImgBB rồi bấm "🔄 Đẩy dữ liệu máy này lên Mây" nhé!`);
+                    }
                 }
-            } else {
-                setCloudBadge('⚠️ Đã lưu trên máy (Chờ đồng bộ)', true);
-                if (showAlert) {
-                    alert('⚠️ Đã lưu trên trình duyệt của máy này! Nếu bạn đăng quá nhiều ảnh nặng từ máy cùng lúc, hãy ưu tiên dán link ảnh Catbox để đồng bộ qua đám mây nhanh nhất nhé.');
-                }
+            } finally {
+                isSavingToCloud = false;
             }
         }
 
@@ -1716,7 +1854,7 @@
         async function handleBgFileUpload(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
-            const dataUrl = await compressImageFileToDataUrl(file, 1600, 0.85);
+            const dataUrl = await compressImageFileToDataUrl(file, 1100, 0.72);
             document.getElementById('bg-input-url').value = dataUrl;
             updateBgPreview();
             event.target.value = '';
@@ -2057,7 +2195,7 @@
             }
 
             for (const file of files) {
-                const dataUrl = await compressImageFileToDataUrl(file, 850, 0.8);
+                const dataUrl = await compressImageFileToDataUrl(file, 640, 0.7);
                 addGuideGalleryImageField(dataUrl);
             }
             event.target.value = '';
@@ -2300,7 +2438,7 @@
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
-            pendingWhisperImageDataUrl = await compressImageFileToDataUrl(file, 680, 0.76);
+            pendingWhisperImageDataUrl = await compressImageFileToDataUrl(file, 540, 0.68);
             const previewBox = document.getElementById('whisper-image-preview-box');
             const previewImg = document.getElementById('whisper-image-preview-img');
             if (previewImg) previewImg.src = pendingWhisperImageDataUrl;
@@ -2320,7 +2458,7 @@
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
-            const dataUrl = await compressImageFileToDataUrl(file, 620, 0.75);
+            const dataUrl = await compressImageFileToDataUrl(file, 500, 0.68);
             pendingReplyImages[whisperId] = dataUrl;
 
             const previewWrap = document.getElementById(`reply-img-preview-wrap-${whisperId}`);
@@ -2684,11 +2822,12 @@
         async function deleteWhisper(id) {
             if (!isAdmin) return;
             if (confirm("Huyên Huyên có chắc chắn muốn xóa mảnh thì thầm này không?")) {
-                whispersData = whispersData.filter(w => w.id !== id);
-                openWhisperThreadIds.delete(id);
-                const deletedIds = JSON.parse(localStorage.getItem('huyen_deleted_whispers') || '[]');
-                if (!deletedIds.includes(id)) deletedIds.push(id);
-                localStorage.setItem('huyen_deleted_whispers', JSON.stringify(deletedIds));
+                const numId = Number(id);
+                whispersData = whispersData.filter(w => Number(w.id) !== numId);
+                openWhisperThreadIds.delete(numId);
+                const deletedIds = getLocalDeletedWhisperIds();
+                if (!deletedIds.includes(numId)) deletedIds.push(numId);
+                safeStorageSet('huyen_deleted_whispers', JSON.stringify(deletedIds));
 
                 renderWhispers();
                 await saveDataToCloud(false);
@@ -3394,7 +3533,7 @@
                 document.getElementById('edit-bio-btn').classList.remove('hidden');
                 document.getElementById('admin-sync-banner').classList.remove('hidden');
                 renderAll();
-                await saveDataToCloud(false);
+                await loadDataFromCloud(false);
                 alert("Đăng nhập quản trị thành công! Bây giờ Huyên Huyên có thể chỉnh sửa giới thiệu, thêm/sửa {char}, chỉ dẫn và quản lý lời thì thầm nhé.");
             } else {
                 errorMsg.innerText = "Huyên Huyên quên pass rồi đúng khônggggg?";
@@ -3432,7 +3571,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const targetSize = 300;
+                    const targetSize = 220;
                     canvas.width = targetSize;
                     canvas.height = targetSize;
                     const ctx = canvas.getContext('2d');
@@ -3544,7 +3683,7 @@
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const maxDim = 900;
+                        const maxDim = 640;
                         let width = img.width;
                         let height = img.height;
 
@@ -3739,10 +3878,15 @@
                 gallery
             };
 
+            const delChars = getLocalDeletedCharIds().filter(delId => delId !== Number(charPayload.id));
+            safeStorageSet('huyen_deleted_chars', JSON.stringify(delChars));
+
             if (id) {
-                const index = charactersData.findIndex(c => c.id == id);
+                const index = charactersData.findIndex(c => Number(c.id) === Number(id));
                 if (index !== -1) {
                     charactersData[index] = charPayload;
+                } else {
+                    charactersData.push(charPayload);
                 }
             } else {
                 charactersData.push(charPayload);
@@ -3754,8 +3898,13 @@
         }
 
         async function deleteCharacter(id) {
+            if (!isAdmin) return;
             if (confirm("Huyên Huyên có chắc chắn muốn xóa giấc mơ này không?")) {
-                charactersData = charactersData.filter(c => c.id !== id);
+                const numId = Number(id);
+                charactersData = charactersData.filter(c => Number(c.id) !== numId);
+                const deletedCharIds = getLocalDeletedCharIds();
+                if (!deletedCharIds.includes(numId)) deletedCharIds.push(numId);
+                safeStorageSet('huyen_deleted_chars', JSON.stringify(deletedCharIds));
                 renderAll();
                 await saveDataToCloud(false);
             }
